@@ -1,7 +1,10 @@
-Changes in version 2.6.1 (2022-04-11)
+Changes in version 2.6.1 (2022-10-03)
 
 New features or changed behaviour of old functions
     o  partial implementation of capped detector in Enrm()
+
+Other
+    o  on GitHub
 
 Changes in version 2.6.0 (2022-01-26)
 
