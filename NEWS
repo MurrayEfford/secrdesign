@@ -1,0 +1,242 @@
+Changes in version 2.6.1 (2022-04-11)
+
+New features or changed behaviour of old functions
+    o  partial implementation of capped detector in Enrm()
+
+Changes in version 2.6.0 (2022-01-26)
+
+New features or changed behaviour of old functions
+    o  run.scenarios() 'fit' option uses multithreading capability of secr
+    o  run.scenarios() 'ncores' defaults to NULL (then uses value of environment 
+       variable RCPP_PARALLEL_NUM_THREADS set by setNumThreads())
+    o  run.scenarios() 'byscenario' defaults to FALSE
+
+Bugs fixed
+    o  Enrm() expected movement could fail when some of mask far from detectors
+
+Other
+    o  removed openCR options and imports (deprecated from 2.5.8)
+    o  initial value of RCPP_PARALLEL_NUM_THREADS (usually 2) is set by secr onload 
+    o  depends R (>= 3.5.0), secr (>= 4.2.0)
+
+Changes in version 2.5.11 (2020-04-10)
+
+New features or changed behaviour of old functions
+    o  none
+
+Bugs fixed
+    o  run.scenarios() default extractfn (no model fitted) mistake in RSEp approximation
+
+Changes in version 2.5.10 (2020-01-31)
+
+New features or changed behaviour of old functions
+    o  run.scenarios() default extractfn (no model fitted) uses RSEp approximation of 
+       Efford & Boulanger 2019
+
+Bugs fixed
+    o   optimalSpacing() with simulations, fit.function = "openCR.fit" and nrepeats>1
+        miscalculated RB(D-hat)
+    o   summary.selectedstatistics() failed when run.scenarios() pop.args included poly
+    o   header() stumbled on non-numeric (covariate) specification of D
+    o   run.scenarios() spurious warning for non-numeric D
+    
+Bug not fixed (see Other)
+    o   With fit.function 'openCR.fit', the calculation of RB(D-hat) in 
+        summarized simulations does not reflect nrepeats>1
+
+Other
+    o   fit.function 'openCR.fit' is deprecated, and will be removed in a later version; 
+        secr.fit is now fast enough
+    o   optimalSpacing() catches bad root finding when limits inappropriate
+    o   optimalSpacing() only passes valid fit.args to run.scenarios
+    o   force ncores = 1 when fitting model (internal function processCH)
+    
+
+Changes in version 2.5.7 (2019-02-04)
+
+New features or changed behaviour of old functions
+    o  none
+
+Bugs fixed
+    o   count.summary() failed with fit.function = "openCR.fit"
+
+Changes in version 2.5.6 (2019-01-26)
+
+New features or changed behaviour of old functions
+    o   make.scenarios() allows uniform (detectfn = 4)
+    o   count and predict methods for simulation objects inheriting from 'summary'
+    o   select.stats() respects count statistics
+
+Bugs fixed
+    o   plot.optimalSpacing() failed if any values missing (NA)
+    o   optimalSpacing() did not apply nrepeats when computing binomial rotRSE
+    o   scenarioSummary() failed with single-detector arrays
+
+Other
+    o   vignette removed (had been re-introduced by mistake in 2.5.5) 
+        (see www.otago.ac.nz/density/pdfs)
+
+Changes in version 2.5.5 (2018-12-07)
+
+New features or changed behaviour of old functions
+    o   optimalSpacing() new argument 'fit.function' to select openCR.fit/secr.fit
+    o   optimalSpacing() new argument 'distribution'
+    o   optimalSpacing() adjusts rotRSE for binomial distribution of n
+    o   plot.optimalSpacing() does not plot optimum
+    o   summarySpacing() calculates detectors per home range
+
+Bugs fixed
+    o   run.scenarios() tripped up on multi-session simulation
+    o   summaryScenarios() mostly ignored nrepeats
+
+Other
+    o   imports from openCR
+
+Changes in version 2.5.4 (2017-12-05)
+
+New features or changed behaviour of old functions
+    o   none
+
+Other
+    o   vignette secrdesign-vignette.pdf removed (see www.otago.ac.nz/density/pdfs)
+
+Changes in version 2.5.3 (2017-12-04)
+
+New features or changed behaviour of old functions
+    o   saturation() new function for expected detector saturation (trap success)
+    o   scenarioSummary() reports average expected detector saturation
+    o   derived.SL() and regionN.SL() replaced by methods for generic functions
+        derived and region.N (see 'secr')
+
+Bugs fixed
+    o   Enrm() etc. detectfn 'HAN' and 'HCG' failed
+
+Other
+    o   tweak to select.stats to allow parameters without true value in scenarios
+    o   depends on secr >= 3.1.2
+
+Changes in version 2.5.2 (2017-10-10)
+
+Other
+    o   vignettes secrdesign-Enrm.pdf and secrdesign-tools.pdf removed (see www.otago.ac.nz/density/pdfs)
+
+Changes in version 2.5.0 (2017-10-06)
+
+New features or changed behaviour of old functions
+    o   functions Lambda(), Enrm(), minnrRSE(), costing(), getdetectpar() and optimalSpacing()
+    o   new function scenarioSummary() reports deterministic summary of scenarios (e.g., expected number 
+        of individuals, costings)
+    o   run.scenarios() and fit.models() acquire argument byscenario (parallel scenarios or replicates?)
+    o   fit.models() mask may be passed as component of fit.args, when it has priority over maskset
+    o   run.scenarios() user may specify different masks as core in pop.args
+    
+Bugs fixed
+    o   run.scenarios() ignored Nmark detection argument
+    o   chatnsim lost if multiple scenarios
+    o   nrepeats was ignored when method = 'none'
+
+Other
+    o   more robust outputtype when no results
+    o   packageType message if pre-release
+    o   persistent problems in header() for non-scalar arguments
+
+Changes in version 2.4.1 (2016-09-28)
+
+New features or changed behaviour of old functions
+    o   rule-of-thumb RSE added to default extractfn when fit = F
+    o   validate() acquires argument 'quietly'
+    o   detectpar list may be specified in det.args (overrides scenario)
+
+Bugs fixed
+    o   summary.selectedstatistics() failed when type = 'array'
+
+Other
+    o   all array dimensions now named in output of summary.selectedstatistics()
+
+Changes in version 2.4.0 (2016-04-23)
+
+New features or changed behaviour of old functions
+    o   mark-resight data are simulated with secr::sim.resight if traps object
+    	has markocc attribute
+    o   run.scenarios() new argument chatnsim for simulating overdispersion of sightings
+    o   header() allows for complex 'details' and 'start' components
+    o   validate reports number of problem rows
+    	
+Bugs fixed
+    o   header() failed with model2D="IHP" (problem in argdf - temporary fix)
+    o   run.scenarios() respects detectpar component of det.args (see makeCH)
+
+Other
+    o   number of occasions in markocc overrides noccasions in scenario
+    o   internally streamlined use of multiple cpu (no unnecessary export)
+    o   select.stats() failed with parameter not 'D'
+    o   run.scenarios() uses message instead of cat
+    
+Changes in version 2.3.1 (2015-05-14)
+
+New features or changed behaviour of old functions
+    o   scenariosFromStatistics() new function to generate scenarios with specified
+         number of first captures and recaptures.
+    o   improved output header for fit.args etc.
+
+
+Changes in version 2.3.0 (2015-03-25)
+
+New features or changed behaviour of old functions
+
+    o   fit.models() acquires arguments 'scen' and 'repl' to select a subset of rawdata
+    o   run.scenarios() and fit.models() when predict.secr returns a list the default 
+        extractfn selects first session or group, with a warning (previously crashed)
+    o   summary.selectedstatistics() has improved labelling of output
+    o   select.stats() acquires argument 'true' for user override of 'true' values
+
+Bugs fixed
+    o   fit.models() did not work with grouped populations
+    o   default extractfn failed when no detections and fit = FALSE
+    o   run.scenarios() dots argument (...) not passed to worker processes
+
+Other
+    o   more robust handling of start values for secr.fit()
+
+Changes in version 2.2.2 (2015-01-11)
+
+Other
+    o   CITATION file uses package metadata
+
+Changes in version 2.2.1 (2014-11-27)
+
+New features or changed behaviour of old functions
+
+    o   run.scenarios() allows value "linear" for model2D argument of sim.popn 
+    o   details 'userdist' argument suppressed when printing summaries
+    o   make.scenarios() optionally generates scenarios with group structure (e.g. males and females)
+    o   run.scenarios() simulates composite (grouped) populations
+
+Bugs fixed
+    o   validate() did not catch NaN values
+
+Other
+    o   attribute 'regionarea' renamed 'regionsize' to cover linear case
+    o   workflow figure dropped from secrdesign-package.Rd (see vignette)
+    o   argument order changed in summary.selectedstatistics
+    o   default extractfn checks for non-null 'fit' of returned secr object
+
+Changes in version 2.1.3 (2014-06-04)
+
+    o   vignette renamed and edited
+    o   vignette source code included
+
+Changes in version 2.1.2 (2014-04-29)
+
+New features or changed behaviour of old functions
+
+    o   validate() function to set out-of-range values to NA
+    o   min, max as fields in summary.selectedstatistics
+    o   secrdesign.pdf vignette
+    o   header in summary output now includes pop.args
+    o   run.scenarios() allows IHP population simulation as 
+        alternative to specifying uniform density
+
+Bugs fixed
+
+    o   maskset was not saved when specified in run.scenarios()
