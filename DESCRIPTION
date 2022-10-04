@@ -16,7 +16,6 @@ Depends:
     R (>= 3.5.0), 
     secr (>= 4.2.0)
 Imports: 
-    abind, 
     kofnGA,
     parallel, 
     sf

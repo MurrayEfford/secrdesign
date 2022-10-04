@@ -1,7 +1,8 @@
 import (parallel)
 import (secr)
 
-importFrom ("abind", "abind")
+# Base R
+
 importFrom("graphics", "abline", "hist", "lines", "mtext", "par",
            "plot", "points", "segments", "legend", "axis", "box", "polygon", "text")
 importFrom("stats", "coef", "logLik", "pgamma", "predict", "qnorm", "quantile",
@@ -15,6 +16,8 @@ importFrom("utils",
 
 importFrom("grDevices", 
     "topo.colors")
+
+# Other packages
 
 importFrom("sf",
     "st_as_sf",
@@ -53,6 +56,7 @@ export (scenarioSummary)
 export (saturation)
 export (count)
 export (GAminnr)
+
 S3method (plot, optimalSpacing)
 S3method (print, optimalSpacing)
 S3method (print, summarysecrdesign)
