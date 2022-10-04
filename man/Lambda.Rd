@@ -1,6 +1,6 @@
 \name{Lambda}
 \alias{Lambda}
-\alias{LambdaK}
+\alias{Lambdak}
 \alias{Enrm}
 \alias{minnrRSE}
 

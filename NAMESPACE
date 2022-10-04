@@ -7,8 +7,30 @@ importFrom("graphics", "abline", "hist", "lines", "mtext", "par",
 importFrom("stats", "coef", "logLik", "pgamma", "predict", "qnorm", "quantile",
            "terms", "uniroot", "optimize", "approx", "dist", "pnorm", "symnum",
            "median")
-importFrom("utils", "flush.console", "packageDescription", "packageVersion")
-importFrom("grDevices", "topo.colors")
+
+importFrom("utils", 
+    "flush.console", 
+    "packageDescription", 
+    "packageVersion")
+
+importFrom("grDevices", 
+    "topo.colors")
+
+importFrom("sf",
+    "st_as_sf",
+    "st_buffer",
+    "st_union",
+    "st_make_grid",
+    "st_coordinates",
+    "st_intersection",
+    "st_linestring",
+    "st_multilinestring",
+    "st_polygonize",
+    "st_sfc"
+    )
+
+importFrom("kofnGA",
+    "kofnGA")
 
 export (make.scenarios)
 export (scenariosFromStatistics)
@@ -30,6 +52,7 @@ export (costing)
 export (scenarioSummary)
 export (saturation)
 export (count)
+export (GAminnr)
 S3method (plot, optimalSpacing)
 S3method (print, optimalSpacing)
 S3method (print, summarysecrdesign)

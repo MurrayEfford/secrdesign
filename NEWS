@@ -1,6 +1,7 @@
-Changes in version 2.6.1 (2022-10-03)
+Changes in version 2.7.0 (2022-10-04)
 
 New features or changed behaviour of old functions
+    o  GAminnr() min(n,r) optimization by genetic algorithm (Durbach et al. 2021)
     o  partial implementation of capped detector in Enrm()
 
 Other
