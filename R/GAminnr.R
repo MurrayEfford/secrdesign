@@ -15,17 +15,18 @@
 # pop, N = 100, sum_wt, transitions = NULL, divby = 1, addback = 0 
 
 # USE THE FOLLOWING WITH CAUTION!
-# pen_gridsigma:   penalties for bad trap spacing are based on comparing min(n,r) grid
+# pen_wt     :  penalty for spacings that are too different from regular grid
+# pen_gridsigma :   penalties for bad trap spacing are based on comparing min(n,r) grid
 #                  to what you would get from a X-sigma regular grid. X = pen_gridsigma
-# pen_wt     :          penalty for spacings that are too different from regular grid
 
 #-------------------------------------------------------------------------------
 
+# default pen_fn
 td <- function (traps, sigma) {
-    # find out how many detector pairs are between 2-3 and 3-4 sigma apart
-    breaks <- c(0, 1.499, 2.499, 3.499, 4.449, Inf) * sigma
+    # find out how many detector pairs are between 2.5-3.5 and 3.5-4.5 sigma apart
+    breaks <- c(0, 2.499, 3.499, 4.499, Inf) * sigma     # why 4.449? assume typo
     d <- as.matrix(dist(traps))  # for compatibility
-    tabulate(cut(d, breaks = breaks))[2:4]
+    tabulate(cut(d, breaks = breaks))[2:3]
 }
 
 #-------------------------------------------------------------------------------
@@ -39,18 +40,15 @@ OFenrm <- function (v,
     detector, 
     D, 
     crit, 
-    g_n234, 
     pen_wt,
-    pen_fn) {
-    
-    lambda0 <- detectpar$lambda0
-    sigma <- detectpar$sigma
+    pen_fn,
+    g_penvector) {
     
     # penalty for too clustered
     if (pen_wt > 0) {
-        # use function passed to OF
-        n234 <- pen_fn(alltraps[v,], detectpar$sigma)
-        penalty <- pen_wt * sum(pmax(0, g_n234-n234))
+        # use pen_fn function passed to OF
+        penvector <- pen_fn(alltraps[v,], detectpar$sigma)
+        penalty <- pen_wt * sum(pmax(0, g_penvector - penvector))
     }
     else {
         penalty <- 0
@@ -58,7 +56,8 @@ OFenrm <- function (v,
     
     traps <- subset(alltraps, v)
     
-    # this implementation does not allow varying lambda0
+    if (length(detectpar$lambda0) > 1)
+        stop ("this implementation does not allow varying lambda0")
     enrm <- Enrm(D = D, traps = traps, mask = mask, noccasions = noccasions, 
         detectpar = detectpar, detectfn = detectfn)
     
@@ -76,8 +75,9 @@ GAminnr <- function(
     detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"),
     D = 1,
     criterion = 4,     # default min(n,r)
-    pen_gridsigma = 2,
     pen_wt = 0, 
+    pen_gridsigma = 2,
+    pen_fn = NULL,
     seed = NULL,
     ...){
     
@@ -95,27 +95,33 @@ GAminnr <- function(
     if (ms(mask) || ms(traps)) stop ("mask and traps should be single-session")
     
     #---------------------------------------------------------------------------
-    # penalty base
     
     if (pen_wt>0) {
-        # find distribution of trap spacings on a close to regular grid, to ensure later optimized grid has spaced
-        # enough detectors sufficiently far apart to get low var(sigma)
+        # penalty reference vector (Durbach et al. 2021)
+
+        # find distribution of trap spacings on a close to regular grid, to ensure 
+        # later optimized grid has spaced enough detectors sufficiently far apart 
+        # to get low var(sigma)
         
+        # polygon to represent region of interest
         pg <- st_union(gridCells(alltraps))
-        # place a grid over the area, with cells X sigma apart
+        # place a grid over the area, with cells pen_gridsigma * sigma apart
+        # random origin, detector not material
         cellsize <- pen_gridsigma * detectpar$sigma
-        grid_traps <- make.systematic(region = pg, spacing = cellsize, detector = detector)  # random origin
-        xy_rand <- grid_traps[sample(1:nrow(grid_traps), 1), ]
-        dist2pt <- (grid_traps$x - xy_rand$x)^2 + (grid_traps$y - xy_rand$y)^2
+        grid_traps <- make.systematic(region = pg, spacing = cellsize)
+        # random starting trap
+        xy_rand <- grid_traps[sample.int(nrow(grid_traps), 1), ]  
+        dist2pt <- distancetotrap(grid_traps, xy_rand)
         OK <- rank(dist2pt, ties.method = "random") <= ntraps
-        grid_traps <- subset(grid_traps, OK)
-        
-        # target for minimum numbers of traps in each distance bracket
-        targetmultiplier <- c(0,1,1)   # 0.8, 1, 1 ?
-        g_n234 <- td(grid_traps, detectpar$sigma) * targetmultiplier
+        # closest ntraps to random start
+        grid_traps <- subset(grid_traps, OK)   
+        # use default penalty function (see above) if none provided
+        if (is.null(pen_fn)) pen_fn <- td  
+        # target vector (e.g., minimum number of traps in each distance bracket)
+        g_penvector <- pen_fn(grid_traps, detectpar$sigma)
     }
     else {
-        g_n234 <- c(1,1,1) 
+        g_penvector <- c(1,1) 
     }
     #---------------------------------------------------------------------------
     
@@ -123,17 +129,17 @@ GAminnr <- function(
         k  = ntraps, 
         OF = OFenrm,
         ...,
-        alltraps   = alltraps,
-        mask       = mask,
-        detectpar  = detectpar,
-        noccasions = noccasions,
-        detectfn   = detectfn,
-        detector   = detector,
-        D          = D,
-        crit       = criterion,
-        pen_wt     = pen_wt,
-        pen_fn     = td,
-        g_n234     = g_n234
+        alltraps    = alltraps,
+        mask        = mask,
+        detectpar   = detectpar,
+        noccasions  = noccasions,
+        detectfn    = detectfn,
+        detector    = detector,
+        D           = D,
+        crit        = criterion,
+        pen_wt      = pen_wt,
+        pen_fn      = pen_fn,
+        g_penvector = g_penvector
     )
     
     optimaltraps <- subset(alltraps, des$bestsol)

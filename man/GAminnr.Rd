@@ -18,7 +18,7 @@ placement using a genetic algorithm.
 
 GAminnr(mask, alltraps, ntraps, detectpar, noccasions = 1, 
     detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"), D = 1, 
-    criterion = 4, pen_gridsigma = 2, pen_wt = 0, 
+    criterion = 4, pen_wt = 0, pen_gridsigma = 2, pen_fn = NULL,
     seed = NULL, ...)
     
 }
@@ -33,8 +33,9 @@ GAminnr(mask, alltraps, ntraps, detectpar, noccasions = 1,
   \item{noccasions}{integer number of sampling occasions}
   \item{D}{numeric density animals/ha}
   \item{criterion}{integer criterion to use (1 = En, 2 = Er, 3 = Em, 4 = min(En,Er))}
-  \item{pen_gridsigma}{numeric penalty for poor trap spacing }
-  \item{pen_wt}{numeric penalty for spacings that are too different from regular grid}
+  \item{pen_wt}{numeric penalty for spacings that are too different from reference grid}
+  \item{pen_gridsigma}{numeric spacing of reference grid (x sigma)}
+  \item{pen_fn}{function to compute penalty vector}
   \item{seed}{set a random seed for reproducibility of GA}
   \item{\dots}{other arguments passed to \code{\link{kofnGA}}}
 
