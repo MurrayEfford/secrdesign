@@ -9,7 +9,8 @@ SECR detector placement by min(n,r) optimization.
 
 \description{
 
-SECR detector placement by min(n,r) optimization.
+Implements the approach of Durbach et al. (2021) for optimization of detector 
+placement using a genetic algorithm. 
 
 }
 
@@ -17,8 +18,7 @@ SECR detector placement by min(n,r) optimization.
 
 GAminnr(mask, alltraps, ntraps, detectpar, noccasions = 1, 
     detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"), D = 1, 
-    criterion = 4, 
-    pen_gridsigma = 2, pen_wt = 0, 
+    criterion = 4, pen_gridsigma = 2, pen_wt = 0, 
     seed = NULL, ...)
     
 }
@@ -55,13 +55,16 @@ ngen \tab 500 \tab number of generations to run \cr
 
 popsize \tab 200 \tab size of the population; equivalently, the number of offspring produced each generation \cr
 
+mutprob \tab 0.01 \tab mutation rate \cr
+
 verbose \tab 0 \tab integer controlling the display of progress during search. If a positive value, then the iteration number and best objective function value are displayed at the console every 'verbose' generations. Otherwise nothing is displayed. The default gives no display. \cr
 
 cluster \tab NULL \tab number of parallel cores or a prebuilt parallel cluster \cr
 
 }
 
-The defaults for ngen and popsize may be too large for routine use.
+The default for ngen may (or may not) be too large for routine use. Durbach et al. (2021) used ngen = 50, popsize = 1000 and 
+mutprob = 0.01. 
 
 }
 
@@ -83,7 +86,7 @@ GAminnr -- A list with components
 
 \references{
 
-Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2020) Fast, flexible alternatives to regular grid designs for spatial capture--recapture. \emph{Methods in Ecology and Evolution} \bold{12}, 298--310. DOI 10.1111/2041-210X.13517
+Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2021) Fast, flexible alternatives to regular grid designs for spatial capture--recapture. \emph{Methods in Ecology and Evolution} \bold{12}, 298--310. DOI 10.1111/2041-210X.13517
 
 Wolters, M. A. (2015) A genetic algorithm for selection of fixed-size
 subsets with application to design problems. \emph{Journal of Statistical
