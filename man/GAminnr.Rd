@@ -34,7 +34,7 @@ GAminnr(mask, alltraps, ntraps, detectpar, noccasions = 1,
   \item{detectpar}{list values of detection parameters lambd0, sigma etc.}
   \item{detectfn}{integer code or character string for shape of detection function - see \link{detectfn}}
   \item{noccasions}{integer number of sampling occasions}
-  \item{D}{numeric density animals/ha}
+  \item{D}{numeric density animals per hectare (0.01 km^2)}
   \item{criterion}{integer criterion to use (1 = En, 2 = Er, 3 = Em, 4 = min(En,Er))}
   \item{pen_wt}{numeric penalty for spacings that are too different from reference grid}
   \item{pen_gridsigma}{numeric spacing of reference grid (x sigma)}
@@ -67,9 +67,9 @@ cluster \tab NULL \tab number of parallel cores or a prebuilt parallel cluster \
 
 The default for ngen may (or may not) be larger than is needed for routine use. Durbach et al. (2021) used ngen = 50, popsize = 1000 and mutprob = 0.01. 
 
-Density D may be a scalar or a vector of length equal to the number of mask cells. No value need be specified if the sole objective is to optimize trap placement, but D is required for predictions of E(\eqn{n}) and E(\eqn{r}).
+Density D may be a scalar or a vector of length equal to the number of mask cells. No value need be specified if the sole aim is to optimize trap placement, but D is required for predictions of E(\eqn{n}) and E(\eqn{r}).
 
-If pen_wt>0 then penalties for poor trap spacing are based on comparing the min(n,r) grid to what you would get from a regular grid with spacing sigma * pen_gridsigma.
+No penalty is applied by default. If pen_wt>0 then penalties for poor trap spacing are based on comparing counts of trap pairs at close spacing (2.5-4.5 sigma) from the min(n,r) grid to those from a regular grid with spacing sigma * pen_gridsigma (See internal function secrdesign:::td).  An alternative penalty function may be supplied.
 
 }
 
