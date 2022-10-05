@@ -1,28 +1,12 @@
 # adapted from code of Ian Durbach 
-# 2022-10-02,4
-
-# replace 'statespace' with 'mask'
-# replace e2dist with secr function edist
-# remove commented code (#N etc.)
-# replace "count" by detector in read.traps()
-# in Appendix F D_per_mask_cell is not an argument, use D = D,
-# share function td for penalty term
-# return more variables
-
-# all_grid_traps <- list() removed
-
-# remove unused arguments from OFenrm: 
-# pop, N = 100, sum_wt, transitions = NULL, divby = 1, addback = 0 
-
-# USE THE FOLLOWING WITH CAUTION!
-# pen_wt     :  penalty for spacings that are too different from regular grid
-# pen_gridsigma :   penalties for bad trap spacing are based on comparing min(n,r) grid
-#                  to what you would get from a X-sigma regular grid. X = pen_gridsigma
-
-#-------------------------------------------------------------------------------
+##############################################################################
+## package 'secrdesign'
+## Lambda.R
+## 2022-10-02,06
+##############################################################################
 
 # default pen_fn
-td <- function (traps, sigma) {
+penfn <- function (traps, sigma) {
     # find out how many detector pairs are between 2.5-3.5 and 3.5-4.5 sigma apart
     breaks <- c(0, 2.499, 3.499, 4.499, Inf) * sigma     # why 4.449? assume typo
     d <- as.matrix(dist(traps))  # for compatibility
@@ -40,15 +24,13 @@ OFenrm <- function (v,
     detector, 
     D, 
     crit, 
-    pen_wt,
-    pen_fn,
+    penalty,
     g_penvector) {
     
     # penalty for too clustered
-    if (pen_wt > 0) {
-        # use pen_fn function passed to OF
-        penvector <- pen_fn(alltraps[v,], detectpar$sigma)
-        penalty <- pen_wt * sum(pmax(0, g_penvector - penvector))
+    if (!is.null(penalty)) {
+        penvector <- penalty$pen_fn(alltraps[v,], detectpar$sigma)
+        penalty <- penalty$pen_wt * sum(pmax(0, g_penvector - penvector))
     }
     else {
         penalty <- 0
@@ -74,14 +56,14 @@ GAminnr <- function(
     noccasions = 1,
     detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"),
     D = NULL,
-    criterion = 4,     # default min(n,r)
-    pen_wt = 0, 
-    pen_gridsigma = 2,
-    pen_fn = NULL,
+    penalty = NULL,
     seed = NULL,
     ...){
     
     detectfn <- match.arg(detectfn)
+    
+    ## criterion to use (1 = En, 2 = Er, 3 = Em, 4 = min(En,Er))
+    criterion <- 4   # force min(n,r)
     
     if(missing(mask)) stop("Must supply a 'mask' object (coords of the study area)")
     if(missing(alltraps))   stop("Must supply a 'traps' object (all possible trap locations)")
@@ -96,7 +78,7 @@ GAminnr <- function(
     
     #---------------------------------------------------------------------------
     
-    if (pen_wt>0) {
+    if (!is.null(penalty)) {
         # penalty reference vector (Durbach et al. 2021)
 
         # find distribution of trap spacings on a close to regular grid, to ensure 
@@ -107,7 +89,7 @@ GAminnr <- function(
         pg <- st_union(gridCells(alltraps))
         # place a grid over the area, with cells pen_gridsigma * sigma apart
         # random origin, detector not material
-        cellsize <- pen_gridsigma * detectpar$sigma
+        cellsize <- penalty$pen_gridsigma * detectpar$sigma
         grid_traps <- make.systematic(region = pg, spacing = cellsize)
         # random starting trap
         xy_rand <- grid_traps[sample.int(nrow(grid_traps), 1), ]  
@@ -116,9 +98,9 @@ GAminnr <- function(
         # closest ntraps to random start
         grid_traps <- subset(grid_traps, OK)   
         # use default penalty function (see above) if none provided
-        if (is.null(pen_fn)) pen_fn <- td  
+        if (is.null(penalty$pen_fn)) penalty$pen_fn <- penfn  
         # target vector (e.g., minimum number of traps in each distance bracket)
-        g_penvector <- pen_fn(grid_traps, detectpar$sigma)
+        g_penvector <- penalty$pen_fn(grid_traps, detectpar$sigma)
     }
     else {
         g_penvector <- NA 
@@ -137,8 +119,7 @@ GAminnr <- function(
         detector    = detector,
         D           = if (is.null(D)) 1 else D,
         crit        = criterion,
-        pen_wt      = pen_wt,
-        pen_fn      = pen_fn,
+        penalty     = penalty,
         g_penvector = g_penvector
     )
     
@@ -159,9 +140,11 @@ GAminnr <- function(
         noccasions   = noccasions,
         detectfn     = detectfn,
         D            = D,
+        penalty      = penalty,
         des          = des, 
         optimaltraps = optimaltraps,
         optimalenrm  = optimalenrm
+        ## do not include minnrRSE - it depends on extra arguments CF, distribution
     )
     
     class(out) <- "GAminnr"
