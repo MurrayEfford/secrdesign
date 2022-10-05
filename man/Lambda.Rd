@@ -47,6 +47,8 @@ Formulae for expected counts are given in \href{https://www.otago.ac.nz/density/
 
 \code{minnrRSE} has mostly the same inputs as \code{Enrm} but returns sqrt(CF/min(n,r)). The correction factor CF may be used to adjust for systematic bias (e.g., for a line of detectors CF = 1.4 may be appropriate). The default \code{distribution = 'poisson'} is for Poisson-distributed \eqn{N} and \eqn{n}. To adjust the prediction for fixed \eqn{N} (binomial \eqn{n}) use \code{distribution = 'binomial'} (see \url{../doc/secrdesign-tools.pdf} Appendix 2).
 
+From 2.7.0, the first argument of \code{minnrRSE} may also be the output from \code{\link{GAminnr}}.
+
 }
 
 \value{
