@@ -73,7 +73,7 @@ GAminnr <- function(
     detectpar, 
     noccasions = 1,
     detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"),
-    D = 1,
+    D = NULL,
     criterion = 4,     # default min(n,r)
     pen_wt = 0, 
     pen_gridsigma = 2,
@@ -121,7 +121,7 @@ GAminnr <- function(
         g_penvector <- pen_fn(grid_traps, detectpar$sigma)
     }
     else {
-        g_penvector <- c(1,1) 
+        g_penvector <- NA 
     }
     #---------------------------------------------------------------------------
     
@@ -135,7 +135,7 @@ GAminnr <- function(
         noccasions  = noccasions,
         detectfn    = detectfn,
         detector    = detector,
-        D           = D,
+        D           = if (is.null(D)) 1 else D,
         crit        = criterion,
         pen_wt      = pen_wt,
         pen_fn      = pen_fn,
@@ -144,10 +144,15 @@ GAminnr <- function(
     
     optimaltraps <- subset(alltraps, des$bestsol)
     
-    optimalenrm <- Enrm(D = D, traps = optimaltraps, mask = mask, 
-        noccasions = noccasions, detectpar = detectpar, detectfn = detectfn)
+    if (!is.null(D)) {
+        optimalenrm <- Enrm(D = D, traps = optimaltraps, mask = mask, 
+            noccasions = noccasions, detectpar = detectpar, detectfn = detectfn)
+    }
+    else {
+        optimalenrm <- NULL
+    }
     
-    list(
+    out <- list(
         mask         = mask, 
         alltraps     = alltraps, 
         detectpar    = detectpar, 
@@ -158,5 +163,8 @@ GAminnr <- function(
         optimaltraps = optimaltraps,
         optimalenrm  = optimalenrm
     )
+    
+    class(out) <- "GAminnr"
+    out
     
 }
