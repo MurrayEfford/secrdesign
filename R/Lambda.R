@@ -142,6 +142,7 @@ Enrm <- function (D, ...) {
 }
 
 minnrRSE <- function (D, ..., CF = 1.0, distribution = c('poisson', 'binomial')) {
+    distribution <- tolower(distribution)
     distribution <- match.arg(distribution)
     if (inherits(D, "GAminnr")) {
         nrm <- D$optimalenrm
