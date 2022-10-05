@@ -16,6 +16,18 @@ library(secrdesign)
 Sys.setenv(RCPP_PARALLEL_BACKEND = "tinythread")
 
 ###############################################################################
-set.seed(1235)
 
-## unfinished
+## GAminnr()
+
+msk <- make.mask(type = 'rectangular', spacing = 10, nx = 30, ny = 20, buffer = 0)
+alltrps <- make.grid(nx = 29, ny = 19, origin = c(10,10), spacing = 10)
+set.seed(123)
+
+# 10 generations for demonstration, use more in practice
+opt <- GAminnr(msk, alltrps, ntraps = 20, detectpar = list(lambda0 = 0.5, sigma = 20), 
+    detectfn = 'HHN', D = 10, noccasions = 5, ngen = 10, verbose = 0)
+
+test_that("Genetic algorithm on track", {
+  expect_equal(opt$des$bestobj, -46.01154, tolerance = 1e-4)
+})
+###############################################################################
