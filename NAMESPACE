@@ -56,6 +56,7 @@ export (scenarioSummary)
 export (saturation)
 export (count)
 export (GAminnr)
+export (penfn)
 
 S3method (plot, optimalSpacing)
 S3method (print, optimalSpacing)
