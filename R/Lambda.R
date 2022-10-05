@@ -143,14 +143,21 @@ Enrm <- function (D, ...) {
 
 minnrRSE <- function (D, ..., CF = 1.0, distribution = c('poisson', 'binomial')) {
     distribution <- match.arg(distribution)
-    nrm <- Enrm(D, ...)
-    RSE <- sqrt(CF/min(nrm[1:2]))
-    if (distribution == 'binomial') {
+    if (inherits(D, "GAminnr")) {
+        nrm <- D$optimalenrm
+        mask <- D$mask
+        D <- D$D
+    }
+    else {
+        nrm <- Enrm(D, ...)
         mask <- list(...)$mask
         # if not named, assume second
         if (is.null(mask)) mask <- list(...)[[2]]
+    }
+    RSE <- sqrt(CF/min(nrm[1:2]))
+    if (distribution == 'binomial') {
        A <- maskarea(mask) 
-       RSE <- sqrt (RSE^2 - 1 / (D * A))
+       RSE <- sqrt (RSE^2 - 1 / (mean(D) * A))
     }
     RSE
 }
