@@ -10,7 +10,7 @@ SECR detector placement by min(n,r) optimization.
 \description{
 
 Implements the approach of Durbach et al. (2021) for optimization of detector 
-placement using a genetic algorithm to maximize the minimum 
+placement using a genetic algorithm to maximize the lesser 
 of E(\eqn{n}) and E(\eqn{r}), where \eqn{n} is the number of distinct individuals 
 and \eqn{r} is the total number of recaptures. This criterion predicts the 
 relative standard error of the density estimate (Efford and Boulanger 2019).
@@ -65,7 +65,8 @@ The default for ngen may (or may not) be larger than is needed for routine use. 
 
 Density D may be a scalar or a vector of length equal to the number of mask cells. No value need be specified if the sole aim is to optimize trap placement, but D is required for predictions of E(\eqn{n}) and E(\eqn{r}).
 
-No penalty is applied by default. To apply a penalty, \code{penalty} should be a list with named components pen_wt>0 and pen_gridsigma). By default, penalties for poor trap spacing are based on comparing counts of trap pairs at close spacing (2.5-3.5, 3.5-4.5 sigma) from the min(n,r) grid to counts from a compact sample of a regular grid with spacing sigma * pen_gridsigma (See internal function \code{\link{GApenfn}}).  An alternative penalty function may be supplied as component `pen_fn' of \code{penalty}.
+Pathological trap layouts (sensu Efford and Boulanger 2019) may be avoided by adding a penalty to the objective.
+No penalty is applied by default. To apply a penalty, \code{penalty} should be a list with named components pen_wt>0 and pen_gridsigma). If a penalty is applied, the default compares the number of trap pairs with close spacing (2.5-3.5 sigma, 3.5-4.5 sigma) to the number in a compact sample from a regular grid with spacing sigma * pen_gridsigma (see internal functions \code{\link{GApenfn}} and \code{\link{compactSample}} and the vignette).  An alternative penalty function may be supplied as component `pen_fn' of \code{penalty}.
 
 }
 
