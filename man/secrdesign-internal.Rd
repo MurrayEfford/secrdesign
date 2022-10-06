@@ -15,18 +15,22 @@ These are exported and may be called separately for testing.
 
 penfn(traps, sigma)
 
+compactSample (traps, n)
 }
 
 \arguments{
 
   \item{traps}{secr trapsobject}
   \item{sigma}{numeric sparial scale parameter}
+  \item{n}{integer number in sample (\eqn{0 < n \le ntraps)}}
   
 }
 
 \details{
 
   \code{penfn} is the default pen_fn used by \code{\link{GAminnr}} When called with a non-null penalty argument.
+  
+  \code{compactSample} selects a detector at random and returns the indices of 
 
 }
 
@@ -34,6 +38,7 @@ penfn(traps, sigma)
 
 penfn -- a numeric vector with the number of trap pairs separated by 2.5-3.5 sigma and 3.5-4.5 sigma.
 
+compactSample -- an object like traps but with only n rows.
 }
 
 \seealso{
@@ -51,5 +56,9 @@ Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2021) Fast, flexible a
 \examples{
 
 penfn(traps(captdata), 20)
+
+plot(traps(captdata))
+plot(compactSample(traps(captdata), 20), add = TRUE, 
+    detpar = list(fg = 'blue',pch = 16))
 
 }

@@ -13,6 +13,14 @@ penfn <- function (traps, sigma) {
     tabulate(cut(d, breaks = breaks))[2:3]
 }
 
+compactSample <- function (traps, n) {
+    # closest ntraps to random start
+    xy_rand <- traps[sample.int(nrow(traps), 1), ]  
+    dist2pt <- distancetotrap(traps, xy_rand)
+    OK <- rank(dist2pt, ties.method = "random") <= n
+    subset(traps, OK)
+}
+
 #-------------------------------------------------------------------------------
 # Objective function
 OFenrm <- function (v, 
@@ -78,10 +86,11 @@ GAminnr <- function(
     if (ms(mask) || ms(traps)) stop ("mask and traps should be single-session")
     
     #---------------------------------------------------------------------------
-    
     if (!is.null(penalty)) {
         # penalty reference vector (Durbach et al. 2021)
-
+        # use default penalty function (see above) if none provided
+        if (is.null(penalty$pen_fn)) penalty$pen_fn <- penfn  
+        
         # find distribution of trap spacings on a close to regular grid, to ensure 
         # later optimized grid has spaced enough detectors sufficiently far apart 
         # to get low var(sigma)
@@ -89,18 +98,10 @@ GAminnr <- function(
         # polygon to represent region of interest
         pg <- st_union(gridCells(alltraps))
         # place a grid over the area, with cells pen_gridsigma * sigma apart
-        # random origin, detector not material
         cellsize <- penalty$pen_gridsigma * detectpar$sigma
         grid_traps <- make.systematic(region = pg, spacing = cellsize)
-        # random starting trap
-        xy_rand <- grid_traps[sample.int(nrow(grid_traps), 1), ]  
-        dist2pt <- distancetotrap(grid_traps, xy_rand)
-        OK <- rank(dist2pt, ties.method = "random") <= ntraps
-        # closest ntraps to random start
-        grid_traps <- subset(grid_traps, OK)   
-        # use default penalty function (see above) if none provided
-        if (is.null(penalty$pen_fn)) penalty$pen_fn <- penfn  
-        # target vector (e.g., minimum number of traps in each distance bracket)
+        grid_traps <- compactSample(grid_traps, ntraps)
+        # target vector (e.g., number of traps in each distance bracket)
         g_penvector <- penalty$pen_fn(grid_traps, detectpar$sigma)
     }
     else {
@@ -152,3 +153,6 @@ GAminnr <- function(
     out
     
 }
+
+# scenario trapsindex noccasions nrepeats  D  g0 sigma detectfn recapfactor popindex detindex fit
+
