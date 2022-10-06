@@ -7,10 +7,6 @@
 ## 2014-04-27 detindex
 ## 2014-11-25 groups
 
-## 2016-03-06 suggest  noccasions nrepeats D lambda0 sigma detectfn recapfactor
-##            should be from 
-##                pop.args (D) and 
-##                det.args (noccasions nrepeats lambda0 sigma detectfn recapfactor)
 ###############################################################################
 
 ## construct a dataframe in which each row represents a scenario
@@ -57,8 +53,6 @@ make.scenarios <- function (trapsindex = 1, noccasions = 3, nrepeats = 1,
         ## assume trapping index in col 1
         value <- cbind(trapdf[value[,1],], value[,-1])
     }
-#     value <- cbind (scenario = 1:nrow(value), value)
-#     rownames(value) <- value$scenario
     nr <- nrow(value)
     value <- cbind (scenario = 1:nr, value)
     if (!missing(groups)) {
