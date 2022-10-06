@@ -17,7 +17,7 @@ Tools to assist the design of spatially explicit capture--recapture studies of a
 Package: \tab secr\cr
 Type: \tab Package\cr
 Version: \tab 2.7.0\cr
-Date: \tab 2022-10-04\cr
+Date: \tab 2022-10-06\cr
 License: \tab GNU General Public License Version 2 or later\cr
 }
 
@@ -44,6 +44,7 @@ Other functions not used exclusively for simulation are:
 \tabular{ll}{
   \code{\link{Enrm}} \tab expected numbers of individuals \eqn{n}, re-detections \eqn{r} and movements \eqn{m} \cr
   \code{\link{minnrRSE}} \tab approximate RSE(D-hat) given sample size (\eqn{n}, \eqn{r}) \cr
+  \code{\link{GAminnr}} \tab optimization of detector placement using genetic algorithm (Durbach et al. 2021) \cr
   \code{\link{costing}} \tab various cost components \cr
   \code{\link{saturation}} \tab expected detector saturation (trap success) \cr
   \code{\link{scenarioSummary}} \tab applies \code{Enrm}, \code{minnrRSE}, and other summaries to each scenario in a dataframe \cr
