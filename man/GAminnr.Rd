@@ -19,7 +19,7 @@ relative standard error of the density estimate (Efford and Boulanger 2019).
 
 \usage{
 
-GAminnr(mask, alltraps, ntraps, detectpar, noccasions = 1, 
+GAminnr(mask, alltraps, ntraps, detectpar, noccasions, 
     detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"), D = NULL, 
     penalty = NULL, seed = NULL, ...)
     

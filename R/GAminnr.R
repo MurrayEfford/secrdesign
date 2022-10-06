@@ -1,7 +1,7 @@
-# adapted from code of Ian Durbach 
 ##############################################################################
 ## package 'secrdesign'
-## Lambda.R
+## GAminnr.R
+## adapted from code of Ian Durbach 
 ## 2022-10-02,06
 ##############################################################################
 
@@ -53,7 +53,7 @@ GAminnr <- function(
     alltraps, 
     ntraps, 
     detectpar, 
-    noccasions = 1,
+    noccasions,
     detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"),
     D = NULL,
     penalty = NULL,
