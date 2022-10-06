@@ -1,6 +1,7 @@
 \name{Internal}
 
 \alias{penfn}
+\alias{compactSample}
 
 \title{Internal Functions}
 
@@ -30,7 +31,7 @@ compactSample (traps, n)
 
   \code{penfn} is the default pen_fn used by \code{\link{GAminnr}} When called with a non-null penalty argument.
   
-  \code{compactSample} selects a detector at random and returns the indices of 
+  \code{compactSample} selects a detector at random and returns the a compact subset of surrounding detectors.
 
 }
 
@@ -38,7 +39,7 @@ compactSample (traps, n)
 
 penfn -- a numeric vector with the number of trap pairs separated by 2.5-3.5 sigma and 3.5-4.5 sigma.
 
-compactSample -- an object like traps but with only n rows.
+compactSample -- an object like traps, but with only n rows.
 }
 
 \seealso{
