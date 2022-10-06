@@ -6,7 +6,7 @@
 ##############################################################################
 
 # default pen_fn
-penfn <- function (traps, sigma) {
+GApenfn <- function (traps, sigma) {
     # find out how many detector pairs are between 2.5-3.5 and 3.5-4.5 sigma apart
     breaks <- c(0, 2.499, 3.499, 4.499, Inf) * sigma     # why 4.449? assume typo
     d <- as.matrix(dist(traps))  # for compatibility
@@ -89,7 +89,7 @@ GAminnr <- function(
     if (!is.null(penalty)) {
         # penalty reference vector (Durbach et al. 2021)
         # use default penalty function (see above) if none provided
-        if (is.null(penalty$pen_fn)) penalty$pen_fn <- penfn  
+        if (is.null(penalty$pen_fn)) penalty$pen_fn <- GApenfn  
         
         # find distribution of trap spacings on a close to regular grid, to ensure 
         # later optimized grid has spaced enough detectors sufficiently far apart 

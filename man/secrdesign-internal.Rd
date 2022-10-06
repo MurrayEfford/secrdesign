@@ -1,43 +1,44 @@
 \name{Internal}
 
-\alias{penfn}
 \alias{compactSample}
+\alias{GApenfn}
 
 \title{Internal Functions}
 
 \description{ 
 
-Functions that may be called internally by \pkg{secrdesign}. 
+Functions that are called internally by \pkg{secrdesign}. 
 These are exported and may be called separately for testing.
 
 }
 
 \usage{
 
-penfn(traps, sigma)
-
 compactSample (traps, n)
+
+GApenfn(traps, sigma)
+
 }
 
 \arguments{
 
   \item{traps}{secr trapsobject}
-  \item{sigma}{numeric sparial scale parameter}
   \item{n}{integer number in sample (\eqn{0 < n \le ntraps)}}
+  \item{sigma}{numeric sparial scale parameter}
   
 }
 
 \details{
 
-  \code{penfn} is the default pen_fn used by \code{\link{GAminnr}} When called with a non-null penalty argument.
-  
   \code{compactSample} selects a detector at random and returns the a compact subset of surrounding detectors.
 
+  \code{GApenfn} is the default pen_fn used by \code{\link{GAminnr}} When called with a non-null penalty argument.
+  
 }
 
 \value{
 
-penfn -- a numeric vector with the number of trap pairs separated by 2.5-3.5 sigma and 3.5-4.5 sigma.
+GApenfn -- a numeric vector with the number of trap pairs separated by 2.5-3.5 sigma and 3.5-4.5 sigma.
 
 compactSample -- an object like traps, but with only n rows.
 }
@@ -56,10 +57,11 @@ Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2021) Fast, flexible a
 
 \examples{
 
-penfn(traps(captdata), 20)
+CStraps <- compactSample(traps(captdata), n = 20)
 
 plot(traps(captdata))
-plot(compactSample(traps(captdata), 20), add = TRUE, 
-    detpar = list(fg = 'blue',pch = 16))
+plot(CStraps, add = TRUE, detpar = list(fg = 'blue',pch = 16))
+
+GApenfn(CStraps, sigma = 25)
 
 }
