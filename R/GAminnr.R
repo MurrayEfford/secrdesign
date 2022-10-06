@@ -72,6 +72,7 @@ GAminnr <- function(
     if (!inherits(alltraps, "traps")) stop ("alltraps should be a traps object")    
     
     detector <- match.arg(detector(alltraps), choices = c("count", "proximity", "multi"))
+    if (noccasions == 1 && detector == "multi") stop ("multi detector requires > 1 occasion")
     if(!is.null(seed)) set.seed(seed)
     
     if (ms(mask) || ms(traps)) stop ("mask and traps should be single-session")
