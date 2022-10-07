@@ -1,4 +1,4 @@
-Changes in version 2.7.0 (2022-10-06)
+Changes in version 2.7.0 (2022-10-07)
 
 New features or changed behaviour of old functions
     o  GAminnr() min(n,r) optimization by genetic algorithm (Durbach et al. 2021)
@@ -8,6 +8,7 @@ New features or changed behaviour of old functions
 Other
     o  on GitHub
     o  added tests
+    o  exports internal functions GApenfn() and compactSample()
 
 Changes in version 2.6.0 (2022-01-26)
 

@@ -17,7 +17,7 @@ Tools to assist the design of spatially explicit capture--recapture studies of a
 Package: \tab secr\cr
 Type: \tab Package\cr
 Version: \tab 2.7.0\cr
-Date: \tab 2022-10-06\cr
+Date: \tab 2022-10-07\cr
 License: \tab GNU General Public License Version 2 or later\cr
 }
 
@@ -43,7 +43,7 @@ The simulation functions in \pkg{secrdesign} are:
 Other functions not used exclusively for simulation are:
 \tabular{ll}{
   \code{\link{Enrm}} \tab expected numbers of individuals \eqn{n}, re-detections \eqn{r} and movements \eqn{m} \cr
-  \code{\link{minnrRSE}} \tab approximate RSE(D-hat) given sample size (\eqn{n}, \eqn{r}) \cr
+  \code{\link{minnrRSE}} \tab approximate RSE(D-hat) given sample size (\eqn{n}, \eqn{r}) (Efford and Boulanger 2019)\cr
   \code{\link{GAminnr}} \tab optimization of detector placement using genetic algorithm (Durbach et al. 2021) \cr
   \code{\link{costing}} \tab various cost components \cr
   \code{\link{saturation}} \tab expected detector saturation (trap success) \cr
@@ -58,6 +58,18 @@ A vignette documenting the simulation functions is available at \href{https://ww
 Documentation for expected counts is in \href{https://www.otago.ac.nz/density/pdfs/secrdesign-Enrm.pdf}{secrdesign-Enrm.pdf}. Another vignette \href{https://www.otago.ac.nz/density/pdfs/secrdesign-tools.pdf}{secrdesign-tools.pdf} demonstrates other tools. These include the \code{optimalSpacing} function, for finding the detector spacing that yields the greatest precision for a given detector geometry, number of sampling occasions, density and detection parameters.
 
 Help pages are also available as \url{../doc/secrdesign-manual.pdf}.
+
+}
+
+\references{
+
+Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2021) Fast, flexible 
+alternatives to regular grid designs for spatial capture--recapture. 
+\emph{Methods in Ecology and Evolution} \bold{12}, 298--310. DOI 10.1111/2041-210X.13517
+
+Efford, M. G., and Boulanger, J. (2019) Fast evaluation of study designs for 
+spatially explicit capture--recapture. 
+\emph{Methods in Ecology and Evolution}, \bold{10}, 1529--1535. DOI: 10.1111/2041-210X.13239
 
 }
 
