@@ -67,12 +67,15 @@ This implementation does not allow lambda0 to vary. In the original, lambda0 cou
 
 The optimal design is not affected by multiplication of D by a constant, since whatever design maximizes min(E(n), E(r)) also maximizes min(E(n), E(r)), and so D does not have to be specified (a default of 1 is used). However, estimates of E(n) and E(r) are only correct if densities are correctly specified 
 
-# Example from Durbach et al. Appendix F
+# Example
+
+Durbach et al. (2021, Appendix F) considered the design of a camera survey for snow leopards in the Tost Mountains of Mongolia. A study in 2012 by Sharma et al. (2014) provided some baseline information. Data for this example are 
+distributed with **secrdesign** in the inst/example folder.
 
 First prepare some inputs:
 
 ```{r exampleF prelim}
-# input file TostExample.RData contains the data frames:
+# TostExample.RData contains the data frames:
 #   bigmask_df -- mask locations
 #   alltraps_df -- all potential camera locations (subset of mask)
 load(system.file("example", "TostExample.RData", package = "secrdesign"))
@@ -250,6 +253,11 @@ Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2021) Fast, flexible
 Efford, M. G., and Boulanger, J. (2019) Fast evaluation of study designs for 
     spatially explicit capture-recapture. 
     *Methods in Ecology and Evolution* **10**, 1529–1535.    
+    
+Sharma, K., Bayrakcismith, R., Tumursukh, L., Johansson, O., Sevger, P., 
+    McCarthy, T., and Mishra, C. (2014) Vigorous dynamics underlie a
+    stable population of the endangered snow leopard *Panthera uncia* in
+    Tost Mountains, South Gobi, Mongolia. *PLoS ONE*, **9**, e101319.    
 
 Wolters, M. A. (2015) A genetic algorithm for selection of fixed-size
     subsets with application to design problems. *Journal of Statistical
