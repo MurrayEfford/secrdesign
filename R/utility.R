@@ -49,4 +49,4 @@ replacedefaults <- function (default, user) replace(default, names(user), user)
 ##############################################################################
 
 .local <- new.env()
-.local$packageType <- ""  ## " pre-release"
+.local$packageType <- "pre-release"
