@@ -25,6 +25,7 @@
 ## 2017-12-01 tweak to fitarg$start: only one value per par
 ## 2020-01-28 change to new rse in defaultextractfn
 ## 2022-01-20 2.6.0 ncores default NULL; multithreaded secr.fit
+## 2022-10-18 trapset components may be function; trap.args argument
 
 # ncores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
 
@@ -187,7 +188,8 @@ olddefaultextractfn <- function(x) {
 }
 
 #####################
-makeCH <- function (scenario, trapset, full.pop.args, full.det.args, mask, multisession) {
+makeCH <- function (scenario, trapset, trap.args, full.pop.args, full.det.args, 
+    mask, multisession) {
     ns <- nrow(scenario)
     with( scenario, {
         CH <- vector(mode = 'list', ns)
@@ -195,7 +197,13 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args, mask, multi
         for (i in 1:ns) {
             #####################
             ## retrieve data
-            grid <- trapset[[trapsindex[i]]]
+            if(is.function(trapset[[trapsindex[i]]])) {
+                grid <- do.call(trapset[[trapsindex[i]]], 
+                    trap.args[[trapsindex[i]]])
+            }
+            else {
+                grid <- trapset[[trapsindex[i]]]
+            }
             poparg <- full.pop.args[[popindex[i]]]
             detarg <- full.det.args[[detindex[i]]]
 
@@ -446,6 +454,7 @@ run.scenarios <- function (
     ncores = NULL, 
     byscenario = FALSE, 
     seed = 123,  
+    trap.args,
     ...) {
 
     #--------------------------------------------------------------------------
@@ -457,7 +466,7 @@ run.scenarios <- function (
         if (is.null(fitarg$mask)) {   ## conditional 2017-05-26
             fitarg$mask <- maskset[[scenario$maskindex[1]]]
         }
-        CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
+        CH <- makeCH(scenario, trapset, trap.args, full.pop.args, full.det.args,
                      fitarg$mask, multisession)
         processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
     }
@@ -496,7 +505,7 @@ run.scenarios <- function (
     }
     ##--------------------------------------------
     ## preprocess inputs
-    if (inherits(trapset, 'traps'))   ## otherwise assume already list of traps
+    if (inherits(trapset, 'traps') || is.function(trapset))  ## otherwise assume already list of traps
         trapset <- list(trapset)
     if (!missing(maskset)) {
         if (inherits(maskset, 'mask'))   ## otherwise assume already list of masks
@@ -508,12 +517,23 @@ run.scenarios <- function (
     if (is.null(names(trapset)))
         names(trapset) <- paste('traps',1:nk, sep='')
 
-    dettype <- sapply(trapset, detector)[scenarios$trapsindex]
-
-    ## mark-resight options 2015-11-03
-    sight <- sapply(trapset, function(x)
-        if(ms(x)) sighting(x[[1]]) else  sighting(x))
-
+    if (is.function(trapset[[1]])) {
+        if (missing(maskset)) 
+            stop ("maskset should be provided if trapset is list of functions")
+        temptrapset <- list()
+        for (i in 1:length(trapset)) {
+            temptrapset[[i]] <- do.call(trapset[[i]], trap.args[[i]])
+        }
+        dettype <- sapply(temptrapset, detector)[scenarios$trapsindex]
+        sight <- sapply(temptrapset, function(x)
+            if(ms(x)) sighting(x[[1]]) else  sighting(x))
+    }
+    else {
+        dettype <- sapply(trapset, detector)[scenarios$trapsindex]
+        sight <- sapply(trapset, function(x)
+            if(ms(x)) sighting(x[[1]]) else  sighting(x))
+    }
+    
     if (!(all(sight) | all(!sight)))
         stop ("cannot mix sighting and nonsighting simulations")
     sight <- any(sight)
@@ -634,25 +654,27 @@ run.scenarios <- function (
         output <- lapply(output, do.call, what = rbind)
     message("Completed in ", round((proc.time() - ptm)[3]/60,3), " minutes")
     desc <- packageDescription("secrdesign")  ## for version number
-    value <- list (call = cl,
-                   version = paste('secrdesign', desc$Version),
-                   starttime = starttime,
-                   proctime = (proc.time() - ptm)[3],
-                   scenarios = scenarios,
-                   trapset = trapset,
-                   maskset = if (is.null(uts)) maskset else NULL,
-                   xsigma = xsigma,
-                   nx = nx,
-                   pop.args = pop.args,
-                   det.args = det.args,
-                   fit = fit,
-                   fit.args = fit.args,
-                   extractfn = extractfn,
-                   seed = seed,
-                   chatnsim = chatnsim,
-                   nrepl = nrepl,
-                   output = output,
-                   outputtype = outputtype
+    value <- list (
+        call      = cl,
+        version   = paste('secrdesign', desc$Version),
+        starttime = starttime,
+        proctime  = (proc.time() - ptm)[3],
+        scenarios = scenarios,
+        trapset   = trapset,
+        trap.args = trap.args,
+        maskset   = if (is.null(uts)) maskset else NULL,
+        xsigma    = xsigma,
+        nx        = nx,
+        pop.args  = pop.args,
+        det.args  = det.args,
+        fit       = fit,
+        fit.args  = fit.args,
+        extractfn = extractfn,
+        seed      = seed,
+        chatnsim  = chatnsim,
+        nrepl     = nrepl,
+        output    = output,
+        outputtype = outputtype
     )
     class(value) <- getoutputclass(outputtype)
     if (outputtype == 'regionN')
