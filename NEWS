@@ -1,9 +1,10 @@
-Changes in version 2.7.0 (2022-10-07)
+Changes in version 2.7.0 (2022-10-19)
 
 New features or changed behaviour of old functions
     o  GAminnr() min(n,r) optimization by genetic algorithm (Durbach et al. 2021)
     o  partial implementation of capped detector in Enrm()
     o  minnrRSE() accepts GAminnr() output
+    o  run.scenarios() option to create trapset dynamically with function(s)
 
 Other
     o  on GitHub
