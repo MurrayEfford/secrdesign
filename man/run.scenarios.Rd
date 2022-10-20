@@ -22,7 +22,7 @@ list (e.g., \code{list(make.grid())}).
 If \code{byscenario = TRUE} then by default each scenario will be run in a separate worker
 process using \code{parLapply} from \pkg{parallel} (see also \link[secr]{Parallel}). The number of scenarios should not exceed the available number of cores (set by the 'ncores' argument or a prior call to `setNumThreads`).
 
-If \code{byscenario = FALSE} then from **secrdesign** 2.6.0 onwards the usual multithreading of **secr** 4.5 is applied. The number of cores should usually be set with `setNumThreads`.
+If \code{byscenario = FALSE} then from \pkg{secrdesign} 2.6.0 onwards the usual multithreading of \pkg{secr} 4.5 is applied. The number of cores should usually be set with `setNumThreads`.
 
 Alternative approaches are offered for predicting precision. Both start
 by generating a pseudorandom dataset under the design using the

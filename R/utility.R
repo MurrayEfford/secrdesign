@@ -48,5 +48,19 @@ replacedefaults <- function (default, user) replace(default, names(user), user)
 
 ##############################################################################
 
+resetOriginCounter <- function () {
+    .local$originCounter <- 1
+}
+##############################################################################
+
+incrementOriginCounter <- function (n) {
+    # counter cycles through values 1:n
+    .local$originCounter <- (.local$originCounter %% n) + 1
+    .local$originCounter
+}
+##############################################################################
+
 .local <- new.env()
 .local$packageType <- "pre-release"
+.local$originCounter <- 1
+##############################################################################
