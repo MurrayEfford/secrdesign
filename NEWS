@@ -1,4 +1,4 @@
-Changes in version 2.7.0 (2022-10-19)
+Changes in version 2.7.0 (2022-10-21)
 
 New features or changed behaviour of old functions
     o  GAminnr() min(n,r) optimization by genetic algorithm (Durbach et al. 2021)
@@ -10,6 +10,8 @@ Other
     o  on GitHub
     o  added tests
     o  exports internal functions GApenfn() and compactSample()
+    o  make.scenarios allows single-level 'groups' 
+    o  check for consistent traps etc. across groups within scenario
 
 Changes in version 2.6.0 (2022-01-26)
 

@@ -188,22 +188,17 @@ olddefaultextractfn <- function(x) {
 }
 
 #####################
-makeCH <- function (scenario, trapset, trap.args, full.pop.args, full.det.args, 
+makeCH <- function (scenario, trapset, full.pop.args, full.det.args, 
     mask, multisession) {
     ns <- nrow(scenario)
+    
     with( scenario, {
         CH <- vector(mode = 'list', ns)
 
         for (i in 1:ns) {
             #####################
             ## retrieve data
-            if(is.function(trapset[[trapsindex[i]]])) {
-                grid <- do.call(trapset[[trapsindex[i]]], 
-                    trap.args[[trapsindex[i]]])
-            }
-            else {
-                grid <- trapset[[trapsindex[i]]]
-            }
+            grid   <- trapset[[trapsindex[i]]]
             poparg <- full.pop.args[[popindex[i]]]
             detarg <- full.det.args[[detindex[i]]]
 
@@ -295,9 +290,7 @@ makeCH <- function (scenario, trapset, trap.args, full.pop.args, full.det.args,
                 nc <- sapply(CH, nrow)
                 CH$verify <- FALSE
                 ####################################
-                ## CH <- do.call(rbind.capthist, CH)
-                ## 2017-07-26 allow for S3 rbind
-                class(CH) <- c("capthist", "list")    # reversed 2017-10-24
+                class(CH) <- c("capthist", "list")   
                 CH <- do.call(rbind, CH)
                 ####################################
                 covariates(CH)$group <- rep(group, nc)
@@ -332,7 +325,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         fitarg$capthist <- CH
         
         if (byscenario) fitarg$ncores <- 1L
-        
+   
         if (is.null(fitarg$model))
             fitarg$model <- defaultmodel(fitarg$CL, fitarg$detectfn)
         if (fitarg$start[1] == 'true') {
@@ -361,6 +354,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
             fitarg$details <- as.list(replace(fitarg$details, 'hessian', FALSE))
         }
         ##-------------------------------------------------------------------
+
         fit <- try(do.call(fitfunction, fitarg))
 
         ##-------------------------------------------------------------------
@@ -454,7 +448,7 @@ run.scenarios <- function (
     ncores = NULL, 
     byscenario = FALSE, 
     seed = 123,  
-    trap.args,
+    trap.args = NULL,
     ...) {
 
     #--------------------------------------------------------------------------
@@ -466,7 +460,14 @@ run.scenarios <- function (
         if (is.null(fitarg$mask)) {   ## conditional 2017-05-26
             fitarg$mask <- maskset[[scenario$maskindex[1]]]
         }
-        CH <- makeCH(scenario, trapset, trap.args, full.pop.args, full.det.args,
+        if (is.function(trapset[[1]])) {
+            # create each detector layout for this simulation
+            if (length(trapset) != length(trap.args)) {
+                stop ("trapset is list of functions, trap.args should be a list of the same length")
+            }
+            trapset <- mapply (do.call, trapset, trap.args, SIMPLIFY = FALSE)
+        }
+        CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
                      fitarg$mask, multisession)
         processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
     }
@@ -543,6 +544,18 @@ run.scenarios <- function (
     if (!OK)
         warning("single-catch traps violate independence assumption for nrepeats > 1")
 
+    if ('group' %in% names(scenarios)) {
+        scenarios$group <- factor(scenarios$group)
+        if (any(tabulate(scenarios$group)>1)) {
+            ## check no change of trapsindex etc. within group
+            fields <- c('trapsindex','noccasions','nrepeats','fitindex')
+            fixed <- scenarios[,fields]
+            scens <- split(fixed, scenarios$scenario)
+            if (any(sapply(scens, function (x) nrow(unique(x))>1)))
+                stop ("Fields ", fields, " must be constant across groups")
+        }
+    }
+    
     ##---------------------------------------------
     ## allow user changes to default sim.popn arguments
     default.args <- as.list(args(sim.popn))[1:12]
