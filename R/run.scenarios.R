@@ -26,6 +26,7 @@
 ## 2020-01-28 change to new rse in defaultextractfn
 ## 2022-01-20 2.6.0 ncores default NULL; multithreaded secr.fit
 ## 2022-10-18 trapset components may be function; trap.args argument
+## 2022-10-21 general tidy up
 
 # ncores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
 
@@ -80,7 +81,6 @@ defaultextractfn <- function(x) {
             else {
                 n <- nrow(CH)
                 ndet <- sum(abs(CH)>0)
-                ## r <- ndet - n
                 r2 <- sum(abs(CH)) - n   ## 2020-01-28
                 nmoves <- sum(unlist(sapply(moves(CH), function(y) y>0)))
                 ## detectors per animal
@@ -96,10 +96,6 @@ defaultextractfn <- function(x) {
                       unmarked=unmarked, nonID = nonID, nzero = nzero)
                 }
                 else {
-                    ## c(n=n, ndet=ndet, nmov=nmoves, dpa = dpa, rse = sqrt(1/n + 1/r))
-                    ## 2020-01-28 change to new rse
-                    ## c(n=n, r=r2, nmov=nmoves, dpa = dpa, rse = 1 / sqrt(1/min(n,r2)))
-                    ## 2020-04-10 fix stupid error
                     c(n=n, r=r2, nmov=nmoves, dpa = dpa, rse = 1 / sqrt(min(n,r2)))
                 }
             }
@@ -125,66 +121,10 @@ defaultextractfn <- function(x) {
             out[[1]]
         }
     }
-    else
-        ## null output: dataframe of 0 rows and 0 columns
-        data.frame()
-}
-
-olddefaultextractfn <- function(x) {
-    ## 2015-01-27
-    if (inherits(x, 'try-error')) {
+    else {
         ## null output: dataframe of 0 rows and 0 columns
         data.frame()
     }
-    else if (inherits(x, 'capthist')) {
-        ## summarised raw data
-        counts <- function(CH) {
-            ## for single-session CH
-            if (nrow(CH)==0)  ## 2015-01-24
-                c(n=0, ndet=0, nmov=0, dpa = NA)
-            else {
-                nmoves <- sum(unlist(sapply(moves(CH), function(y) y>0)))
-                ## detectors per animal
-                dpa <- if (length(dim(CH)) == 2)
-                    mean(apply(abs(CH), 1, function(y) length(unique(y[y>0]))))
-                else
-                    mean(apply(apply(abs(CH), c(1,3), sum)>0, 1, sum))
-                if (sighting(traps(CH))) {
-                    unmarked <- if (is.null(Tu <- Tu(CH))) NA else sum(Tu)
-                    nonID <- if (is.null(Tm <- Tm(CH))) NA else sum(Tm)
-                    nzero <- sum(apply(abs(CH),1,sum) == 0)
-                    c(n=nrow(CH), ndet=sum(abs(CH)>0), nmov=nmoves, dpa = dpa,
-                      unmarked=unmarked, nonID = nonID, nzero = nzero)
-                }
-                else
-                    c(n=nrow(CH), ndet=sum(abs(CH)>0), nmov=nmoves, dpa = dpa)
-            }
-        }
-        if (ms(x))
-            unlist(lapply(x, counts))
-        else {
-            gp <- covariates(x)$group
-            if (is.null(gp))
-                counts(x)
-            else
-                unlist(lapply(split(x,gp,dropnullocc=TRUE), counts))
-        }
-    }
-    else if (inherits(x,'secr') & (!is.null(x$fit))) {
-        ## fitted model:
-        ## default predictions of 'real' parameters
-        out <- predict(x)
-        if (is.data.frame(out))
-            out
-        else {
-            ## 2015-01-26
-            warning ("summarising only first session, group or mixture class")
-            out[[1]]
-        }
-    }
-    else
-        ## null output: dataframe of 0 rows and 0 columns
-        data.frame()
 }
 
 #####################
@@ -243,7 +183,6 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
                            recapfactor = recapfactor[i])
             }
 
-            ## 2016-03-06
             dp <- replace (dp, names(detarg$detectpar), detarg$detectpar)
 
             #####################
@@ -251,12 +190,6 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             detarg$traps <- grid
             detarg$popn <- pop
             detarg$detectpar <- dp
-
-            # ##2016-09-29
-            # # detarg$detectfn <- detectfn[i]
-            # if (is.null(detarg$detectfn))
-            #     detarg$detectfn <- detectfn[i]
-            # revert 2017-05-06
             detarg$detectfn <- detectfn[i]
 
             if (!is.null(markocc(grid))) {
@@ -358,9 +291,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         fit <- try(do.call(fitfunction, fitarg))
 
         ##-------------------------------------------------------------------
-        ## 2015-11-03 code for overdispersion adjustment of mark-resight data
-        ## 2016-03-06 patched
-        ## 2018-05-21 allow multisession
+        ## code for overdispersion adjustment of mark-resight data
         if (!ms(CH) && sighting(traps(CH)) && !inherits(fit, 'try-error')) {
             if ((abs(chatnsim) > 0) &  (logLik(fit)>-1e9)) {
                 fitarg$details$nsim <- abs(chatnsim)
@@ -453,9 +384,7 @@ run.scenarios <- function (
 
     #--------------------------------------------------------------------------
     onesim <- function (r, scenario) {
-        ## 2014-11-23 allow multi-line scenarios
         ## only one mask an fitarg allowed per scenario
-        ## 2017-05-23 dummy argument r
         fitarg <- full.fit.args[[scenario$fitindex[1]]]
         if (is.null(fitarg$mask)) {   ## conditional 2017-05-26
             fitarg$mask <- maskset[[scenario$maskindex[1]]]
@@ -473,8 +402,8 @@ run.scenarios <- function (
     }
     #--------------------------------------------------------------------------
     runscenario <- function(x) {
-        if (ncores>1 && !byscenario && !fit) {
-            ## distribute replicates over cluster only if !byscenario && !fit
+        if (ncores>1 && byscenario) {
+            ## distribute replicates over cluster only if byscenario
             out <- parLapply(clust, 1:nrepl, onesim, scenario = x)
         }
         else {
@@ -548,7 +477,7 @@ run.scenarios <- function (
         scenarios$group <- factor(scenarios$group)
         if (any(tabulate(scenarios$group)>1)) {
             ## check no change of trapsindex etc. within group
-            fields <- c('trapsindex','noccasions','nrepeats','fitindex')
+            fields <- c('trapsindex','noccasions','nrepeats','fitindex','maskindex')
             fixed <- scenarios[,fields]
             scens <- split(fixed, scenarios$scenario)
             if (any(sapply(scens, function (x) nrow(unique(x))>1)))
@@ -643,19 +572,15 @@ run.scenarios <- function (
     #--------------------------------------------
     ## run simulations
     tmpscenarios <- split(scenarios, scenarios$scenario)
-    if (ncores > 1 && (byscenario || !fit)) {
+    if (ncores > 1 && byscenario) {
         list(...)    ## ensures promises evaluated see parallel vignette 2015-02-02
         clust <- makeCluster(ncores, methods = TRUE)
         clusterSetRNGStream(clust, seed)
         on.exit(stopCluster(clust))
-    }
-    else {
-        set.seed (seed)
-    }
-    if (ncores > 1 && byscenario) {
         output <- parLapply(clust, tmpscenarios, runscenario)
     }
     else {
+        set.seed (seed)
         output <- lapply(tmpscenarios, runscenario)
     }
 
@@ -853,12 +778,10 @@ fit.models <- function (
     ## run simulations
     tmpscenarios <- split(scenarios, scenarios$scenario)
 
-    if (ncores > 1 && (byscenario || !fit)) {
+    if (ncores > 1 && byscenario) {
         list(...)    ## ensures promises evaluated see parallel vignette 2015-02-02
         clust <- makeCluster(ncores, methods = TRUE)
         on.exit(stopCluster(clust))
-    }
-    if (ncores > 1 && byscenario) {
         output <- parLapply(clust, tmpscenarios, runscenario)
     }
     else {
