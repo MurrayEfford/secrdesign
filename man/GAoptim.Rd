@@ -1,5 +1,5 @@
-\name{GAminnr}
-\alias{GAminnr}
+\name{GAoptim}
+\alias{GAoptim}
 
 \title{
 
@@ -19,9 +19,9 @@ relative standard error of the density estimate (Efford and Boulanger 2019).
 
 \usage{
 
-GAminnr(mask, alltraps, ntraps, detectpar, noccasions, 
+GAoptim(mask, alltraps, ntraps, detectpar, noccasions, 
     detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"), D = NULL, 
-    penalty = NULL, seed = NULL, ...)
+    criterion = 4, penalty = NULL, seed = NULL, ...)
     
 }
 
@@ -34,6 +34,7 @@ GAminnr(mask, alltraps, ntraps, detectpar, noccasions,
   \item{detectfn}{integer code or character string for shape of detection function - see \link{detectfn}}
   \item{noccasions}{integer number of sampling occasions}
   \item{D}{numeric density animals per hectare (0.01 km^2)}
+  \item{criterion}{integer code for criterion to optimise (see Details)}
   \item{penalty}{list defining penalty for layout in relation to reference grid (optional)}
   \item{seed}{set a random seed for reproducibility of GA}
   \item{\dots}{other arguments passed to \code{\link{kofnGA}}}
@@ -44,7 +45,7 @@ GAminnr(mask, alltraps, ntraps, detectpar, noccasions,
 
 \code{detectpar} is a named list with values of the detection parameters for the chosen detectfn. Usually this will be just lambda0 (baseline hazard of detection) and sigma (spatial scale of detection).
 
-The genetic algorithm is provided by function \code{kofnGA} from package \pkg{kofnGA} (Wolters 2015). The first three arguments of \code{kofnGA} (i.e., n, k, OF) are set by \code{GAminnr}. Others may be adjusted by the user via the \dots argument. Specifically,
+The genetic algorithm is provided by function \code{kofnGA} from package \pkg{kofnGA} (Wolters 2015). The first three arguments of \code{kofnGA} (i.e., n, k, OF) are set by \code{GAoptim}. Others may be adjusted by the user via the \dots argument. Specifically,
 
 \tabular{lll}{
 
@@ -68,11 +69,28 @@ Density D may be a scalar or a vector of length equal to the number of mask cell
 Pathological trap layouts (sensu Efford and Boulanger 2019) may be avoided by adding a penalty to the objective.
 No penalty is applied by default. To apply a penalty, \code{penalty} should be a list with named components pen_wt>0 and pen_gridsigma). If a penalty is applied, the default compares the number of trap pairs with close spacing (2.5-3.5 sigma, 3.5-4.5 sigma) to the number in a compact sample from a regular grid with spacing sigma * pen_gridsigma (see internal functions \code{\link{GApenfn}} and \code{\link{compactSample}} and the vignette).  An alternative penalty function may be supplied as component `pen_fn' of \code{penalty}.
 
+The default criterion is the minimum of E(n) and E(r) as used by Durbach et al. (2021), with optional penalty term. 
+The full list of possibilities is:
+
+\tabular{lll}{
+
+Code \tab Description \tab Note \cr
+1 \tab E(n) \tab number of distinct individuals \cr
+2 \tab E(r) \tab number of recaptures \cr
+3 \tab E(m) \tab number of movement recaptures \cr
+4 \tab min(E(n), E(r)) \tab minimum E(n), E(r) \cr
+5 \tab Qp \tab mean Pr(detected) (Dupont et al. 2021) \cr
+6 \tab Qpm \tab mean Pr(detected at >1 site) (Dupont et al. 2021) \cr
+7 \tab Qpb \tab Qp + Qpm (Dupont et al. 2021) \cr
+}
+
+Criteria 1--4 are computed with function \code{\link{Enrm}} (see also Efford and Boulanger 2019). Criteria 5--7 are computed with function \code{\link{Qpm}} based on Dupont et al. (2021). Any penalty is applied only when criterion = 4.
+
 }
 
 \value{
 
-An object of class "GAminnr" that is a list with components
+An object of class "GAoptim" that is a list with components
 
 \item{mask}{saved input}
 \item{alltraps}{saved input}
@@ -88,6 +106,10 @@ An object of class "GAminnr" that is a list with components
 }
 
 \references{
+
+Dupont, G., Royle, J. A., Nawaz, M. A. and Sutherland, C. (2021) Optimal sampling
+design for spatial capture--recapture. \emph{Ecology} \bold{102} e03262.
+
 
 Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2021) Fast, flexible 
 alternatives to regular grid designs for spatial capture--recapture. 
@@ -112,6 +134,7 @@ Ian Durbach and Murray Efford.
 \seealso{
 
 \code{\link{Enrm}}, 
+\code{\link{Qpm}}, 
 \code{\link{minnrRSE}}, 
 \code{\link{GApenfn}}, 
 \code{\link{compactSample}}
@@ -128,7 +151,7 @@ alltrps <- make.grid(nx = 29, ny = 19, origin = c(10,10), spacing = 10)
 set.seed(123)
 
 # 50 generations for demonstration, use more in practice
-opt <- GAminnr(msk, alltrps, ntraps = 20, detectpar = list(lambda0 = 0.5, sigma = 20), 
+opt <- GAoptim(msk, alltrps, ntraps = 20, detectpar = list(lambda0 = 0.5, sigma = 20), 
     detectfn = 'HHN', D = 10, noccasions = 5, ngen = 50, verbose = 1)
 
 plot(msk)
