@@ -11,6 +11,19 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// hazmatcpp
+arma::mat hazmatcpp(const arma::vec par, const arma::mat& d, int detectfn);
+RcppExport SEXP _secrdesign_hazmatcpp(SEXP parSEXP, SEXP dSEXP, SEXP detectfnSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< int >::type detectfn(detectfnSEXP);
+    rcpp_result_gen = Rcpp::wrap(hazmatcpp(par, d, detectfn));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Lambdacpp
 Rcpp::List Lambdacpp(int type, const arma::vec par, const arma::mat d, int detectfn);
 RcppExport SEXP _secrdesign_Lambdacpp(SEXP typeSEXP, SEXP parSEXP, SEXP dSEXP, SEXP detectfnSEXP) {
@@ -42,6 +55,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_secrdesign_hazmatcpp", (DL_FUNC) &_secrdesign_hazmatcpp, 3},
     {"_secrdesign_Lambdacpp", (DL_FUNC) &_secrdesign_Lambdacpp, 4},
     {"_secrdesign_Qpmcpp", (DL_FUNC) &_secrdesign_Qpmcpp, 5},
     {NULL, NULL, 0}

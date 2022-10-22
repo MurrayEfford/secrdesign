@@ -80,7 +80,7 @@ S3method (predict, summary)
 S3method (coef, summary)
 
 ## DEBUGGING ONLY (cpp functions not documented)
-# exportPattern("*cpp")
+## exportPattern("*cpp")
 
 useDynLib (secrdesign, .registration = TRUE)
 

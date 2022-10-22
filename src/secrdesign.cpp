@@ -7,7 +7,8 @@
 
 /*==============================================================================*/
 
-arma::mat hazmat (const arma::vec par, const arma::mat &d, int detectfn) {
+// [[Rcpp::export]]
+arma::mat hazmatcpp (const arma::vec par, const arma::mat &d, int detectfn) {
     
     arma::mat H = d;
     
@@ -50,7 +51,7 @@ arma::mat hazmat (const arma::vec par, const arma::mat &d, int detectfn) {
 Rcpp::List Lambdacpp (int type, const arma::vec par, const arma::mat d, int detectfn)
 {
     // traps x mask hazard matrix
-    arma::mat h = hazmat(par, d, detectfn);
+    arma::mat h = hazmatcpp(par, d, detectfn);
     
     arma::rowvec sumhk = arma::sum(h, 0); 
     Rcpp::NumericVector outsumhk = Rcpp::NumericVector(sumhk.begin(), sumhk.end());
@@ -86,29 +87,29 @@ Rcpp::List Lambdacpp (int type, const arma::vec par, const arma::mat d, int dete
 
 // [[Rcpp::export]]
 Rcpp::List Qpmcpp (
-        const arma::vec par, 
-        const arma::rowvec D, 
+        const arma::vec par,
+        const arma::rowvec D,
         const arma::mat d, 
         int detectfn,
         int noccasions)
 {
     double Qp, Qpm;
-    double G = arma::accu(D);  // assume already includes cellsize
-
+    double G = arma::accu(D);
+    
     // traps x mask matrix hazard per occasion
-    arma::mat h = hazmat(par, d, detectfn);
-
+    arma::mat h = hazmatcpp(par, d, detectfn);
+    
     // mask probability detection
     arma::rowvec pd = 1 - arma::exp(- arma::sum(h,0) * noccasions);
     arma::rowvec p0 = 1-pd;
-    pd = D % pd;
-    Qp = arma::accu (pd) / G;
+    pd = pd % D;
+    Qp = arma::accu(pd) / G;
 
     arma::mat pij = 1 - arma::exp(- h * noccasions);
     pij = pij/(1-pij);
     arma::rowvec p1 = p0 % arma::sum(pij, 0);   // sum over traps
     arma::rowvec p2 = D % (1 - p0 - p1);
-    Qpm = arma::accu (p2) / G;
+    Qpm = arma::accu(p2) / G;
 
     return (Rcpp::List::create(
             Rcpp::Named("Qp") = Qp,

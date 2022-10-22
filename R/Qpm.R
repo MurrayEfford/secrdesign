@@ -8,12 +8,10 @@ Qpm <- function (D, traps, mask, detectpar, noccasions, detectfn =
     detectfn <- dfc$detectfn
     detectpar <- dfc$detectpar
     detectpars <- unlist(detectpar[secr:::parnames(detectfn)])
-    
-    D <- rep(D, length.out = nrow(mask)) * attr(mask, 'area');
-
+    D <- rep(D, length.out = nrow(mask)) * attr(mask, 'area')  # per cell
     temp <- Qpmcpp (
         unlist(detectpars), 
-        as.double(D), 
+        as.double(D),
         edist(traps, mask), 
         as.integer(detectfn),
         as.integer(noccasions)

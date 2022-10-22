@@ -82,7 +82,10 @@ spatially explicit capture--recapture.
 
 \seealso{
 
-\code{\link{getdetectpar}}, \code{\link{optimalSpacing}}, \code{\link{scenarioSummary}}
+\code{\link{getdetectpar}}, 
+\code{\link{optimalSpacing}}, 
+\code{\link{scenarioSummary}}, 
+\code{\link{GAoptim}}
 
 }
 
@@ -95,6 +98,8 @@ msk <- make.mask(tr, buffer = 100, type = 'trapbuffer')
 L <- Lambda(tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 nrm <- Enrm(D = 5, tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 nrm
+
+Qpm(D = 5, tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 
 plot(L, cov = "Lambda", dots = FALSE)
 plot(tr, add = TRUE)
