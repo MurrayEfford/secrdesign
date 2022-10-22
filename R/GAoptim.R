@@ -1,8 +1,8 @@
 ##############################################################################
 ## package 'secrdesign'
-## GAminnr.R
+## GAoptim.R
 ## adapted from code of Ian Durbach 
-## 2022-10-02,06
+## 2022-10-02,06,22
 ##############################################################################
 
 # default pen_fn
@@ -23,7 +23,7 @@ compactSample <- function (traps, n) {
 
 #-------------------------------------------------------------------------------
 # Objective function
-OFenrm <- function (v, 
+OF <- function (v, 
     alltraps, 
     mask, 
     detectpar,
@@ -48,31 +48,39 @@ OFenrm <- function (v,
     
     if (length(detectpar$lambda0) > 1)
         stop ("this implementation does not allow varying lambda0")
-    enrm <- Enrm(D = D, traps = traps, mask = mask, noccasions = noccasions, 
-        detectpar = detectpar, detectfn = detectfn)
     
-    c(-enrm[1], -enrm[2], -enrm[3], penalty-(min(enrm[1],enrm[2])))[crit]    
+    if (crit<5) {
+        enrm <- Enrm(D = D, traps = traps, mask = mask, noccasions = noccasions, 
+            detectpar = detectpar, detectfn = detectfn)
+        c(-enrm[1], -enrm[2], -enrm[3], penalty-(min(enrm[1],enrm[2])))[crit]    
+    }
+    else {
+        qpm <- Qpm(D = D, traps = traps, mask = mask, noccasions = noccasions, 
+            detectpar = detectpar, detectfn = detectfn)
+        c(-qpm[1], -qpm[2], -sum(qpm))[crit-4]    
+    }
     
 }
 #-------------------------------------------------------------------------------
 
-GAminnr <- function(
-        mask,
+GAoptim <- function(
+    mask,
     alltraps, 
     ntraps, 
     detectpar, 
     noccasions,
-    detectfn = c("HHN", "HHR", "HEX", "HAN", "HCG"),
-    D = NULL,
-    penalty = NULL,
-    seed = NULL,
+    detectfn  = c("HHN", "HHR", "HEX", "HAN", "HCG"),
+    D         = NULL,
+    criterion = 4,
+    penalty   = NULL,
+    seed      = NULL,
     ...){
     
     detectfn <- match.arg(detectfn)
     
-    ## criterion to use (1 = En, 2 = Er, 3 = Em, 4 = min(En,Er))
-    criterion <- 4   # force min(n,r)
-    
+    ## criterion (1 = En, 2 = Er, 3 = Em, 4 = min(En,Er), 5 = Qp, 6 = Qpm, 7 = Qp + Qpm)
+    if (criterion<1 || criterion>7) stop ("invalid criterion code")
+
     if(missing(mask)) stop("Must supply a 'mask' object (coords of the study area)")
     if(missing(alltraps))   stop("Must supply a 'traps' object (all possible trap locations)")
     
@@ -111,7 +119,7 @@ GAminnr <- function(
     
     des <- kofnGA::kofnGA(n = nrow(alltraps), 
         k  = ntraps, 
-        OF = OFenrm,
+        OF = OF,
         ...,
         alltraps    = alltraps,
         mask        = mask,
@@ -149,10 +157,7 @@ GAminnr <- function(
         ## do not include minnrRSE - it depends on extra arguments CF, distribution
     )
     
-    class(out) <- "GAminnr"
+    class(out) <- "GAoptim"
     out
     
 }
-
-# scenario trapsindex noccasions nrepeats  D  g0 sigma detectfn recapfactor popindex detindex fit
-

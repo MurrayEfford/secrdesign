@@ -1,8 +1,9 @@
 \name{Lambda}
 \alias{Lambda}
-\alias{Lambdak}
+%\alias{Lambdak}
 \alias{Enrm}
 \alias{minnrRSE}
+\alias{Qpm}
 
 \title{Expected Detections}
 
@@ -12,13 +13,14 @@
 
 Lambda(traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX", 
     "HAN", "HCG", 'HN', 'HR', 'EX'))
-
-Lambdak(D, traps, mask, detectpar, detectfn = c("HHN", "HHR", "HEX", 
-    "HAN", "HCG", 'HN', 'HR', 'EX'))
-
+% Lambdak(D, traps, mask, detectpar, detectfn = c("HHN", "HHR", "HEX", 
+%    "HAN", "HCG", 'HN', 'HR', 'EX'))
 Enrm(D, ...)
 
 minnrRSE(D, ..., CF = 1.0, distribution = c("poisson","binomial"))
+
+Qpm(D, traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX", 
+    "HAN", "HCG", "HN", "HR", "EX"))
 
 }
 
@@ -47,7 +49,7 @@ Formulae for expected counts are given in \href{https://www.otago.ac.nz/density/
 
 \code{minnrRSE} has mostly the same inputs as \code{Enrm} but returns sqrt(CF/min(n,r)). The correction factor CF may be used to adjust for systematic bias (e.g., for a line of detectors CF = 1.4 may be appropriate). The default \code{distribution = 'poisson'} is for Poisson-distributed \eqn{N} and \eqn{n}. To adjust the prediction for fixed \eqn{N} (binomial \eqn{n}) use \code{distribution = 'binomial'} (see \url{../doc/secrdesign-tools.pdf} Appendix 2).
 
-From 2.7.0, the first argument of \code{minnrRSE} may also be the output from \code{\link{GAminnr}}.
+From 2.7.0, the first argument of \code{minnrRSE} may also be the output from \code{\link{GAoptim}}.
 
 }
 
@@ -55,14 +57,26 @@ From 2.7.0, the first argument of \code{minnrRSE} may also be the output from \c
 
 \code{Lambda} --
     \link{mask} object with covariates `Lambda' (\eqn{\Lambda(x)}{\Lambda(x)}), `sumpk' and `sumq2' (intermediate values for computation of expected counts - see \url{../doc/expectedcounts.pdf})
-    
-\code{Lambdak} --
-    Vector of with single-occasion hazard at each detector integrated over \link{mask} object.
-    
-\code{Enrm} --
-    numeric vector of length 3, the values of E(\eqn{n}), E(\eqn{r}) and E(\eqn{m}).
+%\code{Lambdak} --
+%    Vector of with single-occasion hazard at each detector integrated over \link{mask} object.
 
-\code{minnrRSE} -- rule-of-thumb RSE(D-hat)
+\code{Enrm} --
+    numeric vector of length 3, the values of E(\eqn{n}), E(\eqn{r}) and E(\eqn{m})
+
+\code{minnrRSE} -- rule-of-thumb RSE(D-hat) Efford and Boulanger (2019)
+
+\code{Qpm} -- criteria of Dupont et al. (2021)
+
+}
+
+\references{
+
+Dupont, G., Royle, J. A., Nawaz, M. A. and Sutherland, C. (2021) Optimal sampling
+design for spatial capture--recapture. \emph{Ecology} \bold{102} e03262.
+
+Efford, M. G., and Boulanger, J. (2019) Fast evaluation of study designs for 
+spatially explicit capture--recapture. 
+\emph{Methods in Ecology and Evolution}, \bold{10}, 1529--1535. DOI: 10.1111/2041-210X.13239
 
 }
 
