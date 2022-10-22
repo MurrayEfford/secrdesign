@@ -17,6 +17,9 @@ importFrom("utils",
 importFrom("grDevices", 
     "topo.colors")
 
+importFrom ("Rcpp", 
+    "evalCpp")
+
 # Other packages
 
 importFrom("sf",
@@ -46,7 +49,7 @@ export (find.stats)
 export (make.array)
 export (header)
 export (Lambda)
-export (Lambdak)
+# export (Lambdak)
 export (Enrm)
 export (getdetectpar)
 export (minnrRSE)
@@ -55,9 +58,10 @@ export (costing)
 export (scenarioSummary)
 export (saturation)
 export (count)
-export (GAminnr)
+export (GAoptim)
 export (GApenfn)
 export (compactSample)
+export (Qpm)
 
 S3method (plot, optimalSpacing)
 S3method (print, optimalSpacing)
@@ -74,5 +78,9 @@ S3method (region.N, fittedmodels)
 S3method (count, summary)
 S3method (predict, summary)
 S3method (coef, summary)
+
+## DEBUGGING ONLY (cpp functions not documented)
+# exportPattern("*cpp")
+
 useDynLib (secrdesign, .registration = TRUE)
 

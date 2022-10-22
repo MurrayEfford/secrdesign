@@ -1,10 +1,11 @@
-Changes in version 2.7.0 (2022-10-21)
+Changes in version 2.7.0 (2022-10-22)
 
 New features or changed behaviour of old functions
-    o  GAminnr() min(n,r) optimization by genetic algorithm (Durbach et al. 2021)
-    o  partial implementation of capped detector in Enrm()
-    o  minnrRSE() accepts GAminnr() output
+    o  GAoptim() optimization by genetic algorithm using min(n,r) criterion 
+       (Durbach et al. 2021) and others 
+    o  minnrRSE() accepts GAoptim() output
     o  run.scenarios() option to create trapset dynamically with function(s)
+    o  partial implementation of capped detector in Enrm()
 
 Other
     o  on GitHub
@@ -12,6 +13,8 @@ Other
     o  exports internal functions GApenfn() and compactSample()
     o  make.scenarios allows single-level 'groups' 
     o  check for consistent traps etc. across groups within scenario
+    o  parallel clusters not used by run.scenarios() if fit = FALSE
+    o  shift to Rcpp, RcppArmadillo from C
 
 Changes in version 2.6.0 (2022-01-26)
 
