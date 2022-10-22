@@ -32,7 +32,7 @@ GApenfn(traps, sigma)
 
   \code{compactSample} selects a detector at random and returns the a compact subset of surrounding detectors.
 
-  \code{GApenfn} is the default pen_fn used by \code{\link{GAminnr}} When called with a non-null penalty argument.
+  \code{GApenfn} is the default pen_fn used by \code{\link{GAoptim}} When called with a non-null penalty argument.
   
 }
 
@@ -45,7 +45,7 @@ compactSample -- an object like traps, but with only n rows.
 
 \seealso{
 
-\code{\link{GAminnr}}, 
+\code{\link{GAoptim}}, 
 
 }
 
