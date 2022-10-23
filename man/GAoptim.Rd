@@ -109,7 +109,6 @@ An object of class "GAoptim" that is a list with components
 Dupont, G., Royle, J. A., Nawaz, M. A. and Sutherland, C. (2021) Optimal sampling
 design for spatial capture--recapture. \emph{Ecology} \bold{102} e03262.
 
-
 Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2021) Fast, flexible 
 alternatives to regular grid designs for spatial capture--recapture. 
 \emph{Methods in Ecology and Evolution} \bold{12}, 298--310. DOI 10.1111/2041-210X.13517
