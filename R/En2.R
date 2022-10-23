@@ -1,10 +1,10 @@
 ##############################################################################
 ## package 'secrdesign'
-## Qpm.R
+## En2.R
 ## 2022-10-23
 ##############################################################################
 
-Qpm <- function (D, traps, mask, detectpar, noccasions, detectfn = 
+En2 <- function (D, traps, mask, detectpar, noccasions, detectfn = 
         c('HHN', 'HHR', 'HEX','HAN','HCG', 'HN', 'HR', 'EX')) {
     
     if (is.character(detectfn))
@@ -14,8 +14,10 @@ Qpm <- function (D, traps, mask, detectpar, noccasions, detectfn =
     detectfn <- dfc$detectfn
     detectpar <- dfc$detectpar
     detectpars <- unlist(detectpar[secr:::parnames(detectfn)])
+    dettype <- secr:::detectorcode(traps, noccasions = noccasions)[1]
     D <- rep(D, length.out = nrow(mask)) * attr(mask, 'area')  # per cell
-    temp <- Qpmcpp (
+    temp <- En2cpp (
+        as.integer(dettype),
         unlist(detectpars), 
         as.double(D),
         edist(traps, mask), 
@@ -23,6 +25,6 @@ Qpm <- function (D, traps, mask, detectpar, noccasions, detectfn =
         as.integer(noccasions)
     )
     
-    c(Qp = temp$Qp, Qpm = temp$Qpm)
+    c(En = temp$En, En2 = temp$En2)
     
 }
