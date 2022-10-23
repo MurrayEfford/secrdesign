@@ -66,7 +66,9 @@ Rcpp::List Lambdacpp (
     outsumq2[0] = NA_REAL;
     
     arma::rowvec sumhk2 = arma::sum(arma::square(h), 0); 
-    arma::rowvec sumq2 = sumhk2 / arma::square(sumhk);	// sumhk>0
+    // protect against 1/0
+    sumhk.replace(0, arma::datum::eps);
+    arma::rowvec sumq2 = sumhk2 / arma::square(sumhk);
     outsumq2 = Rcpp::NumericVector(sumq2.begin(), sumq2.end());
     
     // multi
