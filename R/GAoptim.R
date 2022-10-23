@@ -55,11 +55,14 @@ OF <- function (v,
         c(-enrm[1], -enrm[2], -enrm[3], penalty-(min(enrm[1],enrm[2])))[crit]    
     }
     else {
-        qpm <- Qpm(D = D, traps = traps, mask = mask, noccasions = noccasions, 
-            detectpar = detectpar, detectfn = detectfn)
-        c(-qpm[1], -qpm[2], -sum(qpm))[crit-4]    
+        # qpm <- Qpm(D = D, traps = traps, mask = mask, noccasions = noccasions, 
+        #     detectpar = detectpar, detectfn = detectfn)
+        # c(-qpm[1], -qpm[2], -sum(qpm))[crit-4]    
+        en2 <- En2(D = D, traps = traps, mask = mask, noccasions = noccasions, 
+             detectpar = detectpar, detectfn = detectfn)
+        
+        c(en2[2], sum(en2))[crit-4]
     }
-    
 }
 #-------------------------------------------------------------------------------
 

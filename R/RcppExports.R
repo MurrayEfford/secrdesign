@@ -13,3 +13,7 @@ Qpmcpp <- function(par, D, d, detectfn, noccasions) {
     .Call(`_secrdesign_Qpmcpp`, par, D, d, detectfn, noccasions)
 }
 
+En2cpp <- function(type, par, D, d, detectfn, noccasions) {
+    .Call(`_secrdesign_En2cpp`, type, par, D, d, detectfn, noccasions)
+}
+

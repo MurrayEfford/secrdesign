@@ -48,7 +48,11 @@ arma::mat hazmatcpp (const arma::vec par, const arma::mat &d, int detectfn) {
 /*==============================================================================*/
 
 // [[Rcpp::export]]
-Rcpp::List Lambdacpp (int type, const arma::vec par, const arma::mat d, int detectfn)
+Rcpp::List Lambdacpp (
+        const int type, 
+        const arma::vec par, 
+        const arma::mat d, 
+        const int detectfn)
 {
     // traps x mask hazard matrix
     arma::mat h = hazmatcpp(par, d, detectfn);
@@ -90,29 +94,83 @@ Rcpp::List Qpmcpp (
         const arma::vec par,
         const arma::rowvec D,
         const arma::mat d, 
-        int detectfn,
-        int noccasions)
+        const int detectfn,
+        const int noccasions)
 {
     double Qp, Qpm;
     double G = arma::accu(D);
-    
+    arma::mat pij;
+    arma::rowvec pd, p0, p1, p2;
+
     // traps x mask matrix hazard per occasion
     arma::mat h = hazmatcpp(par, d, detectfn);
     
     // mask probability detection
-    arma::rowvec pd = 1 - arma::exp(- arma::sum(h,0) * noccasions);
-    arma::rowvec p0 = 1-pd;
+    pd = 1 - arma::exp(- arma::sum(h,0) * noccasions);
+    p0 = 1-pd;
     pd = pd % D;
     Qp = arma::accu(pd) / G;
 
-    arma::mat pij = 1 - arma::exp(- h * noccasions);
+    pij = 1 - arma::exp(- h * noccasions);
     pij = pij/(1-pij);
-    arma::rowvec p1 = p0 % arma::sum(pij, 0);   // sum over traps
-    arma::rowvec p2 = D % (1 - p0 - p1);
+    p1 = p0 % arma::sum(pij, 0);   // sum over traps
+    p2 = D % (1 - p0 - p1);
     Qpm = arma::accu(p2) / G;
 
     return (Rcpp::List::create(
             Rcpp::Named("Qp") = Qp,
             Rcpp::Named("Qpm") = Qpm));
+}
+/*==============================================================================*/
+
+// [[Rcpp::export]]
+Rcpp::List En2cpp (
+        const int type, 
+        const arma::vec par,
+        const arma::rowvec D,
+        const arma::mat d, 
+        const int detectfn,
+        const int noccasions)
+{
+    // suffix k refers to detectors, m to mask cells
+    arma::mat pkm = d;
+    arma::rowvec p0, p1, D1, D2;
+    arma::uword i;
+
+    arma::mat hkm = hazmatcpp(par, d, detectfn);
+    arma::rowvec Hm = sum(hkm,0);       // hazard summed over traps
+    p0 = arma::exp(-Hm * noccasions);   // Pr not detected
+    
+    double En, En2;                     // return values
+    
+    // multi-catch traps, by occasion
+    if (type == 0) {
+        arma::mat pkm = hkm;
+        arma::mat Hkm = hkm;
+        for (i = 0; i < hkm.n_rows; i++ ) {
+            pkm.row(i) = (1 - arma::exp(-Hm)) / Hm;
+            Hkm.row(i) = Hm;
+        }
+        pkm = (1 - arma::pow(1-hkm % pkm, noccasions)) % 
+            arma::pow(1 - pkm % (Hkm-hkm), noccasions-1);
+        p1  = arma::sum(pkm,0);        // trapped at only one site
+    }
+    
+    // binary and count proximity detectors, all occasions
+    else {
+        pkm = 1 - arma::exp(-hkm * noccasions);
+        pkm = pkm/(1-pkm);
+        p1  = p0 % arma::sum(pkm,0);    // detected at only one site       
+    }
+    
+    D1 = D % (1 - p0);
+    D2 = D % (1 - p0 - p1);
+    En  = arma::accu(D1);
+    En2 = arma::accu(D2);
+    
+    return (Rcpp::List::create(
+            Rcpp::Named("En") = En,
+            Rcpp::Named("En2") = En2));
+    
 }
 /*==============================================================================*/

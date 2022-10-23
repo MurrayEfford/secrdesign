@@ -79,12 +79,11 @@ Code \tab Description \tab Note \cr
 2 \tab E(r) \tab number of recaptures \cr
 3 \tab E(m) \tab number of movement recaptures \cr
 4 \tab min(E(n), E(r)) \tab minimum E(n), E(r) \cr
-5 \tab Qp \tab mean Pr(detected) (Dupont et al. 2021) \cr
-6 \tab Qpm \tab mean Pr(detected at >1 site) (Dupont et al. 2021) \cr
-7 \tab Qpb \tab Qp + Qpm (Dupont et al. 2021) \cr
+5 \tab E(n2) \tab expected number of animals detected at 2 or more sites (cf Qpm Dupont et al. 2021) \cr
+6 \tab E(n) + E(n2) \tab (1) + (5) (cf Qpb Dupont et al. 2021)  \cr
 }
 
-Criteria 1--4 are computed with function \code{\link{Enrm}} (see also Efford and Boulanger 2019). Criteria 5--7 are computed with function \code{\link{Qpm}} based on Dupont et al. (2021). Any penalty is applied only when criterion = 4.
+Criteria 1--4 are computed with function \code{\link{Enrm}} (see also Efford and Boulanger 2019). Criteria 5--6 are computed with function \code{\link{En2}}. Any penalty is applied only when criterion = 4.
 
 }
 
@@ -134,7 +133,7 @@ Ian Durbach and Murray Efford.
 \seealso{
 
 \code{\link{Enrm}}, 
-\code{\link{Qpm}}, 
+\code{\link{En2}}, 
 \code{\link{minnrRSE}}, 
 \code{\link{GApenfn}}, 
 \code{\link{compactSample}}

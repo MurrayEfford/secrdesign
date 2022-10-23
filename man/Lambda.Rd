@@ -4,6 +4,7 @@
 \alias{Enrm}
 \alias{minnrRSE}
 \alias{Qpm}
+\alias{En2}
 
 \title{Expected Detections}
 
@@ -20,6 +21,9 @@ Enrm(D, ...)
 minnrRSE(D, ..., CF = 1.0, distribution = c("poisson","binomial"))
 
 Qpm(D, traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX", 
+    "HAN", "HCG", "HN", "HR", "EX"))
+
+En2(D, traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX", 
     "HAN", "HCG", "HN", "HR", "EX"))
 
 }
@@ -66,6 +70,8 @@ From 2.7.0, the first argument of \code{minnrRSE} may also be the output from \c
 \code{minnrRSE} -- rule-of-thumb RSE(D-hat) Efford and Boulanger (2019)
 
 \code{Qpm} -- criteria of Dupont et al. (2021)
+
+\code{En2} -- numeric vector comprising the values E(\eqn{n}) and (approximate) E(number of animals detected at 2 or more sites).
 
 }
 

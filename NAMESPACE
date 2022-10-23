@@ -62,6 +62,7 @@ export (GAoptim)
 export (GApenfn)
 export (compactSample)
 export (Qpm)
+export (En2)
 
 S3method (plot, optimalSpacing)
 S3method (print, optimalSpacing)
