@@ -28,17 +28,17 @@ opt4 <- GAoptim(msk, alltrps, ntraps = 20,
     detectfn = 'HHN', D = 10, noccasions = 5, ngen = 10, 
     verbose = 0, criterion = 4, seed = 123)
 
-opt7 <- GAoptim(msk, alltrps, ntraps = 20, 
+opt5 <- GAoptim(msk, alltrps, ntraps = 20, 
     detectpar = list(lambda0 = 0.5, sigma = 20), 
     detectfn = 'HHN', D = 10, noccasions = 5, ngen = 10, 
-    verbose = 0, criterion = 7, seed = 123)
+    verbose = 0, criterion = 5, seed = 123)
 
 test_that("Genetic algorithm on track, criterion 4", {
   expect_equal(opt4$des$bestobj, -46.01154, tolerance = 1e-4)
 })
 
 test_that("Genetic algorithm on track, criterion 7", {
-    expect_equal(opt7$des$bestobj, -1.108848, tolerance = 1e-4)
+    expect_equal(opt5$des$bestobj, -19.01397, tolerance = 1e-4)
 })
 
 ###############################################################################
