@@ -18,9 +18,9 @@ En2 <- function (D, traps, mask, detectpar, noccasions, detectfn =
     D <- rep(D, length.out = nrow(mask)) * attr(mask, 'area')  # per cell
     temp <- En2cpp (
         as.integer(dettype),
-        unlist(detectpars), 
+        as.double(unlist(detectpars)), 
         as.double(D),
-        edist(traps, mask), 
+        as.matrix(edist(traps, mask)), 
         as.integer(detectfn),
         as.integer(noccasions)
     )
