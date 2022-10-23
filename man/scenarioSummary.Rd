@@ -47,6 +47,7 @@ A dataframe including the first 8 columns from scenarios and the computed column
 \item{En}{expected number of individuals}
 \item{Er}{expected number of recaptures}
 \item{Em}{expected number of movement recaptures}
+\item{En2}{expected number of individuals detected at two or more sites}
 \item{esa}{effective sampling area (ha)}
 \item{CF}{rule-of-thumb correction factor}
 \item{rotRSE}{rule-of-thumb relative standard error of density estimate}

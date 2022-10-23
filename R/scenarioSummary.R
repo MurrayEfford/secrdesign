@@ -189,21 +189,27 @@ scenarioSummary <- function (scenarios, trapset, maskset, xsigma = 4, nx = 64,
         Pxy <- pdot(mask, traps, detectfn, detectpar, scenario$noccasions)
         esa <- sum(Pxy) * attr(mask, 'area')
         sat <- saturation (scenario$D, detectpar, detectfn, traps, mask)
-        if (detector(traps)[1] %in% c("multi", "proximity", "count"))
+        if (detector(traps)[1] %in% c("multi", "proximity", "count")) {
             nrm <- Enrm(scenario$D, traps, mask, detectpar, 
                         scenario$noccasions, detectfn = detectfn)
-        else
-            nrm <- c(En=NA,Er=NA,Em=NA)
+            en2 <- En2(scenario$D, traps, mask, detectpar, 
+                scenario$noccasions, detectfn = detectfn)
+        }
+        else {
+            nrm <- c(En = NA, Er = NA, Em = NA)
+            en2 <- c(En = NA, En2 = NA)
+        }
         
         ## 2018-06-11
         nrm <- nrm * scenario$nrepeats
+        en2 <- en2 * scenario$nrepeats
         esa <- esa * scenario$nrepeats
         
         rotRSE <- 1 / sqrt(min(nrm[1:2]))
         rotRSEB <- (rotRSE^2 - 1 / (scenario$D * scenario$nrepeats * maskarea(mask)))^0.5 * scenario$CF
         rotRSE <- rotRSE * scenario$CF
 
-        out <- c(scenario[1:8], round(nrm,3))
+        out <- c(scenario[1:8], round(nrm,3), round(en2[2],3))
 
         out <- c(out, 
                  esa = esa,
