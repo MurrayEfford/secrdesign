@@ -141,27 +141,28 @@ Rcpp::List En2cpp (
 
     arma::mat hkm = hazmatcpp(par, d, detectfn);
     arma::rowvec Hm = sum(hkm,0);       // hazard summed over traps
+    Hm.replace(0, arma::datum::eps);    // protect divide by zero
+    
     p0 = arma::exp(-Hm * noccasions);   // Pr not detected
     
     double En, En2;                     // return values
     
     // multi-catch traps, by occasion
     if (type == 0) {
-        arma::mat pkm = hkm;
         arma::mat Hkm = hkm;
         for (i = 0; i < hkm.n_rows; i++ ) {
-            pkm.row(i) = (1 - arma::exp(-Hm)) / Hm;
             Hkm.row(i) = Hm;
         }
-        pkm = (1 - arma::pow(1-hkm % pkm, noccasions)) % 
-            arma::pow(1 - pkm % (Hkm-hkm), noccasions-1);
+        arma::mat fkm = (1 - arma::exp(-Hkm)) / Hkm;
+        pkm = (1 - arma::pow(1 - fkm % hkm, noccasions)) % 
+            arma::pow(1 - fkm % (Hkm-hkm), noccasions-1);
         p1  = arma::sum(pkm,0);        // trapped at only one site
     }
     
     // binary and count proximity detectors, all occasions
     else {
         pkm = 1 - arma::exp(-hkm * noccasions);
-        pkm = pkm/(1-pkm);
+        pkm = pkm/(1-pkm);              // fails if any pkm==1?
         p1  = p0 % arma::sum(pkm,0);    // detected at only one site       
     }
     
