@@ -37,7 +37,7 @@ test_that("Genetic algorithm on track, criterion 4", {
   expect_equal(opt4$des$bestobj, -46.01154, tolerance = 1e-4)
 })
 
-test_that("Genetic algorithm on track, criterion 7", {
+test_that("Genetic algorithm on track, criterion 5", {
     expect_equal(opt5$des$bestobj, -19.01397, tolerance = 1e-4)
 })
 
