@@ -135,11 +135,12 @@ Rcpp::List En2cpp (
         const int noccasions)
 {
     // suffix k refers to detectors, m to mask cells
+    arma::mat hkm = hazmatcpp(par, d, detectfn);
+    
     arma::mat pkm = d;
     arma::rowvec p0, p1, D1, D2;
     arma::uword i;
-
-    arma::mat hkm = hazmatcpp(par, d, detectfn);
+    
     arma::rowvec Hm = sum(hkm,0);       // hazard summed over traps
     Hm.replace(0, arma::datum::eps);    // protect divide by zero
     
@@ -153,9 +154,10 @@ Rcpp::List En2cpp (
         for (i = 0; i < hkm.n_rows; i++ ) {
             Hkm.row(i) = Hm;
         }
-        arma::mat fkm = (1 - arma::exp(-Hkm)) / Hkm;
-        pkm = (1 - arma::pow(1 - fkm % hkm, noccasions)) % 
-            arma::pow(1 - fkm % (Hkm-hkm), noccasions-1);
+        arma::mat Pkm = (1 - arma::exp(-Hkm));
+        pkm = hkm/Hkm % Pkm;
+        pkm = (1 - arma::pow(1 - pkm, noccasions)) % 
+            arma::pow(1 - Pkm + pkm, noccasions-1);
         p1  = arma::sum(pkm,0);        // trapped at only one site
     }
     
