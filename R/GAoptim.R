@@ -158,6 +158,7 @@ GAoptim <- function(
         detectfn     = detectfn,
         D            = D,
         penalty      = penalty,
+        criterion    = criterion,
         des          = des, 
         optimaltraps = optimaltraps,
         optimalenrm  = optimalenrm
