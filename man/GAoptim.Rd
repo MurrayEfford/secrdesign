@@ -34,7 +34,7 @@ GAoptim(mask, alltraps, ntraps, detectpar, noccasions,
   \item{detectfn}{integer code or character string for shape of detection function - see \link{detectfn}}
   \item{noccasions}{integer number of sampling occasions}
   \item{D}{numeric density animals per hectare (0.01 km^2)}
-  \item{criterion}{integer code for criterion to optimise (see Details)}
+  \item{criterion}{integer code for criterion to maximise, or function (see Details)}
   \item{penalty}{list defining penalty for layout in relation to reference grid (optional)}
   \item{seed}{set a random seed for reproducibility of GA}
   \item{\dots}{other arguments passed to \code{\link{kofnGA}}}
@@ -70,7 +70,7 @@ Pathological trap layouts (sensu Efford and Boulanger 2019) may be avoided by ad
 No penalty is applied by default. To apply a penalty, \code{penalty} should be a list with named components pen_wt>0 and pen_gridsigma). If a penalty is applied, the default compares the number of trap pairs with close spacing (2.5-3.5 sigma, 3.5-4.5 sigma) to the number in a compact sample from a regular grid with spacing sigma * pen_gridsigma (see internal functions \code{\link{GApenfn}} and \code{\link{compactSample}} and the vignette).  An alternative penalty function may be supplied as component `pen_fn' of \code{penalty}.
 
 The default criterion is the minimum of E(n) and E(r) as used by Durbach et al. (2021), with optional penalty term. 
-The full list of possibilities is:
+The full list of builtin possibilities is:
 
 \tabular{lll}{
 
@@ -84,6 +84,8 @@ Code \tab Description \tab Note \cr
 }
 
 Criteria 1--4 are computed with function \code{\link{Enrm}} (see also Efford and Boulanger 2019). Criteria 5--6 are computed with function \code{\link{En2}}. Any penalty is applied only when criterion = 4.
+
+The criterion may also be a function that returns a single numeric value to be maximised. Arguments of the function should match those of \code{\link{En2}}, although \dots may suffice for some or all (see Examples).
 
 }
 
@@ -156,6 +158,13 @@ plot(msk)
 plot(opt$optimaltraps, add = TRUE)
 minnrRSE(opt, distribution = 'binomial')
 
+# Using a criterion function
+# En2 is unsuitable as a criterion function as it returns 2 values
+# This function selects the second as the (unique) criterion
+fn <- function(...) En2(...)[2]
+opt2 <- GAoptim(msk, alltrps, ntraps = 20, detectpar = list(lambda0 = 0.5, sigma = 20), 
+    detectfn = 'HHN', D = 10, noccasions = 5, ngen = 50, verbose = 1, criterion = fn)
+    
 }
 
 }

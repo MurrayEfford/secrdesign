@@ -49,7 +49,11 @@ OF <- function (v,
     if (length(detectpar$lambda0) > 1)
         stop ("this implementation does not allow varying lambda0")
     
-    if (crit<5) {
+    if (is.function(crit)) {
+        -crit(D = D, traps = traps, mask = mask, noccasions = noccasions, 
+            detectpar = detectpar, detectfn = detectfn)[1]
+    }
+    else if (crit<5) {
         enrm <- Enrm(D = D, traps = traps, mask = mask, noccasions = noccasions, 
             detectpar = detectpar, detectfn = detectfn)
         c(-enrm[1], -enrm[2], -enrm[3], penalty-(min(enrm[1],enrm[2])))[crit]    
@@ -81,8 +85,8 @@ GAoptim <- function(
     
     detectfn <- match.arg(detectfn)
     
-    ## criterion (1 = En, 2 = Er, 3 = Em, 4 = min(En,Er), 5 = Qp, 6 = Qpm, 7 = Qp + Qpm)
-    if (criterion<1 || criterion>7) stop ("invalid criterion code")
+    ## criterion (1 = En, 2 = Er, 3 = Em, 4 = min(En,Er), 5 = En2, 6 = En+En2)
+    if (!is.function(criterion) && (criterion<1 || criterion>6)) stop ("invalid criterion code")
 
     if(missing(mask)) stop("Must supply a 'mask' object (coords of the study area)")
     if(missing(alltraps))   stop("Must supply a 'traps' object (all possible trap locations)")
