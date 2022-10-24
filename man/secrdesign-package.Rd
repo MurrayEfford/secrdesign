@@ -17,7 +17,7 @@ Tools to assist the design of spatially explicit capture--recapture studies of a
 Package: \tab secr\cr
 Type: \tab Package\cr
 Version: \tab 2.7.0\cr
-Date: \tab 2022-10-22\cr
+Date: \tab 2022-10-24\cr
 License: \tab GNU General Public License Version 2 or later\cr
 }
 
@@ -25,6 +25,10 @@ The primary use of \pkg{secrdesign} is to predict by Monte Carlo
 simulation the precision or bias of density estimates from different
 detector layouts, given pilot values for density and the detection
 parameters lambda0/g0 and sigma.
+
+Tools are also provided for predicting the performance of detector layouts 
+without simulation, and for optimising layouts to meet various criteria, 
+particularly expected counts.
 
 The simulation functions in \pkg{secrdesign} are:
 \tabular{ll}{
@@ -43,6 +47,7 @@ The simulation functions in \pkg{secrdesign} are:
 Other functions not used exclusively for simulation are:
 \tabular{ll}{
   \code{\link{Enrm}} \tab expected numbers of individuals \eqn{n}, re-detections \eqn{r} and movements \eqn{m} \cr
+  \code{\link{En2}} \tab expected number of individuals detected at two or more detectors \cr
   \code{\link{minnrRSE}} \tab approximate RSE(D-hat) given sample size (\eqn{n}, \eqn{r}) (Efford and Boulanger 2019)\cr
   \code{\link{GAoptim}} \tab optimization of detector placement using genetic algorithm (Durbach et al. 2021) \cr
   \code{\link{costing}} \tab various cost components \cr
@@ -51,7 +56,6 @@ Other functions not used exclusively for simulation are:
   \code{\link{optimalSpacing}} \tab optimal detector spacing by rule-of-thumb and simulation RSE(D-hat)\cr
   \code{\link{scenariosFromStatistics}} \tab match specified \eqn{n}, \eqn{r} \cr
 }
-
 
 A vignette documenting the simulation functions is available at \href{https://www.otago.ac.nz/density/pdfs/secrdesign-vignette.pdf}{secrdesign-vignette.pdf}. An Appendix in that vignette has code for various examples that should help get you started. 
 

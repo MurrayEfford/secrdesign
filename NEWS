@@ -1,12 +1,12 @@
-Changes in version 2.7.0 (2022-10-22)
+Changes in version 2.7.0 (2022-10-24)
 
 New features or changed behaviour of old functions
     o  GAoptim() optimization by genetic algorithm using min(n,r) criterion 
        (Durbach et al. 2021) and others 
     o  minnrRSE() accepts GAoptim() output
+    o  En2() and Qpm() for additional optimization criteria
     o  run.scenarios() option to create trapset dynamically with function(s)
-    o  partial implementation of capped detector in Enrm()
-
+    
 Other
     o  on GitHub
     o  added tests
