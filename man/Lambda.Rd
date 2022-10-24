@@ -8,7 +8,11 @@
 
 \title{Expected Detections}
 
-\description{Compute the expected number of detections as a function of location (\code{Lambda}), and the expected total numbers of individuals \eqn{n}, recaptures \eqn{r} and movements \eqn{m} for a population sampled with an array of detectors (\code{Enrm}). }
+\description{
+
+Compute the expected number of detections as a function of location (\code{Lambda}), and the expected total numbers of individuals \eqn{n}, recaptures \eqn{r} and movements \eqn{m} for a population sampled with an array of detectors (\code{Enrm}) or the number of individuals detected at two or more detectors (\code{En2}). 
+
+}
 
 \usage{
 
@@ -71,7 +75,7 @@ From 2.7.0, the first argument of \code{minnrRSE} may also be the output from \c
 
 \code{Qpm} -- criteria of Dupont et al. (2021)
 
-\code{En2} -- numeric vector comprising the values E(\eqn{n}) and (approximate) E(number of animals detected at 2 or more sites).
+\code{En2} -- numeric vector comprising the values E(\eqn{n}) and E(number of animals detected at 2 or more sites).
 
 }
 
@@ -106,6 +110,8 @@ nrm <- Enrm(D = 5, tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 nrm
 
 Qpm(D = 5, tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
+
+En2(D = 5, tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 
 plot(L, cov = "Lambda", dots = FALSE)
 plot(tr, add = TRUE)
