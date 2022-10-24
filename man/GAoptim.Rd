@@ -3,7 +3,7 @@
 
 \title{
 
-SECR detector placement by min(n,r) optimization.
+SECR detector placement by maximisation of a simple criterion
 
 }
 
@@ -14,6 +14,10 @@ placement using a genetic algorithm to maximize the lesser
 of E(\eqn{n}) and E(\eqn{r}), where \eqn{n} is the number of distinct individuals 
 and \eqn{r} is the total number of recaptures. This criterion predicts the 
 relative standard error of the density estimate (Efford and Boulanger 2019).
+
+Users may choose the criterion to be maximised. The number of individuals 
+detected at two or more detectors is an alternative of particular interest 
+(Dupont et al. 2021).
 
 }
 
