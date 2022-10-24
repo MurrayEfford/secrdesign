@@ -104,6 +104,7 @@ An object of class "GAoptim" that is a list with components
 \item{detectfn}{saved input}
 \item{D}{saved input}
 \item{penalty}{saved input}
+\item{criterion}{saved input}
 \item{des}{kofnGA() output object}
 \item{optimaltraps}{traps object with optimized layout}
 \item{optimalenrms}{E(n), E(r), E(m) evaluated with optimized layout}
