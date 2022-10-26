@@ -49,7 +49,7 @@ scenarioSummary <- function (scenarios, trapset, maskset, xsigma = 4, nx = 64,
     if (is.null(ncores)) {
         ncores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
     }
-    
+
     if (!all(as.character(scenarios$detectfn) %in% 
              c(as.character(c(0,1,2,14:18)), 'HN','HR','EX','HHN', 'HEX', 'HHR', 'HCG','HAN')))
         stop ("scenarioSummary requires hazard detection function HHN, HEX etc. (HN, EX approximated)")
@@ -260,7 +260,7 @@ scenarioSummary <- function (scenarios, trapset, maskset, xsigma = 4, nx = 64,
     spans <- unname(sapply(trapset, getspan))
     ntraps <- unname(sapply(trapset, nrow))
     spaces <- unname(sapply(trapset, spacing))
-    spaces <- sapply(spaces, function(x) if (is.null(x)) NA else x)  ## patch 2019-01-09
+    spaces <- sapply(spaces, function(x) if (is.null(x) || length(x)==0) NA else x)  ## patch 2019-01-09, 2022-10-26
     
     if (is.null(scenarios$CF)) {
         if (length(CF) > length(trapset))
