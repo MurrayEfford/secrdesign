@@ -141,7 +141,8 @@ count.summary <- function(object, ...) {
     stats <- c('Animals', 'Detections')
     if (object$outputtype == "secrsummary") {
         move <- if ('Moves' %in% names(object$output[[1]][[1]]$capthist)) 'Moves' else NULL
-        stats <- c(stats, move)
+        tpa  <- if ('Animals2' %in% names(object$output[[1]][[1]]$capthist)) 'Animals2' else NULL
+        stats <- c(stats, move, tpa)
         counttable <- function(x) {
             out <- as.data.frame(t(x[['capthist']][stats]))
             names(out) <- stats
@@ -151,7 +152,8 @@ count.summary <- function(object, ...) {
     }
     else {
         move <- if ('Moves' %in% rownames(object$output[[1]][[1]]$capthist)) 'Moves' else NULL
-        stats <- c(stats, move)
+        tpa  <- if ('Animals2' %in% rownames(object$output[[1]][[1]]$capthist)) 'Animals2' else NULL
+        stats <- c(stats, move, tpa)
         counttable <- function(x) {
             
             ## fix in 2.5.7 2019-01-27
