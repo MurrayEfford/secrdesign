@@ -12,59 +12,59 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // hazmatcpp
-arma::mat hazmatcpp(const arma::vec par, const arma::mat& d, int detectfn);
+arma::mat hazmatcpp(const arma::vec& par, const arma::mat& d, const int& detectfn);
 RcppExport SEXP _secrdesign_hazmatcpp(SEXP parSEXP, SEXP dSEXP, SEXP detectfnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type par(parSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
-    Rcpp::traits::input_parameter< int >::type detectfn(detectfnSEXP);
+    Rcpp::traits::input_parameter< const int& >::type detectfn(detectfnSEXP);
     rcpp_result_gen = Rcpp::wrap(hazmatcpp(par, d, detectfn));
     return rcpp_result_gen;
 END_RCPP
 }
 // Lambdacpp
-Rcpp::List Lambdacpp(const int type, const arma::vec par, const arma::mat d, const int detectfn);
+Rcpp::List Lambdacpp(const int& type, const arma::vec& par, const arma::mat& d, const int& detectfn);
 RcppExport SEXP _secrdesign_Lambdacpp(SEXP typeSEXP, SEXP parSEXP, SEXP dSEXP, SEXP detectfnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int >::type type(typeSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
-    Rcpp::traits::input_parameter< const int >::type detectfn(detectfnSEXP);
+    Rcpp::traits::input_parameter< const int& >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const int& >::type detectfn(detectfnSEXP);
     rcpp_result_gen = Rcpp::wrap(Lambdacpp(type, par, d, detectfn));
     return rcpp_result_gen;
 END_RCPP
 }
 // Qpmcpp
-Rcpp::List Qpmcpp(const arma::vec par, const arma::rowvec D, const arma::mat d, const int detectfn, const int noccasions);
+Rcpp::List Qpmcpp(const arma::vec& par, const arma::rowvec& D, const arma::mat& d, const int& detectfn, const int& noccasions);
 RcppExport SEXP _secrdesign_Qpmcpp(SEXP parSEXP, SEXP DSEXP, SEXP dSEXP, SEXP detectfnSEXP, SEXP noccasionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::rowvec >::type D(DSEXP);
-    Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
-    Rcpp::traits::input_parameter< const int >::type detectfn(detectfnSEXP);
-    Rcpp::traits::input_parameter< const int >::type noccasions(noccasionsSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type D(DSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const int& >::type detectfn(detectfnSEXP);
+    Rcpp::traits::input_parameter< const int& >::type noccasions(noccasionsSEXP);
     rcpp_result_gen = Rcpp::wrap(Qpmcpp(par, D, d, detectfn, noccasions));
     return rcpp_result_gen;
 END_RCPP
 }
 // En2cpp
-Rcpp::List En2cpp(const int type, const arma::vec par, const arma::rowvec D, const arma::mat d, const int detectfn, const int noccasions);
+Rcpp::List En2cpp(const int& type, const arma::vec& par, const arma::rowvec& D, const arma::mat& d, const int& detectfn, const int& noccasions);
 RcppExport SEXP _secrdesign_En2cpp(SEXP typeSEXP, SEXP parSEXP, SEXP DSEXP, SEXP dSEXP, SEXP detectfnSEXP, SEXP noccasionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int >::type type(typeSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::rowvec >::type D(DSEXP);
-    Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
-    Rcpp::traits::input_parameter< const int >::type detectfn(detectfnSEXP);
-    Rcpp::traits::input_parameter< const int >::type noccasions(noccasionsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type D(DSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const int& >::type detectfn(detectfnSEXP);
+    Rcpp::traits::input_parameter< const int& >::type noccasions(noccasionsSEXP);
     rcpp_result_gen = Rcpp::wrap(En2cpp(type, par, D, d, detectfn, noccasions));
     return rcpp_result_gen;
 END_RCPP

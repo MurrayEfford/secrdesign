@@ -8,7 +8,10 @@
 /*==============================================================================*/
 
 // [[Rcpp::export]]
-arma::mat hazmatcpp (const arma::vec par, const arma::mat &d, int detectfn) {
+arma::mat hazmatcpp (
+        const arma::vec &par, 
+        const arma::mat &d, 
+        const int &detectfn) {
     
     arma::mat H = d;
     
@@ -28,7 +31,7 @@ arma::mat hazmatcpp (const arma::vec par, const arma::mat &d, int detectfn) {
         H = par(0) * arma::exp(-d / par(1));
     } 
     else if (detectfn == 6 || detectfn == 17) {  // HAN
-        H = par(0) * exp(-arma::square(d-par(2)) / 2 / par(1) / par(1));
+        H = par(0) * arma::exp(-arma::square(d-par(2)) / 2 / par(1) / par(1));
     } 
     else if (detectfn == 8 || detectfn == 18) {  // HCG
         for (k=0; k<kk; k++) {
@@ -49,10 +52,10 @@ arma::mat hazmatcpp (const arma::vec par, const arma::mat &d, int detectfn) {
 
 // [[Rcpp::export]]
 Rcpp::List Lambdacpp (
-        const int type, 
-        const arma::vec par, 
-        const arma::mat d, 
-        const int detectfn)
+        const int &type, 
+        const arma::vec &par, 
+        const arma::mat &d, 
+        const int &detectfn)
 {
     // traps x mask hazard matrix
     arma::mat h = hazmatcpp(par, d, detectfn);
@@ -93,11 +96,11 @@ Rcpp::List Lambdacpp (
 
 // [[Rcpp::export]]
 Rcpp::List Qpmcpp (
-        const arma::vec par,
-        const arma::rowvec D,
-        const arma::mat d, 
-        const int detectfn,
-        const int noccasions)
+        const arma::vec &par,
+        const arma::rowvec &D,
+        const arma::mat &d, 
+        const int &detectfn,
+        const int &noccasions)
 {
     double Qp, Qpm;
     double G = arma::accu(D);
@@ -127,12 +130,12 @@ Rcpp::List Qpmcpp (
 
 // [[Rcpp::export]]
 Rcpp::List En2cpp (
-        const int type, 
-        const arma::vec par,
-        const arma::rowvec D,
-        const arma::mat d, 
-        const int detectfn,
-        const int noccasions)
+        const int &type, 
+        const arma::vec &par,
+        const arma::rowvec &D,
+        const arma::mat &d, 
+        const int &detectfn,
+        const int &noccasions)
 {
     // suffix k refers to detectors, m to mask cells
     arma::mat hkm = hazmatcpp(par, d, detectfn);
