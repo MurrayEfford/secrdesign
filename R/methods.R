@@ -155,11 +155,6 @@ count.summary <- function(object, ...) {
         tpa  <- if ('Animals2' %in% rownames(object$output[[1]][[1]]$capthist)) 'Animals2' else NULL
         stats <- c(stats, move, tpa)
         counttable <- function(x) {
-            
-            ## fix in 2.5.7 2019-01-27
-            ## out <- as.data.frame(t(x$capthist[stats, 'Number', drop = FALSE]))
-            ## names(out) <- stats
-            ## replaced with :
             out <- as.data.frame(t(x$capthist[stats, 'Total', drop = FALSE]))
             names(out) <- stats
             rownames(out) <- "Number"
