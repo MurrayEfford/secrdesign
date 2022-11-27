@@ -158,6 +158,9 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
                         (length(poparg$D)<nrow(mask))) {
                     poparg$D <- D[i]
                 }
+                if (is.function(poparg$D) && packageVersion('secr') < '4.5.8') {
+                    stop("density function requires secr version >= 4.5.8")
+                }
                 if (nrepeats[i]!=1)
                     stop("nrepeats > 1 not allowed for IHP, linear")
             }
