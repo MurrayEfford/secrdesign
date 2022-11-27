@@ -1,12 +1,12 @@
 ##############################################################################
 ## package 'secrdesign'
 ## En2.R
-## 2022-10-23
+## 2022-10-23, 2022-11-19
 ##############################################################################
 
 En2 <- function (D, traps, mask, detectpar, noccasions, detectfn = 
         c('HHN', 'HHR', 'HEX','HAN','HCG', 'HN', 'HR', 'EX')) {
-    
+    if (min(dist(traps)) == 0) warning("not all detector locations unique")
     if (is.character(detectfn))
         detectfn <- match.arg(detectfn)
     detectfn <- secr:::valid.detectfn(detectfn, valid = c(0,1,2,14:18))
