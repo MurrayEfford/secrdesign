@@ -147,7 +147,6 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             if (inherits(mask, 'linearmask'))               ## force to linear...
                 poparg$model2D <- 'linear'
             if (poparg$model2D %in% c('IHP', 'linear')) {   ## linear
-
                 ## 2017-10-03 to allow user to specify core directly,
                 ## make this assignment conditional
                 if (!inherits(poparg$core, 'mask')) {
@@ -155,8 +154,10 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
                 }
 
                 ## for 'linear' case we may want a constant numeric value
-                if (!is.character(poparg$D) & (length(poparg$D)<nrow(mask)))
+                if (!is.character(poparg$D) && !is.function(poparg$D) && 
+                        (length(poparg$D)<nrow(mask))) {
                     poparg$D <- D[i]
+                }
                 if (nrepeats[i]!=1)
                     stop("nrepeats > 1 not allowed for IHP, linear")
             }
@@ -209,6 +210,12 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
                 CHi <- do.call(sim.capthist, detarg)
             if (!is.na(nrepeats[i]))
                 attr(CHi, "n.mash") <- rep(NA, nrepeats[i])
+            
+            ## 2022-11-24
+            ## remember this realisation of D from function
+            attr(CHi, 'D') <- attr(detarg$pop, 'D')
+            ##
+            
             CH[[i]] <- CHi
         }
         if (ns > 1) {
@@ -246,6 +253,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         ## D, lambda0, g0, sigma are columns in 'scenario'
 
         par <- with(scenario, {
+            if (!is.null(attr(CH, 'D'))) D <- mean(attr(CH, 'D'))
             wt <- D/sum(D)
             if (detectfn[1] %in% 14:18) {
                 list(D = sum(D) * nrepeats, lambda0 = sum(lambda0*wt), sigma = sum(sigma*wt))
@@ -256,7 +264,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         })
         ## prepare arguments for secr.fit()
         fitarg$capthist <- CH
-        
+
         if (byscenario) fitarg$ncores <- 1L
    
         if (is.null(fitarg$model))
@@ -396,8 +404,10 @@ run.scenarios <- function (
             }
             trapset <- mapply (do.call, trapset, trap.args, SIMPLIFY = FALSE)
         }
+        # browser()
         CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
                      fitarg$mask, multisession)
+       
         processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
     }
     #--------------------------------------------------------------------------
@@ -556,16 +566,16 @@ run.scenarios <- function (
         pi <- scenarios$popindex[i]
         mi <- scenarios$maskindex[i]
         if ((full.pop.args[[pi]]$model2D %in% c('IHP', 'linear'))) {  ## linear 2014-09-03
-            ## 2020-01-29
+            avD <- NA
             if (is.character(full.pop.args[[pi]]$D)) {          
                 # avD <- mean (covariates(maskset[[mi]])[,full.pop.args[[pi]]$D])
                 avD <- mean (covariates(full.pop.args[[pi]]$core)[,full.pop.args[[pi]]$D])
             }
-            else {
+            else if (!is.function(full.pop.args[[pi]]$D)) {
                 avD <- mean(full.pop.args[[pi]]$D)
             }
             scenarios[i, 'nrepeats'] <- 1   ## override
-            scenarios[i, 'D'] <- avD
+            if (!is.na(avD)) scenarios[i, 'D'] <- avD
         }
     }
 
