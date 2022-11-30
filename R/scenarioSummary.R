@@ -39,7 +39,7 @@ trapsperHR <- function(traps, r) {
 # trapsperHR (gr, circular.r(p = 0.95, detectfn = 'HEX', sigma = 20))
 
 scenarioSummary <- function (scenarios, trapset, maskset, xsigma = 4, nx = 64,   
-                             CF = 1.0, costing = FALSE, ..., ncores = NULL) {
+                             CF = 1.0, costing = FALSE, ..., ncores = 1) {
     ## mainline
     ## record start time etc.
     ## 2019-02-16 not needed ptm  <- proc.time()
