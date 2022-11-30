@@ -24,10 +24,10 @@ Enrm(D, ...)
 
 minnrRSE(D, ..., CF = 1.0, distribution = c("poisson","binomial"))
 
-Qpm(D, traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX", 
+En2(D, traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX", 
     "HAN", "HCG", "HN", "HR", "EX"))
 
-En2(D, traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX", 
+Qpm(D, traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX", 
     "HAN", "HCG", "HN", "HR", "EX"))
 
 }
@@ -59,6 +59,16 @@ Formulae for expected counts are given in \href{https://www.otago.ac.nz/density/
 
 From 2.7.0, the first argument of \code{minnrRSE} may also be the output from \code{\link{GAoptim}}.
 
+\code{En2} is defined for detectors `multi', `proximity' and `count'.
+
+\code{Qpm} returns the optimisation criteria \eqn{Q_p} and \eqn{Q_{p_m}} of Dupont et al. (2021), defined only for `proximity' and `count' detectors. The criteria are mask-dependent, and \code{En2} is generally preferred. For `proximity' and `count' detectors the following expressions give the same result:
+
+\code{En2(D, trp, msk, dp)}
+
+\code{Qpm(D, trp, msk, dp) * maskarea(msk) * D}
+
+given constant density `D', detectors `trp', mask `msk' and detection parameters `dp'.
+
 }
 
 \value{
@@ -73,9 +83,10 @@ From 2.7.0, the first argument of \code{minnrRSE} may also be the output from \c
 
 \code{minnrRSE} -- rule-of-thumb RSE(D-hat) Efford and Boulanger (2019)
 
-\code{Qpm} -- criteria of Dupont et al. (2021)
+\code{En2} -- numeric vector comprising the values E(\eqn{n}) and E(number of animals detected at 2 or more sites)
 
-\code{En2} -- numeric vector comprising the values E(\eqn{n}) and E(number of animals detected at 2 or more sites).
+\code{Qpm} -- numeric vector comprising the criteria \eqn{Q_p} and \eqn{Q_{p_m}} of Dupont et al. (2021)
+
 
 }
 
@@ -108,8 +119,6 @@ msk <- make.mask(tr, buffer = 100, type = 'trapbuffer')
 L <- Lambda(tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 nrm <- Enrm(D = 5, tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 nrm
-
-Qpm(D = 5, tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 
 En2(D = 5, tr, msk, list(lambda0 = 0.2, sigma = 20), 5)
 
