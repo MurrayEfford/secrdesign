@@ -34,7 +34,7 @@ Not all scenarios from \code{make.scenarios()} are suitable. Grouped (multi-line
 
 The approximate RSE(D-hat) is rotRSE = CF/ sqrt(min(E(n), E(r))). This assumes n is Poisson-distributed. For binomial n an ad hoc adjustment is rotRSEB = sqrt(rotRSE^2 - 1 / (D x A)) where A is the mask area.
 
-If 'ncores' is NULL then the number of cores is taken from the environment variable RCPP_PARALLEL_NUM_THREADS set by `setNumThreads`. The default, to use a single core, is usually faster.
+The default \code{ncores = 1} (new in 2.7.0) is usually faster than setting ncores>1 because of the overheads in setting up a parallel cluster.
 
 The \dots argument is for inputs to \code{\link{costing}}, including \code{unitcost} (required) and routelength (optional). 
 

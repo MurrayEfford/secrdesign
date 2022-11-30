@@ -46,9 +46,6 @@ scenarioSummary <- function (scenarios, trapset, maskset, xsigma = 4, nx = 64,
     cl   <- match.call(expand.dots = TRUE)
     starttime <- format(Sys.time(), "%H:%M:%S %d %b %Y")
     extrafields <- FALSE
-    if (is.null(ncores)) {
-        ncores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
-    }
 
     if (!all(as.character(scenarios$detectfn) %in% 
              c(as.character(c(0,1,2,14:18)), 'HN','HR','EX','HHN', 'HEX', 'HHR', 'HCG','HAN')))
@@ -274,7 +271,6 @@ scenarioSummary <- function (scenarios, trapset, maskset, xsigma = 4, nx = 64,
     ## run summaries
     tmpscenarios <- split(scenarios, scenarios$scenario)
     if (ncores > 1) {
-        ## not needed: list(...) ## ensures promises evaluated see parallel vignette
         clust <- makeCluster(ncores, methods = TRUE)
         on.exit(stopCluster(clust))
         output <- parLapply(clust, tmpscenarios, onescenario)
