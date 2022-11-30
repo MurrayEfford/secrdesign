@@ -28,8 +28,6 @@
 ## 2022-10-18 trapset components may be function; trap.args argument
 ## 2022-10-21 general tidy up
 
-# ncores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
-
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -358,16 +356,16 @@ getoutputtype <- function (output) {
 
 getoutputclass <- function (outputtype) {
     switch (outputtype,
-            secrfit = c("fittedmodels", 'secrdesign', 'list'),
-            predicted = c("estimatetables", 'secrdesign', 'list'),
-            derived = c("estimatetables", 'secrdesign', 'list'),
-            regionN = c("estimatetables", 'secrdesign', 'list'),
-            coef = c("estimatetables", 'secrdesign', 'list'),
-            user = c("estimatetables", 'secrdesign', 'list'),
-            secrsummary = c("summary", 'secrdesign', 'list'),
-            capthist = c("rawdata", 'secrdesign', 'list'),
-            selectedstatistics = c("selectedstatistics", 'secrdesign', 'list'),
-            list      ## otherwise
+        secrfit     = c("fittedmodels", 'secrdesign', 'list'),
+        predicted   = c("estimatetables", 'secrdesign', 'list'),
+        derived     = c("estimatetables", 'secrdesign', 'list'),
+        regionN     = c("estimatetables", 'secrdesign', 'list'),
+        coef        = c("estimatetables", 'secrdesign', 'list'),
+        user        = c("estimatetables", 'secrdesign', 'list'),
+        secrsummary = c("summary", 'secrdesign', 'list'),
+        capthist    = c("rawdata", 'secrdesign', 'list'),
+        selectedstatistics = c("selectedstatistics", 'secrdesign', 'list'),
+        list      ## otherwise
     )
 }
 
@@ -486,18 +484,6 @@ run.scenarios <- function (
     if (!OK)
         warning("single-catch traps violate independence assumption for nrepeats > 1")
 
-    if ('group' %in% names(scenarios)) {
-        scenarios$group <- factor(scenarios$group)
-        if (any(tabulate(scenarios$group)>1)) {
-            ## check no change of trapsindex etc. within group
-            fields <- c('trapsindex','noccasions','nrepeats','fitindex','maskindex')
-            fixed <- scenarios[,fields]
-            scens <- split(fixed, scenarios$scenario)
-            if (any(sapply(scens, function (x) nrow(unique(x))>1)))
-                stop ("Fields ", fields, " must be constant across groups")
-        }
-    }
-    
     ##---------------------------------------------
     ## allow user changes to default sim.popn arguments
     default.args <- as.list(args(sim.popn))[1:12]
@@ -517,7 +503,6 @@ run.scenarios <- function (
     det.args <- wrapifneeded(det.args, default.args)
     full.det.args <- fullargs (det.args, default.args, scenarios$detindex)
 
-    ## load detect args back into scenarios?
     ##---------------------------------------------
     ## allow user changes to default fit.function arguments
     if (fit.function == 'secr.fit') {
@@ -535,6 +520,7 @@ run.scenarios <- function (
     ## corrected 2016-09-28, 2017-05-23
     for (i in 1:length(full.fit.args))
         full.fit.args[[i]]$details$nsim <- replace(full.fit.args$details,'nsim',chatnsim)
+    
     ##--------------------------------------------
     ## construct masks as required
     if (missing(maskset)) {
@@ -563,6 +549,20 @@ run.scenarios <- function (
             stop ("maskindex does not match maskset")
     }
 
+    #--------------------------------------------
+    ## check 'group'  (moved down to follow maskindex 2022-11-30)
+    if ('group' %in% names(scenarios)) {
+        scenarios$group <- factor(scenarios$group)
+        if (any(tabulate(scenarios$group)>1)) {
+            ## check no change of trapsindex etc. within group
+            fields <- c('trapsindex','noccasions','nrepeats','fitindex','maskindex')
+            fixed <- scenarios[,fields]
+            scens <- split(fixed, scenarios$scenario)
+            if (any(sapply(scens, function (x) nrow(unique(x))>1)))
+                stop ("Fields ", fields, " must be constant across groups")
+        }
+    }
+    
     #--------------------------------------------
     ## override nrepeats and D in scenarios when IHP distribution
     for (i in 1:nrow(scenarios)) {
