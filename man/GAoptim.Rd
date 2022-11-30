@@ -70,10 +70,10 @@ The default for ngen may (or may not) be larger than is needed for routine use. 
 
 Density D may be a scalar or a vector of length equal to the number of mask cells. No value need be specified if the sole aim is to optimize trap placement, but D is required for predictions of E(\eqn{n}) and E(\eqn{r}).
 
-Pathological trap layouts (sensu Efford and Boulanger 2019) may be avoided by adding a penalty to the objective.
+Pathological detector layouts (sensu Efford and Boulanger 2019) may be avoided by adding a penalty to the objective.
 No penalty is applied by default. To apply a penalty, \code{penalty} should be a list with named components pen_wt>0 and pen_gridsigma). If a penalty is applied, the default compares the number of trap pairs with close spacing (2.5-3.5 sigma, 3.5-4.5 sigma) to the number in a compact sample from a regular grid with spacing sigma * pen_gridsigma (see internal functions \code{\link{GApenfn}} and \code{\link{compactSample}} and the vignette).  An alternative penalty function may be supplied as component `pen_fn' of \code{penalty}.
 
-The default criterion is the minimum of E(n) and E(r) as used by Durbach et al. (2021), with optional penalty term. 
+The default criterion is the minimum of E(n) and E(r) as used by Durbach et al. (2021).
 The full list of builtin possibilities is:
 
 \tabular{lll}{
@@ -143,6 +143,12 @@ Ian Durbach and Murray Efford.
 \code{\link{minnrRSE}}, 
 \code{\link{GApenfn}}, 
 \code{\link{compactSample}}
+
+}
+
+\section{Warnings}{
+
+Spatial representativeness is not considered, so designs `optimised' with \code{GAoptim} are not robust to unmodelled variation in density or detection parameters.
 
 }
 
