@@ -1,4 +1,16 @@
-Changes in version 2.7.1 (2022-12-04)
+Changes in version 2.8.0 (2023-01-03)
+
+New features or changed behaviour of old functions
+    o  run.scenarios() fit.function may be "ipsecr.fit"
+    o  run.scenarios() acquires argument 'CH.function'
+
+Other
+    o  suggests ipsecr
+    o  schematic figure in help page ?secrdesign
+    o  revised help page ?run.scenarios
+    o  run.scenarios() sets RCPP_PARALLEL_NUM_THREADS if ncores provided
+
+Changes in version 2.7.0 (2022-12-04)
 
 New features or changed behaviour of old functions
     o  GAoptim() optimization by genetic algorithm using min(n,r) criterion 

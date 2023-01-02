@@ -1,7 +1,7 @@
 ##############################################################################
 ## package 'secrdesign'
 ## utility.R
-## 2022-10-23
+## 2022-10-23, 2022-12-04
 ##############################################################################
 
 .local <- new.env()
@@ -54,7 +54,7 @@ defaultmodel <- function (CL, detectfn) {
         model <- list(beta0 = ~ 1, beta1 = ~ 1)
     else ## detectfn %in% c(14:18))
         model <- list(lambda0 = ~ 1, sigma = ~ 1)
-    if (!CL) model <- c(list(D = ~1), model)
+    if (!is.null(CL) && !CL) model <- c(list(D = ~1), model)
     model
 }
 ##############################################################################
