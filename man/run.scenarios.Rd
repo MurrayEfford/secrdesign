@@ -6,7 +6,7 @@
 
 \description{
 
-This function performs simulations to predict the precision of abundance
+This function performs simulations to predict the precision of density and other
 estimates from simple 1-session SECR designs. Scenarios are specified
 via an input dataframe that will usually be constructed with
 \code{\link{make.scenarios}}. Each scenario comprises an index to a detector layout,
