@@ -80,6 +80,9 @@ S3method (count, summary)
 S3method (predict, summary)
 S3method (coef, summary)
 
+S3method (c, estimatetables)
+S3method (rbind, estimatetables)
+
 ## DEBUGGING ONLY (cpp functions not documented)
 ## exportPattern("*cpp")
 
