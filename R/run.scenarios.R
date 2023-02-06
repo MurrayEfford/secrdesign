@@ -61,7 +61,18 @@ fullargs <- function (args, default, index) {
 }
 ###############################################################################
 
-defaultextractfn <- function(x) {
+# 2023-02-07
+designextractfn <- function(CH, ...) {
+    if (!inherits(CH, 'capthist')) stop ("designextractfn expects capthist object")
+    n <- nrow(CH)
+    r <- sum(CH) - n
+    dots <- list(...)
+    esa <- sum(pdot(traps = traps(CH), ...)) * attr(dots$X, 'area')
+    c(n = n, r = r, esa = esa, D = n/esa)
+}
+###############################################################################
+
+defaultextractfn <- function(x, ...) {
     if (inherits(x, 'try-error')) {
         ## null output: dataframe of 0 rows and 0 columns
         data.frame()
@@ -242,6 +253,11 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             attr(CHi, 'D') <- attr(detarg$pop, 'D')
             ##
             
+            ## 2023-02-06
+            ## remember detection parameters
+            attr(CHi, 'detectpar') <- detarg$detectpar
+            ## 
+            
             CH[[i]] <- CHi
         }
         if (ns > 1) {
@@ -270,7 +286,15 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
 }
 #####################
 processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscenario, ...) {
-    if (!fit) {
+    if (fit == 'design') {
+        if (nrow(scenario)>1) warning("ignoring multiple groups for 'design' option")
+        extractfn(CH, 
+            X = fitarg$mask, 
+            detectfn = scenario$detectfn[1],
+            detectpar = attr(CH, 'detectpar'),
+            noccasions = scenario$noccasions[1])
+    }
+    else if (!fit) {
         extractfn(CH, ...)
     }
     else {
@@ -391,6 +415,7 @@ getoutputtype <- function (output) {
 getoutputclass <- function (outputtype) {
     switch (outputtype,
         secrfit     = c("fittedmodels", 'secrdesign', 'list'),
+        ipsecrfit   = c("fittedmodels", 'secrdesign', 'list'),
         predicted   = c("estimatetables", 'secrdesign', 'list'),
         derived     = c("estimatetables", 'secrdesign', 'list'),
         regionN     = c("estimatetables", 'secrdesign', 'list'),
@@ -481,7 +506,10 @@ run.scenarios <- function (
     ##--------------------------------------------
     ## default extractfn
     if (is.null(extractfn)) {
-        extractfn <- defaultextractfn
+        if (fit == 'design')
+            extractfn <- designextractfn
+        else
+            extractfn <- defaultextractfn
     }
     ##--------------------------------------------
     ## preprocess inputs
