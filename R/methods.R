@@ -339,7 +339,7 @@ summary.selectedstatistics <- function (object,
             q    <- quantile(x, na.rm = T, prob = c(alpha1, 0.5, alpha3))
             rms  <- mean(x^2, na.rm = T)^0.5
             var  <- var(x, na.rm = T)
-            tmp  <- c(n, mean, sd, se, minx, maxx, lcl, ucl, q, rms)
+            tmp  <- c(n, mean, sd, se, minx, maxx, lcl, ucl, q, rms, var)
             tmp[is.nan(tmp)] <- NA
             names(tmp) <- c('n', 'mean', 'sd', 'se', 'min', 'max', 'lcl', 'ucl', q1tag,
                             'median', q3tag, 'rms', 'var')
