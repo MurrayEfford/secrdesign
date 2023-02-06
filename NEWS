@@ -1,10 +1,15 @@
-Changes in version 2.8.0 (2023-01-15)
+Changes in version 2.8.1 (2023-02-06)
+
+New features or changed behaviour of old functions
+    o  allow detectfn  'HVP'
+
+Changes in version 2.8.0 (2023-01-19)
 
 New features or changed behaviour of old functions
     o  run.scenarios() fit.function may be "ipsecr.fit"
     o  run.scenarios() acquires argument 'CH.function'
-    o  functions to combine estimatetables output from different executions 
-       of run.scenarios() (generic methods c, rbind)
+    o  functions to combine output from different executions 
+       of run.scenarios() (methods c, rbind for estimatetables, selectedstatistics)
 
 Other
     o  suggests ipsecr

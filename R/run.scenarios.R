@@ -182,7 +182,7 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             ## 'par' does not allow for varying link or any non-null model (b, T etc.)
             
 
-            if (detectfn[i] %in% 14:18) {
+            if (detectfn[i] %in% 14:19) {
                 dp <- list(lambda0 = lambda0[i], sigma = sigma[i],
                            recapfactor = recapfactor[i])
             }
@@ -281,7 +281,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         par <- with(scenario, {
             if (!is.null(attr(CH, 'D'))) D <- mean(attr(CH, 'D'))
             wt <- D/sum(D)
-            if (detectfn[1] %in% 14:18) {
+            if (detectfn[1] %in% 14:19) {
                 list(D = sum(D) * nrepeats, lambda0 = sum(lambda0*wt), sigma = sum(sigma*wt))
             }
             else {

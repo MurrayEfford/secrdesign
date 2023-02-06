@@ -205,16 +205,45 @@ Murray Efford
 }
 
 \seealso{
-  \code{\link{predict.fittedmodels}},
-  \code{\link{scenarioSummary}}, 
   \code{\link{select.stats}},
+  
   \code{\link{summary.secrdesign}},
+  
+  \code{\link{summary.estimatetables}},
+  
   \code{\link{summary.selectedstatistics}},
+  
+
+  Miscellaneous --
+  
+  \code{\link{predict.fittedmodels}},
+  
+  \code{\link{scenarioSummary}}, 
+  
   \code{\link{count.summary}},
-  \code{\link{predict.summary}},
+  
+  \code{\link{predict.summary}}
+  
+  
+  \pkg{secr} functions used internally --
+  
   \code{\link[secr]{sim.popn}},
+  
   \code{\link[secr]{sim.capthist}},
+  
   \code{\link[secr]{secr.fit}}
+  
+  
+  To combine output --
+  
+  \code{\link{rbind.estimatetables}},
+  
+  \code{\link{rbind.selectedstatistics}},
+  
+  \code{\link{c.estimatetables}},
+  
+  \code{\link{c.selectedstatistics}}
+  
 }
 
 \examples{
