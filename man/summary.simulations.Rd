@@ -61,7 +61,7 @@ header(object)
   simulations. Otherwise the header alone is returned.
   
   \code{fields} is a vector of any selection from c(`n', `mean', `sd',
-  `se', `min', `max', `lcl', `ucl', `median', `q', `rms'), or the
+  `se', `min', `max', `lcl', `ucl', `median', `q', `rms', `var'), or the
   character value `all'.
 
   Field `q' provides 1000 \code{alpha/2} and 1000[1 - \code{alpha/2}]
