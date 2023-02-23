@@ -44,7 +44,7 @@ header(object)
   \item{x}{object of class `selectedstatistics' from
     \code{run.scenarios}}
   \item{scenarios}{integer indices of scenarios to plot (all plotted if not specified)}
-  \item{statistic}{integer or character indices if the statistics in x for which
+  \item{statistic}{integer or character indices of the statistics in x for which
     histograms are requested}
   \item{refline}{logical; if TRUE a reference line is plotted at the
   true value of a parameter}
