@@ -4,3 +4,4 @@
 extraR
 vignettes
 ^Rprof.out$
+^\.github$

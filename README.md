@@ -1,3 +1,7 @@
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/MurrayEfford/secrdesign/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MurrayEfford/secrdesign/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 # secrdesign
 
 Sampling Design for Spatially Explicit Capture-Recapture
