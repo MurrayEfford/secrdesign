@@ -60,11 +60,18 @@ estimateSummary <- function (object, parameter = 'D',
         }
         x
     }
-    arr <- aperm(apply(arr, c(1,3,4,5), validate), c(2,1,3,4,5))
+    if (!all(checkfields %in% dimnames(arr)[[2]]))
+        warning("checkfields not found in object$output; check not performed")
+    else
+        arr <- aperm(apply(arr, c(1,3,4,5), validate), c(2,1,3,4,5))
     
     # subsets of data
-    parm <- arr[parameter,'estimate',,,, drop = FALSE]
-    parmse <- arr[parameter,c('estimate','SE.estimate'),,,, drop = FALSE]
+    estcol <- c('estimate','SE.estimate')
+    if (all(c('beta','SE.beta') %in% dimnames(arr)[[2]])) {
+        estcol <- c('beta','SE.beta') # switch for coef()
+    }
+    parm <- arr[parameter,estcol[1],,,, drop = FALSE]
+    parmse <- arr[parameter,estcol,,,, drop = FALSE]
     parmcl <- arr[parameter, c('lcl','ucl'),,,, drop = FALSE]
     
     se <- function (x) sd(x, na.rm = TRUE) / sum(!is.na(x))^0.5

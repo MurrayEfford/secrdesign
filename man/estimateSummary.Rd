@@ -17,7 +17,7 @@ estimateArray(object)
 
 estimateSummary(object, parameter = "D", statistics = c("n", "estimate", 
     "SE.estimate", "RB", "seRB", "RSE", "RMSE", "COV"), true,
-   validrange = c(0, Inf), checkfields = c('estimate','SE.estimate'),
+    validrange = c(0, Inf), checkfields = c('estimate','SE.estimate'),
     format = c('list', 'data.frame'))
 
 }
@@ -39,7 +39,7 @@ When 'predict(fittedmodel)' in \code{\link{run.scenarios}} generates more than
 one estimate table (i.e. when the model uses groups, mixture classes or 
 multiple sessions), the default extract function retains only the first. 
 This is often OK, but it can be frustrating if you care about 
-group-specific estimates.
+group- or session-specific estimates.
 
 The alternative is to use 'predict' as the run.scenarios extractfn, which 
 retains all estimate tables. This requires a different function for 
@@ -113,7 +113,7 @@ old <- options(digits = 3)
 
 sims <- run.scenarios(10, scen8, trapset = grid, fit = TRUE, 
     fit.args = list(model = list(D~g, g0~1, sigma~g), groups = 'group'),
-    extractfn = predict, maskset = mask, ncores = 4)
+    extractfn = predict, maskset = mask, ncores = 2)
 
 # default summary uses true = c(8,4,8,4)  (cf details)
 tab <- estimateSummary(sims, 'D',  c("n", "estimate", "RB", "seRB"))
@@ -129,7 +129,7 @@ data.frame(details, tab)
 #--------------------------------------------------------------------------
 # try with default extractfn (single table per replicate, despite groups)
 sims2 <- run.scenarios(10, scen8, trapset = grid, fit = TRUE, 
-     maskset = mask, ncores = 4)
+     maskset = mask, ncores = 2)
 
 # Fails with "Error in estimateSummary(sims2, "D") : incongruent 'true'""
 tab2 <- estimateSummary(sims2, 'D')
@@ -142,6 +142,29 @@ estimateSummary(sims2, 'D', true = c(12,12), format = 'data.frame')
 # compare
 summary(sims2)
 #--------------------------------------------------------------------------
+
+# multiple estimate tables also arise from multi-session simulations
+# argument 'true' must be specified manually
+# interpret with care: sessions are (probably) not independent
+# this example uses the previous grid and mask
+scen9 <- make.scenarios (D = 8, g0 = 0.3, sigma = 30, noccasions = 5)
+poparg <- list(nsessions = 3, details = list(lambda = 1.2))  # for sim.popn
+detarg <- list(renumber = FALSE)                             # for sim.capthist
+fitarg <- list(model = D~Session)                            # for secr.fit
+sims3 <- run.scenarios(5, scen9, trapset = grid, fit = TRUE, 
+    maskset = mask, ncores = 2, pop.args = poparg, det.args = detarg,
+    fit.args = fitarg, extractfn = predict)
+estimateSummary(sims3, parameter = 'D', format = 'data.frame', true = 8 * 1.2^(0:2))
+
+# extractfn = coef usually results in a single estimate table,
+# so the usual summary method is usually sufficent.
+# For completeness we show that estimateSummary can also be used.
+# Coefficients are often negative, so relative values may be meaningless
+sims4 <- run.scenarios(5, scen9, trapset = grid, fit = TRUE, 
+    maskset = mask, ncores = 2, pop.args = poparg, det.args = detarg,
+    fit.args = fitarg, extractfn = coef)
+estimateSummary(sims4, parameter = 'D', c("n", "estimate", "SE.estimate", "RMSE", "COV"), 
+    format = 'data.frame', true = log(8))
 
 options(old)
 
