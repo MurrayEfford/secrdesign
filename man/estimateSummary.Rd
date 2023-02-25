@@ -132,7 +132,7 @@ sims2 <- run.scenarios(10, scen8, trapset = grid, fit = TRUE,
      maskset = mask, ncores = 2)
 
 # Fails with "Error in estimateSummary(sims2, "D") : incongruent 'true'""
-tab2 <- estimateSummary(sims2, 'D')
+# tab2 <- estimateSummary(sims2, 'D')
 # OK if manually provide scenario-specific true density
 tab2 <- estimateSummary(sims2, 'D', true = c(12,12))
 
