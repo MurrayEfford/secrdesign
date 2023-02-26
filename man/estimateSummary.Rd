@@ -7,9 +7,9 @@
 \description{
 
 An alternative approach to summarising output from \code{run.scenarios}
-(cf \code{\link{summary.estimatetables}}). Especially useful when 
-\code{extractfn = predict} or \code{extractfn = coef} and all scenarios 
-have group structure.
+(cf \code{\link{summary.estimatetables}}). \code{estimateSummary} is 
+especially useful when \code{extractfn = predict} or \code{extractfn = coef},
+and all scenarios have group structure.
 
 }
 
@@ -34,7 +34,7 @@ estimateSummary(object, parameter = "D", statistics = c("true", "nvalid",
   \item{checkfields}{character choice of columns in each estimate table that 
   will be checked against validrange}
   \item{format}{character choice of output}
-  \item{cols}{indices of scenario columns included when format = "data.frame"}
+  \item{cols}{indices of scenario columns to include when format = "data.frame"}
   
 }
 
@@ -76,7 +76,7 @@ columns.
 \value{
 
 \code{estimateArray} --
-array with dimensions (Parameter, statistic, Group, Scenario, Replicate)\\
+array with dimensions (Parameter, statistic, Group, Scenario, Replicate)
 
 \code{estimateSummary} --
 
