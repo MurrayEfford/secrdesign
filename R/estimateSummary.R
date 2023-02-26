@@ -147,7 +147,7 @@ estimateSummary <- function (object, parameter = 'D',
         else {
             # groups from multi-session, etc.
             if (dim(arr)[3]>1) {
-                rows <- rep(unique(object$scenarios$scenario), each = ngrp)
+                rows <- rep(unique(object$scenarios$scenario), each = dim(arr)[3])
             }
             else  {
                 rows <- 1:nrow(out)

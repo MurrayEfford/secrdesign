@@ -142,11 +142,7 @@ sims <- run.scenarios(10, scen8, trapset = grid, fit = TRUE,
     extractfn = predict, maskset = mask)
 
 # default summary uses true = c(8,4,8,4)  (cf details)
-tab <- estimateSummary(sims, 'D',  
-    c("true", "nvalid", "EST", "RB", "seRB"))
-
-# re-format list output by scenario -- 
-# data.frame(lapply(tab,t))
+estimateSummary(sims, 'D', c("true", "nvalid", "EST", "RB", "seRB"))
 
 # format by scenario and group, and pre-pend details --
 estimateSummary(sims, 'D',  c("nvalid", "EST", "RB", "seRB"), 
@@ -167,7 +163,7 @@ estimateSummary(sims2, 'D', true = c(12,12))
 estimateSummary(sims2, 'D', true = c(12,12), format = 'data.frame', cols = 1)
 
 # compare standard summary
-summary(sims2)
+summary(sims2)$OUTPUT
 
 #--------------------------------------------------------------------------
 
@@ -180,9 +176,11 @@ scen9 <- make.scenarios (D = 8, g0 = 0.3, sigma = 30, noccasions = 5)
 poparg <- list(nsessions = 3, details = list(lambda = 1.2))  # for sim.popn
 detarg <- list(renumber = FALSE)                             # for sim.capthist
 fitarg <- list(model = D~Session)                            # for secr.fit
+
 sims3 <- run.scenarios(5, scen9, trapset = grid, fit = TRUE, 
     maskset = mask, pop.args = poparg, det.args = detarg,
     fit.args = fitarg, extractfn = predict)
+    
 estimateSummary(sims3, parameter = 'D', format = 'data.frame', 
     true = 8 * 1.2^(0:2))
 #--------------------------------------------------------------------------
@@ -195,8 +193,14 @@ estimateSummary(sims3, parameter = 'D', format = 'data.frame',
 sims4 <- run.scenarios(5, scen9, trapset = grid, fit = TRUE, 
     maskset = mask, pop.args = poparg, det.args = detarg,
     fit.args = fitarg, extractfn = coef)
+    
 estimateSummary(sims4, parameter = 'D', c("nvalid", "EST", "seEST", "RMSE", "COV"), 
-    format = 'data.frame', true = log(8))
+    format = 'data.frame', true = log(8), checkfields = 'beta', 
+    validrange = log(c(2,20)))
+
+estimateSummary(sims4, parameter = 'D.Session', c("nvalid", "EST", "seEST", 
+    "RMSE", "COV"), format = "data.frame", true = log(1.2), checkfields = "beta", 
+    validrange = log(c(0.5,2)))
 #--------------------------------------------------------------------------
 
 options(old)
