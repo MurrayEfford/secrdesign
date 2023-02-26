@@ -116,16 +116,14 @@ are not used in the fitted model.
 
 \donttest{
 
+# 2-scenario, 2-group simulation
 scen8 <- make.scenarios (D = 8, g0 = 0.3, sigma = 30, 
     noccasions = c(4,8), groups = c('F','M'))
     
-# replace density and sigma values of males to define more interesting 
-# 2-scenario, 2-group simulation
+# replace density and sigma values of males to make it interesting 
 male <- scen8$group == 'M'
 scen8$D[male] <- 4
 scen8$sigma[male] <- 40
-details <- scen8[,c(1,2,4,6:8)]
-details
 
 grid <- make.grid(8, 8, spacing = 30)
 mask <- make.mask(grid, buffer = 160, type = 'trapbuffer')
@@ -141,12 +139,12 @@ sims <- run.scenarios(10, scen8, trapset = grid, fit = TRUE,
     fit.args = list(model = list(D~g, g0~1, sigma~g), groups = 'group'),
     extractfn = predict, maskset = mask)
 
-# default summary uses true = c(8,4,8,4)  (cf details)
+# format as list, selecting statistics
+# default summary uses true = c(8,4,8,4)  
 estimateSummary(sims, 'D', c("true", "nvalid", "EST", "RB", "seRB"))
 
-# format by scenario and group, and pre-pend details --
-estimateSummary(sims, 'D',  c("nvalid", "EST", "RB", "seRB"), 
-    format = 'data.frame', cols = c(1,2,4,6:8))
+# format as data.frame by scenario and group, all statistics
+estimateSummary(sims, 'D',  format = 'data.frame')
 
 #--------------------------------------------------------------------------
 # try with default extractfn (single table per replicate, despite groups)
