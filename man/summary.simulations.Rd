@@ -86,6 +86,10 @@ header(object)
   For type = `CI' the statistics must include `estimate', `lcl' and
   `ucl' (or `beta', `lcl' and `ucl' if outputtype = `coef').
   
+  \code{\link{estimateSummary}} is a simpler approach that provides full output 
+  for models with groups or multiple sessions simulated in 
+  \code{\link{run.scenarios}} with extractfn predict or coef).
+  
 }
 
 \value{
@@ -110,6 +114,7 @@ header(object)
   \code{\link{make.array}},
   \code{\link{select.stats}}
   \code{\link{validate}}
+  \code{\link{estimateSummary}}
 
 }
 

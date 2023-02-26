@@ -7,7 +7,9 @@
 \description{
 
 An alternative approach to summarising output from \code{run.scenarios}
-(cf \code{\link{summary.estimatetables}}).
+(cf \code{\link{summary.estimatetables}}). Especially useful when 
+\code{extractfn = predict} or \code{extractfn = coef} and all scenarios 
+have group structure.
 
 }
 
@@ -15,14 +17,15 @@ An alternative approach to summarising output from \code{run.scenarios}
 
 estimateArray(object)
 
-estimateSummary(object, parameter = "D", statistics = c("n", "estimate", 
-    "SE.estimate", "RB", "seRB", "RSE", "RMSE", "COV"), true,
+estimateSummary(object, parameter = "D", statistics = c("true", "nvalid", 
+    "EST", "seEST", "RB", "seRB", "RSE", "RMSE", "rRMSE", "COV"), true,
     validrange = c(0, Inf), checkfields = c('estimate','SE.estimate'),
-    format = c('list', 'data.frame'))
+    format = c('list', 'data.frame'), cols = 1:2)
 
 }
 
 \arguments{
+
   \item{object}{secrdesign object of class "estimatetables"}
   \item{parameter}{character name of parameter (row in estimate table)}
   \item{statistics}{character choice of outputs}
@@ -31,6 +34,8 @@ estimateSummary(object, parameter = "D", statistics = c("n", "estimate",
   \item{checkfields}{character choice of columns in each estimate table that 
   will be checked against validrange}
   \item{format}{character choice of output}
+  \item{cols}{indices of scenario columns included when format = "data.frame"}
+  
 }
 
 \details{
@@ -59,8 +64,12 @@ Otherwise, true values will be taken from rows of the data frame object$scenario
 Replicates are rejected (set to NA) if any \code{checkfields} 
 falls outside \code{validrange}.
 
-Output statistics `n', `estimate', `SE.estimate', `RB', and `RSE' are means 
-across replicates.
+Output statistics `EST', `RB', and `RSE' are means 
+across replicates, and `seEST', `seRB' the corresponding standard errors.
+
+The output list may optionally be formatted as a data.frame with pre-pended 
+columns from object$scenarios. Set \code{cols} to 0 or NULL for no scenario 
+columns.
 
 }
 
@@ -71,19 +80,34 @@ array with dimensions (Parameter, statistic, Group, Scenario, Replicate)\\
 
 \code{estimateSummary} --
 
-list of matrices (group x scenario), one for each statistic
+list of matrices (group x scenario), one for each statistic:
+
+\item{true.X}{true value of parameter (X)}
+\item{nvalid}{number of valid replicates used in later summaries}
+\item{EST}{mean of parameter estimates}
+\item{seEST}{standard error of estimates (across replicates)}
+\item{RB}{relative bias}
+\item{seRB}{standard error of replicate-specific RB (across replicates)}
+\item{RSE}{relative standard error (SE.estimate/estimate)}
+\item{RMSE}{root mean squared error}
+\item{rRMSE}{RMSE/true.X}
+\item{COV}{coverage of confidence intervals (usually 95\% intervals)}
 
 }
 
 \note{
 
-These functions are experimental in version 2.8.1 and may be changed.
+These functions are experimental in version 2.8.1 and may be changed. 
+
+Results may be confusing when scenarios have group structure and groups 
+are not used in the fitted model.
 
 }
 
 \seealso{
 
 \code{\link{run.scenarios}},
+\code{\link{header}},
 \code{\link{summary.estimatetables}}
 
 }
@@ -107,64 +131,73 @@ grid <- make.grid(8, 8, spacing = 30)
 mask <- make.mask(grid, buffer = 160, type = 'trapbuffer')
 
 old <- options(digits = 3)
+setNumThreads(2)
 
 #--------------------------------------------------------------------------
 # run a few simulations
 
+# model groups
 sims <- run.scenarios(10, scen8, trapset = grid, fit = TRUE, 
     fit.args = list(model = list(D~g, g0~1, sigma~g), groups = 'group'),
-    extractfn = predict, maskset = mask, ncores = 2)
+    extractfn = predict, maskset = mask)
 
 # default summary uses true = c(8,4,8,4)  (cf details)
-tab <- estimateSummary(sims, 'D',  c("n", "estimate", "RB", "seRB"))
+tab <- estimateSummary(sims, 'D',  
+    c("true", "nvalid", "EST", "RB", "seRB"))
 
-# re-format list output by scenario --
-data.frame(lapply(tab,t))
+# re-format list output by scenario -- 
+# data.frame(lapply(tab,t))
 
 # format by scenario and group, and pre-pend details --
-tab <- estimateSummary(sims, 'D',  c("n", "estimate", "RB", "seRB"), 
-    format = 'data.frame')
-data.frame(details, tab)
+estimateSummary(sims, 'D',  c("nvalid", "EST", "RB", "seRB"), 
+    format = 'data.frame', cols = c(1,2,4,6:8))
 
 #--------------------------------------------------------------------------
 # try with default extractfn (single table per replicate, despite groups)
 sims2 <- run.scenarios(10, scen8, trapset = grid, fit = TRUE, 
-     maskset = mask, ncores = 2)
+     maskset = mask)
 
 # Fails with "Error in estimateSummary(sims2, "D") : incongruent 'true'""
-# tab2 <- estimateSummary(sims2, 'D')
+# estimateSummary(sims2, 'D')
+
 # OK if manually provide scenario-specific true density
-tab2 <- estimateSummary(sims2, 'D', true = c(12,12))
+estimateSummary(sims2, 'D', true = c(12,12))
 
 # reformat by scenario
-estimateSummary(sims2, 'D', true = c(12,12), format = 'data.frame')
+estimateSummary(sims2, 'D', true = c(12,12), format = 'data.frame', cols = 1)
 
-# compare
+# compare standard summary
 summary(sims2)
+
 #--------------------------------------------------------------------------
 
 # multiple estimate tables also arise from multi-session simulations
 # argument 'true' must be specified manually
 # interpret with care: sessions are (probably) not independent
 # this example uses the previous grid and mask
+
 scen9 <- make.scenarios (D = 8, g0 = 0.3, sigma = 30, noccasions = 5)
 poparg <- list(nsessions = 3, details = list(lambda = 1.2))  # for sim.popn
 detarg <- list(renumber = FALSE)                             # for sim.capthist
 fitarg <- list(model = D~Session)                            # for secr.fit
 sims3 <- run.scenarios(5, scen9, trapset = grid, fit = TRUE, 
-    maskset = mask, ncores = 2, pop.args = poparg, det.args = detarg,
+    maskset = mask, pop.args = poparg, det.args = detarg,
     fit.args = fitarg, extractfn = predict)
-estimateSummary(sims3, parameter = 'D', format = 'data.frame', true = 8 * 1.2^(0:2))
+estimateSummary(sims3, parameter = 'D', format = 'data.frame', 
+    true = 8 * 1.2^(0:2))
+#--------------------------------------------------------------------------
 
-# extractfn = coef usually results in a single estimate table,
-# so the usual summary method is usually sufficent.
-# For completeness we show that estimateSummary can also be used.
-# Coefficients are often negative, so relative values may be meaningless
+# extractfn = coef results in a single estimate table per replicate,
+# so the usual summary method is sufficent. For completeness we show 
+# that estimateSummary can also be used. Coefficients are often negative,
+# so relative values (e.g., RB, RSE) may be meaningless.
+
 sims4 <- run.scenarios(5, scen9, trapset = grid, fit = TRUE, 
-    maskset = mask, ncores = 2, pop.args = poparg, det.args = detarg,
+    maskset = mask, pop.args = poparg, det.args = detarg,
     fit.args = fitarg, extractfn = coef)
-estimateSummary(sims4, parameter = 'D', c("n", "estimate", "SE.estimate", "RMSE", "COV"), 
+estimateSummary(sims4, parameter = 'D', c("nvalid", "EST", "seEST", "RMSE", "COV"), 
     format = 'data.frame', true = log(8))
+#--------------------------------------------------------------------------
 
 options(old)
 
