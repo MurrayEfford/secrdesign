@@ -256,6 +256,7 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             ## 2023-02-06
             ## remember detection parameters
             attr(CHi, 'detectpar') <- detarg$detectpar
+            attr(CHi, 'detparmat') <- detarg$detparmat
             ## 
             
             CH[[i]] <- CHi
