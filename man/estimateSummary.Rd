@@ -95,6 +95,8 @@ list of matrices (group x scenario), one for each statistic:
 \item{rRMSE}{RMSE/true.X}
 \item{COV}{coverage of confidence intervals (usually 95\% intervals)}
 
+Or a data frame formed from these matrices.
+
 }
 
 \note{

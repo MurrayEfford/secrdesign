@@ -59,7 +59,6 @@ estimateSummary <- function (object, parameter = 'D',
     format = c('list', 'data.frame'), cols = NULL) {
     
     arr <- estimateArray(object)
-    
     if (missing(true)) {
         # assumes groups, if present, are used in model
         # otherwise incompatible
@@ -135,12 +134,20 @@ estimateSummary <- function (object, parameter = 'D',
         COV = COV)[statistics]
     if (names(out)[1] == 'true') names(out)[1] <- paste0("true.", parameter)
     
+    ngrp <- max(1, length(unique(object$scenarios$group)))
     if (dim(arr)[3] == 1) {
         out <- lapply(out, abind::adrop, 1)
-        if (is.null(cols)) cols <- 'scenario'
+        if (is.null(cols)) {
+            cols <- 'scenario'
+        }
     }
     else {
-        if (is.null(cols)) cols <- c('scenario', 'group')
+        if (is.null(cols)) {
+            if ('group' %in% names(object$scenarios) && ngrp > 1)
+                cols <- c('scenario', 'group')
+            else
+                cols <- 'scenario'
+        }
     }
         
     # optionally recast output list as data.frame
@@ -148,7 +155,6 @@ estimateSummary <- function (object, parameter = 'D',
     if (format == 'data.frame') {
         out  <- do.call(data.frame, lapply(out, as.numeric))
         # pre-pend columns from object$scenarios
-        ngrp <- max(1, length(unique(object$scenarios$group)))
         if (dim(arr)[3]>1 && ngrp>1) {
             # valid groups defined in scenarios df
             rows <- 1:nrow(object$scenarios)   
