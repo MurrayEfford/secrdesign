@@ -162,7 +162,7 @@ sims2 <- run.scenarios(10, scen8, trapset = grid, fit = TRUE,
 estimateSummary(sims2, 'D', true = c(12,12))
 
 # reformat by scenario
-estimateSummary(sims2, 'D', true = c(12,12), format = 'data.frame', cols = 1)
+estimateSummary(sims2, 'D', true = c(12,12), format = 'data.frame')
 
 # compare standard summary
 summary(sims2)$OUTPUT
