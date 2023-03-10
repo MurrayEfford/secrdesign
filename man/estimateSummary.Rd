@@ -82,7 +82,7 @@ array with dimensions (Parameter, statistic, Group, Scenario, Replicate)
 
 \code{estimateSummary} --
 
-list of matrices (group x scenario), one for each statistic:
+If groups present and format = "list" - a list of matrices (group x scenario), one for each statistic:
 
 \item{true.X}{true value of parameter (X)}
 \item{nvalid}{number of valid replicates used in later summaries}
@@ -93,15 +93,17 @@ list of matrices (group x scenario), one for each statistic:
 \item{RSE}{relative standard error (SE.estimate/estimate)}
 \item{RMSE}{root mean squared error}
 \item{rRMSE}{RMSE/true.X}
-\item{COV}{coverage of confidence intervals (usually 95\% intervals)}
+\item{COV}{coverage of confidence intervals (usually 95\% intervals).}
 
-Or a data frame formed from these matrices.
+If groups absent and format = "list" - a list of vectors (one element per scenario) with statistics as above.
+
+If format = "data.frame" - a data frame with rows corresponding to group x scenario (or session x scenario) combinations and columns corresponding to statistics as above.
 
 }
 
 \note{
 
-These functions are experimental in version 2.8.1 and may be changed. 
+These functions were introduced in version 2.8.1. They may change in later versions. 
 
 Results may be confusing when scenarios have group structure and groups 
 are not used in the fitted model.
