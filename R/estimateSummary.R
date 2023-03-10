@@ -2,6 +2,7 @@
 ## package 'secrdesign'
 ## estimateSummary.R
 ## 2023-02-25
+## 2023-03-10 abind::adrop when no group in any scenario
 ###############################################################################
 
 # Convert output (nested list of estimate tables) to array
@@ -55,7 +56,7 @@ estimateSummary <- function (object, parameter = 'D',
     statistics = c('true', 'nvalid', 'EST', 'seEST', 'RB', 
         'seRB', 'RSE', 'RMSE', 'rRMSE', 'COV'), true, validrange = c(0, Inf), 
     checkfields = c('estimate','SE.estimate'),
-    format = c('list', 'data.frame'), cols = 1:2) {
+    format = c('list', 'data.frame'), cols = NULL) {
     
     arr <- estimateArray(object)
     
@@ -134,6 +135,14 @@ estimateSummary <- function (object, parameter = 'D',
         COV = COV)[statistics]
     if (names(out)[1] == 'true') names(out)[1] <- paste0("true.", parameter)
     
+    if (dim(arr)[3] == 1) {
+        out <- lapply(out, abind::adrop, 1)
+        if (is.null(cols)) cols <- 'scenario'
+    }
+    else {
+        if (is.null(cols)) cols <- c('scenario', 'group')
+    }
+        
     # optionally recast output list as data.frame
     format <- match.arg(format)
     if (format == 'data.frame') {

@@ -20,7 +20,7 @@ estimateArray(object)
 estimateSummary(object, parameter = "D", statistics = c("true", "nvalid", 
     "EST", "seEST", "RB", "seRB", "RSE", "RMSE", "rRMSE", "COV"), true,
     validrange = c(0, Inf), checkfields = c('estimate','SE.estimate'),
-    format = c('list', 'data.frame'), cols = 1:2)
+    format = c('list', 'data.frame'), cols = NULL)
 
 }
 
@@ -70,6 +70,8 @@ across replicates, and `seEST', `seRB' the corresponding standard errors.
 The output list may optionally be formatted as a data.frame with pre-pended 
 columns from object$scenarios. Set \code{cols} to 0 or NULL for no scenario 
 columns.
+
+\code{cols} defaults to \code{c("scenario", "group")} if groups are present and \code{"scenario"} otherwise. 
 
 }
 
