@@ -242,6 +242,8 @@ Murray Efford
   
   \code{\link{summary.selectedstatistics}},
   
+  \code{\link{estimateSummary}}
+  
 
   Miscellaneous --
   
@@ -285,6 +287,13 @@ traps1 <- make.grid()   ## default 6 x 6 trap grid
 tmp1 <- run.scenarios(nrepl = 20, trapset = traps1, scenarios = scen1,
     fit = FALSE)
 summary(tmp1)
+
+# new summary method (secrdesign >= 2.8.1)
+# assumes fit = TRUE, extractfn = predict
+
+tmp2 <- run.scenarios(nrepl = 2, trapset = traps1, scenarios = scen1,
+    fit = TRUE, extractfn = predict)
+estimateSummary(tmp2, format = "data.frame", cols = c(1,3))
 
 \dontrun{
 
