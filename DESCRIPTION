@@ -2,7 +2,7 @@ Package: secrdesign
 Type: Package
 Title: Sampling Design for Spatially Explicit Capture-Recapture
 Version: 2.8.1
-Date: 2023-02-25
+Date: 2023-03-10
 Description: Tools for designing spatially explicit capture-recapture studies of animal populations. This is primarily a simulation manager for package 'secr'. Extensions in version 2.5.0 include costing and evaluation of detector spacing.
 Authors@R: c(person("Murray", "Efford", 
     email = "murray.efford@otago.ac.nz", 
@@ -16,6 +16,7 @@ Depends:
     R (>= 3.5.0), 
     secr (>= 4.2.0)
 Imports: 
+    abind,
     kofnGA,
     parallel, 
     sf,
