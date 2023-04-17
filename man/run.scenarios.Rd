@@ -42,6 +42,7 @@ run.scenarios(nrepl, scenarios, trapset, maskset, xsigma = 4, nx = 32,
 fit.models(rawdata, fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit"), 
     fit.args, chatnsim, extractfn = NULL, ncores = NULL, byscenario = FALSE,
     scen, repl, ...)
+
 }
 
 \arguments{
