@@ -75,3 +75,22 @@ incrementOriginCounter <- function (n) {
 }
 ##############################################################################
 
+findarg <- function (object, name, item, default) {
+    arg <- if (name %in% names(object))
+        object[[name]]
+    else
+        # look down one level in list
+        object[[item]][[name]]
+    if (is.null(arg)) default else arg
+}
+##############################################################################
+
+'outputtype<-' <- function (object, value) {
+    clss <- getoutputclass(value)
+    if (clss[1] == "list") warning("type does not correspond to known outputtype")
+    class(object) <- clss
+    object$outputtype <- value
+    object
+}
+##############################################################################
+
