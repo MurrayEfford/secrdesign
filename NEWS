@@ -1,7 +1,13 @@
-Changes in version 2.8.3 (2023-03-11)
+Changes in version 2.9.0 (2023-04-17)
 
 New features or changed behaviour of old functions
-    o  none
+    o  multi-model fits (nested fit.args for one fitindex)
+
+Other
+    o  outputtype<- in-place replacement (also reassigns class)
+    o  transformOutput() function to recast output
+    o  select.stats tweak to allow movingAverage
+    o  estimateArray() and estimateSummary() more robust
     
 Changes in version 2.8.2 (2023-03-11)
 
