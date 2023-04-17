@@ -3,7 +3,7 @@
 \alias{compactSample}
 \alias{GApenfn}
 \alias{outputtype}
-\alias{'outputtype<-'}
+\alias{outputtype<-}
 
 \title{Internal Functions}
 
@@ -29,7 +29,7 @@ GApenfn(traps, sigma)
   \item{traps}{secr trapsobject}
   \item{n}{integer number in sample (\eqn{0 < n \le ntraps)}}
   \item{sigma}{numeric sparial scale parameter}
-  \item{object}{object output from \code{\link{runscenarios}}}
+  \item{object}{object output from \code{\link{run.scenarios}}}
   \item{value}{replacement value for outputtype of object}
 }
 

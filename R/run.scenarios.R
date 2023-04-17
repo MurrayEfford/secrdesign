@@ -54,8 +54,9 @@ fullargs <- function (args, default, index) {
             if (length(args) < nind) stop("too few components in args")
             tmpargs <- vector('list', nind)
             for (i in 1:nind) {
-                if (is.character(args[[i]]))
+                if (is.character(args[[i]])) {
                     args[[i]] <- match.arg(args[[i]], default[[i]])
+                }
                 ## naked fn gives trouble here... 2014-09-03
                 tmpargs[[i]] <- replace (default, names(args[[i]]), args[[i]])
                 if (is.character(tmpargs[[i]]))
@@ -804,7 +805,6 @@ fit.models <- function (
     fit.function <- match.arg(fit.function)
     if (!inherits(rawdata, "rawdata"))
         stop ("requires rawdata output from run.scenarios()")
-
     ## optionally select which scenarios to fit
     if (missing(scen)) {
         scen <- unique(rawdata$scenarios$scenario)
@@ -830,7 +830,6 @@ fit.models <- function (
         if (nrepl<1)
             stop ("invalid repl argument")
     }
-
     CHlist <- lapply(rawdata$output[scen], '[', repl)
     scenarios <- rawdata$scenarios[rawdata$scenarios$scenario %in% scen,]
 

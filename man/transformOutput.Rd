@@ -44,11 +44,6 @@ The outputtype and class of the object are changed to match `outputtype'.
 
 \code{\link{run.scenarios}},
 \code{\link{estimateSummary}},
-\code{\link{'run.scenarios'outputtype<-'}}
-
-}
-
-\examples{
-
+\code{\link{outputtype<-}}
 
 }
