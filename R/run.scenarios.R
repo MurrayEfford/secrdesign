@@ -32,7 +32,7 @@
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
-        list(args)  ## assume single; wrap
+        list(args)  ## assume single naked list; wrap
     else
         args
 }
@@ -44,18 +44,25 @@ fullargs <- function (args, default, index) {
         full.args <- list(default)
     }
     else {
-        nind <- max(index)
-        if (length(args) < nind) stop("too few components in args")
-        tmpargs <- vector('list', nind)
-        for (i in 1:nind) {
-            if (is.character(args[[i]]))
-                args[[i]] <- match.arg(args[[i]], default[[i]])
-            ## naked fn gives trouble here... 2014-09-03
-            tmpargs[[i]] <- replace (default, names(args[[i]]), args[[i]])
-            if (is.character(tmpargs[[i]]))
-                tmpargs[[i]] <- tmpargs[[i]][1]
+        if (is.list(args[[1]][[1]])) {
+            # special case for multifit fit.arg 2023-04-14
+            full.args <- mapply(fullargs, args, index = sapply(args,length), 
+                MoreArgs = list(default = default), SIMPLIFY = FALSE)
         }
-        full.args <- tmpargs
+        else {
+            nind <- max(index)
+            if (length(args) < nind) stop("too few components in args")
+            tmpargs <- vector('list', nind)
+            for (i in 1:nind) {
+                if (is.character(args[[i]]))
+                    args[[i]] <- match.arg(args[[i]], default[[i]])
+                ## naked fn gives trouble here... 2014-09-03
+                tmpargs[[i]] <- replace (default, names(args[[i]]), args[[i]])
+                if (is.character(tmpargs[[i]]))
+                    tmpargs[[i]] <- tmpargs[[i]][1]
+            }
+            full.args <- tmpargs
+        }
     }
     full.args
 }
@@ -290,12 +297,29 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
     if (fit == 'design') {
         if (nrow(scenario)>1) warning("ignoring multiple groups for 'design' option")
         extractfn(CH, 
-            X = fitarg$mask, 
+            X = fitarg[[1]]$mask, 
             detectfn = scenario$detectfn[1],
             detectpar = attr(CH, 'detectpar'),
-            noccasions = scenario$noccasions[1])
+            noccasions = scenario$noccasions[1], ...)
     }
-    else if (!fit) {
+    else if (fit == 'multifit') {
+        fits <- lapply(fitarg, processCH, 
+            scenario = scenario, 
+            CH = CH, 
+            extractfn = identity, 
+            fit = TRUE, 
+            fitfunction = fitfunction, 
+            byscenario = byscenario)   # do not pass ...
+        if (fitfunction == 'secr.fit') {
+            fits <- secrlist(fits)
+            names(fits) <- sapply(fitarg, '[[', 'model')
+        }
+        else {
+            warning('multifit for non-secr fit returns list of fits rather than secrlist')
+        }
+        extractfn(fits, ...)
+    }
+    else if (is.logical(fit) && !fit) {
         extractfn(CH, ...)
     }
     else {
@@ -317,7 +341,6 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         fitarg$capthist <- CH
 
         if (byscenario) fitarg$ncores <- 1L
-   
         if (is.null(fitarg$model)) {
             fitarg$model <- defaultmodel(fitarg$CL, fitarg$detectfn)
         }
@@ -370,7 +393,6 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
             }
         }
         ##-------------------------------------------------------------------
-
         extractfn(fit, ...)
     }
 }
@@ -387,9 +409,11 @@ getoutputtype <- function (output) {
     outputtype <-
         if (inherits(typical, 'secr'))
             'secrfit'
-        else if (inherits(typical, 'ipsecr'))
-            'ipsecrfit'
-        else if (inherits(typical, 'summary.secr'))
+    else if (inherits(typical, 'secrlist'))
+        'multifit'
+    else if (inherits(typical, 'ipsecr'))
+        'ipsecrfit'
+    else if (inherits(typical, 'summary.secr'))
             'secrsummary'
         else if (inherits(typical, 'data.frame')) {
             if (all(c('estimate','SE.estimate','lcl','ucl') %in% names(typical)) &
@@ -425,7 +449,7 @@ getoutputclass <- function (outputtype) {
         secrsummary = c("summary", 'secrdesign', 'list'),
         capthist    = c("rawdata", 'secrdesign', 'list'),
         selectedstatistics = c("selectedstatistics", 'secrdesign', 'list'),
-        list      ## otherwise
+        "list"      ## otherwise as character 2023-04-14
     )
 }
 
@@ -455,10 +479,8 @@ run.scenarios <- function (
     #--------------------------------------------------------------------------
     onesim <- function (r, scenario) {
         ## only one mask an fitarg allowed per scenario
-        fitarg <- full.fit.args[[scenario$fitindex[1]]]
-        if (is.null(fitarg$mask)) {   ## conditional 2017-05-26
-            fitarg$mask <- maskset[[scenario$maskindex[1]]]
-        }
+        mask <- findarg(full.fit.args[[scenario$fitindex[1]]], 'mask', 1, 
+            maskset[[scenario$maskindex[1]]])
         if (is.function(trapset[[1]])) {
             # create each detector layout for this simulation
             if (length(trapset) != length(trap.args)) {
@@ -467,9 +489,10 @@ run.scenarios <- function (
             trapset <- mapply (do.call, trapset, trap.args, SIMPLIFY = FALSE)
         }
         CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
-                     fitarg$mask, multisession, CH.function)
-       
-        processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
+                     mask, multisession, CH.function)
+        processCH(scenario, CH, 
+            full.fit.args[[scenario$fitindex[1]]], 
+            extractfn, fit, fit.function, byscenario, ...)
     }
     #--------------------------------------------------------------------------
     runscenario <- function(x) {
@@ -610,10 +633,19 @@ run.scenarios <- function (
     else stop ("unrecognised fit function")
     if (missing(fit.args)) fit.args <- NULL
     fit.args <- wrapifneeded(fit.args, default.args)
+    
+    # 2023-04-13
+    if (is.list(fit.args[[1]][[1]]) && is.logical(fit) && fit) {
+        fit <- "multifit"
+    }
+    
     full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex)
     if (fit.function == "secr.fit") {
-        for (i in 1:length(full.fit.args))
-        full.fit.args[[i]]$details$nsim <- replace(full.fit.args$details,'nsim',chatnsim)
+        for (i in 1:length(full.fit.args)) {
+            if ('details' %in% names(full.fit.args[[i]]))
+                full.fit.args[[i]]$details$nsim <- replace(full.fit.args$details,'nsim',chatnsim)
+            ## stop("chatnsim not currently available for multifit models")
+        }
     }
     
     ##--------------------------------------------
