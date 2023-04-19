@@ -28,6 +28,7 @@
 ## 2022-10-18 trapset components may be function; trap.args argument
 ## 2022-10-21 general tidy up
 ## 2022-12-28 allow fit.function = "ipsecr.fit"
+## 2023-04-19 explicit fit = "multifit"
 
 ###############################################################################
 wrapifneeded <- function (args, default) {
@@ -39,15 +40,16 @@ wrapifneeded <- function (args, default) {
 ###############################################################################
 ## complete a partial argument list (arg) with default args
 ## always return a list of arg lists long enough to match max(index)
-fullargs <- function (args, default, index) {
+fullargs <- function (args, default, index, multifit) {
     if (is.null(args)) {
         full.args <- list(default)
     }
     else {
-        if (is.list(args[[1]][[1]])) {
+        if (multifit) {
             # special case for multifit fit.arg 2023-04-14
+            if (!is.list(args[[1]][[1]])) stop ("multifit expects nested list of fit.args")
             full.args <- mapply(fullargs, args, index = sapply(args,length), 
-                MoreArgs = list(default = default), SIMPLIFY = FALSE)
+                MoreArgs = list(default = default, multifit = FALSE), SIMPLIFY = FALSE)
         }
         else {
             nind <- max(index)
@@ -583,7 +585,7 @@ run.scenarios <- function (
     default.args$model2D  <- eval(default.args$model2D)[1]   ## 2014-09-03
     if (missing(pop.args)) pop.args <- NULL
     pop.args <- wrapifneeded(pop.args, default.args)
-    full.pop.args <- fullargs (pop.args, default.args, scenarios$popindex)
+    full.pop.args <- fullargs (pop.args, default.args, scenarios$popindex, FALSE)
 
     ##---------------------------------------------
     ## CAPTHIST ARGS
@@ -606,7 +608,7 @@ run.scenarios <- function (
 
     if (missing(det.args)) det.args <- NULL
     det.args <- wrapifneeded(det.args, default.args)
-    full.det.args <- fullargs (det.args, default.args, scenarios$detindex)
+    full.det.args <- fullargs (det.args, default.args, scenarios$detindex, FALSE)
 
     ##---------------------------------------------
     ## FIT ARGS
@@ -635,12 +637,7 @@ run.scenarios <- function (
     if (missing(fit.args)) fit.args <- NULL
     fit.args <- wrapifneeded(fit.args, default.args)
     
-    # 2023-04-13
-    if (is.list(fit.args[[1]][[1]]) && is.logical(fit) && fit) {
-        fit <- "multifit"
-    }
-    
-    full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex)
+    full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex, fit == "multifit")
     if (fit.function == "secr.fit") {
         for (i in 1:length(full.fit.args)) {
             if ('details' %in% names(full.fit.args[[i]]))
@@ -890,7 +887,7 @@ fit.models <- function (
         rownames(scenarios) <- 1:nrow(scenarios)
 
     }
-    full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex)
+    full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex, fit == "multifit")
 
     for (i in 1: length(full.fit.args))
         full.fit.args[[i]]$details <- as.list(replace(full.fit.args[[i]]$details,'nsim',chatnsim))

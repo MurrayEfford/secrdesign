@@ -59,8 +59,9 @@ fit.models(rawdata, fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit"),
   \item{CH.function}{character name of function to simulate capthist}
   \item{det.args}{list of named arguments to
   \code{\link[secr]{sim.capthist}} (optional)} 
-  \item{fit}{logical; if TRUE a model is fitted with \code{fit.function}, otherwise
-  data are generated but no model is fitted \cr (see also Design-only statistics in Details)}
+  \item{fit}{logical or character; if TRUE a model is fitted with \code{fit.function}, otherwise
+  data are generated but no model is fitted \cr 
+  (see also Multi-model fit and Design-only statistics in Details)}
   \item{fit.function}{character name of function to use for model fitting}
   \item{fit.args}{list of named arguments to \code{\link[secr]{secr.fit}} or \code{\link[ipsecr]{ipsecr.fit}} (optional)}
   \item{chatnsim}{integer number of simulations for overdispersion of mark-resight models}
@@ -129,6 +130,12 @@ For \code{ncores > 1} it pays to keep an eye on the processes from the
 \subsection{Alternate functions for simulation and fitting}{
 
 The default is to use functions \code{\link{sim.capthist}} and \code{\link{secr.fit}} from \pkg{secr}. Either may be substituted by the corresponding function (\code{\link[ipsecr]{simCH}} or \code{\link[ipsecr]{ipsecr.fit}}) from package \pkg{ipsecr} if that has been installed.
+
+}
+
+\subsection{Multi-model fit}{
+
+Multiple models may be fited to the same simulated data for multi-model inference. This requires both (i) `fit = "multifit"', and (ii) 'fit.args' should be a nested list (fit arguments within models within fit.index) with a separate specification for each model fit. See the vignette for examples.
 
 }
 
