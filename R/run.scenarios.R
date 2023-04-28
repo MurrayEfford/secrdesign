@@ -29,7 +29,7 @@
 ## 2022-10-21 general tidy up
 ## 2022-12-28 allow fit.function = "ipsecr.fit"
 ## 2023-04-19 explicit fit = "multifit"
-
+## 2023-04-29 maskset could be ignored in fitarg
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -482,8 +482,8 @@ run.scenarios <- function (
     #--------------------------------------------------------------------------
     onesim <- function (r, scenario) {
         ## only one mask an fitarg allowed per scenario
-        mask <- findarg(full.fit.args[[scenario$fitindex[1]]], 'mask', 1, 
-            maskset[[scenario$maskindex[1]]])
+        fitarg <- full.fit.args[[scenario$fitindex[1]]]
+        fitarg$mask <- findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
         if (is.function(trapset[[1]])) {
             # create each detector layout for this simulation
             if (length(trapset) != length(trap.args)) {
@@ -492,10 +492,8 @@ run.scenarios <- function (
             trapset <- mapply (do.call, trapset, trap.args, SIMPLIFY = FALSE)
         }
         CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
-                     mask, multisession, CH.function)
-        processCH(scenario, CH, 
-            full.fit.args[[scenario$fitindex[1]]], 
-            extractfn, fit, fit.function, byscenario, ...)
+                     fitarg$mask, multisession, CH.function)
+        processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
     }
     #--------------------------------------------------------------------------
     runscenario <- function(x) {

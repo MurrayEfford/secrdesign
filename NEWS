@@ -1,7 +1,10 @@
-Changes in version 2.9.0 (2023-04-19)
+Changes in version 2.9.0 (2023-04-29)
 
 New features or changed behaviour of old functions
     o  multi-model fits (nested fit.args for one fitindex)
+
+Bugs fixed
+    o  run.scenarios() could ignore maskset
 
 Other
     o  outputtype<- in-place replacement (also reassigns class)
