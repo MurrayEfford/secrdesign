@@ -8,13 +8,11 @@ Bugs fixed
     o  run.scenarios() failed with byscenario = TRUE
 
 Other
-    o  byscenario = TRUE uses cluster type = FORK on Unix-like machine
-
-Other
     o  outputtype<- in-place replacement (also reassigns class)
     o  transformOutput() function to recast output
     o  select.stats tweak to allow movingAverage
     o  estimateArray() and estimateSummary() more robust
+    o  byscenario = TRUE uses cluster type = FORK on Unix-like machine
     
 Changes in version 2.8.2 (2023-03-11)
 
