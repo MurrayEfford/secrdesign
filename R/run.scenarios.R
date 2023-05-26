@@ -30,6 +30,7 @@
 ## 2022-12-28 allow fit.function = "ipsecr.fit"
 ## 2023-04-19 explicit fit = "multifit"
 ## 2023-04-29 maskset could be ignored in fitarg
+## 2023-05-26 byscenario = TRUE fixed
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -497,13 +498,7 @@ run.scenarios <- function (
     }
     #--------------------------------------------------------------------------
     runscenario <- function(x) {
-        if (ncores>1 && byscenario) {
-            ## distribute replicates over cluster only if byscenario
-            out <- parallel::parLapply(clust, 1:nrepl, onesim, scenario = x)
-        }
-        else {
-            out <- lapply(1:nrepl, onesim, scenario = x)
-        }
+        out <- lapply(1:nrepl, onesim, scenario = x)
         message("Completed scenario ", x$scenario[1])
         out
     }
@@ -711,7 +706,18 @@ run.scenarios <- function (
     tmpscenarios <- split(scenarios, scenarios$scenario)
     if (ncores > 1 && byscenario) {
         list(...)    ## ensures promises evaluated see parallel vignette 2015-02-02
-        clust <- parallel::makeCluster(ncores, methods = TRUE)
+        clustertype <- if (.Platform$OS.type == "unix") "FORK" else "PSOCK"
+        clust <- parallel::makeCluster(ncores, type = clustertype, methods = TRUE)
+        if (clustertype == "PSOCK") {
+            clusterEvalQ(clust, library(secr))
+            clusterExport(clust, c(
+                "runscenario", "onesim", "full.fit.args", "findarg",
+                "maskset", "trapset", "trap.args", "full.det.args", 
+                "multisession", "CH.function", "makeCH", 
+                "processCH", "extractfn", "fit", "fit.function", 
+                "byscenario", ...
+            ), environment())
+        }
         parallel::clusterSetRNGStream(clust, seed)
         on.exit(parallel::stopCluster(clust))
         output <- parallel::parLapply(clust, tmpscenarios, runscenario)
@@ -921,7 +927,18 @@ fit.models <- function (
 
     if (ncores > 1 && byscenario) {
         list(...)    ## ensures promises evaluated see parallel vignette 2015-02-02
-        clust <- parallel::makeCluster(ncores, methods = TRUE)
+        clustertype <- if (.Platform$OS.type == "unix") "FORK" else "PSOCK"
+        clust <- parallel::makeCluster(ncores, type = clustertype, methods = TRUE)
+        if (clustertype == "PSOCK") {
+            clusterEvalQ(clust, library(secr))
+            clusterExport(clust, c(
+                "runscenario", "onesim", "full.fit.args", "findarg",
+                "maskset", "trapset", "trap.args", "full.det.args", 
+                "multisession", "CH.function", "makeCH", 
+                "processCH", "extractfn", "fit", "fit.function", 
+                "byscenario", ...
+            ), environment())
+        }
         on.exit(parallel::stopCluster(clust))
         output <- parallel::parLapply(clust, tmpscenarios, runscenario)
     }
