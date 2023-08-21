@@ -684,8 +684,13 @@ run.scenarios <- function (
             fields <- c('trapsindex','noccasions','nrepeats','fitindex','maskindex')
             fixed <- scenarios[,fields]
             scens <- split(fixed, scenarios$scenario)
-            if (any(sapply(scens, function (x) nrow(unique(x))>1)))
+            varyingfn <- function (x) apply(x, 2, function (y) length(unique(y))>1)
+            varying <- sapply(scens, varyingfn)
+            if (any(varying)) {
+                cat ("Fields varying among groups within scenario - \n")
+                print(varying)
                 stop ("Fields ", paste(fields, collapse=', '), " must be constant across groups")
+            }
         }
     }
     
