@@ -31,6 +31,7 @@
 ## 2023-04-19 explicit fit = "multifit"
 ## 2023-04-29 maskset could be ignored in fitarg
 ## 2023-05-26 byscenario = TRUE fixed
+## 2023-05-28 dynamic maskset for trapset function UNTESTED
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -484,14 +485,20 @@ run.scenarios <- function (
     onesim <- function (r, scenario) {
         ## only one mask an fitarg allowed per scenario
         fitarg <- full.fit.args[[scenario$fitindex[1]]]
-        fitarg$mask <- findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
         if (is.function(trapset[[1]])) {
             # create each detector layout for this simulation
             if (length(trapset) != length(trap.args)) {
                 stop ("trapset is list of functions, trap.args should be a list of the same length")
             }
             trapset <- mapply (do.call, trapset, trap.args, SIMPLIFY = FALSE)
+            ## allow dynamic mask
+            if (is.null(maskset)) {
+                warning ('dynamic mask under development')
+                maskset <- lapply(trapset, make.mask, buffer = xsigma * scenario$sigma[1], 
+                                  nx = nx, type = 'trapbuffer')
+            }
         }
+        fitarg$mask <- findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
         CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
                      fitarg$mask, multisession, CH.function)
         processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
@@ -678,7 +685,7 @@ run.scenarios <- function (
             fixed <- scenarios[,fields]
             scens <- split(fixed, scenarios$scenario)
             if (any(sapply(scens, function (x) nrow(unique(x))>1)))
-                stop ("Fields ", fields, " must be constant across groups")
+                stop ("Fields ", paste(fields, collapse=', '), " must be constant across groups")
         }
     }
     
