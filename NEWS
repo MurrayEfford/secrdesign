@@ -1,4 +1,4 @@
-Changes in version 2.9.0 (2023-05-26)
+Changes in version 2.9.0 (2023-08-30)
 
 New features or changed behaviour of old functions
     o  multi-model fits (nested fit.args for one fitindex)
@@ -13,6 +13,7 @@ Other
     o  select.stats tweak to allow movingAverage
     o  estimateArray() and estimateSummary() more robust
     o  byscenario = TRUE uses cluster type = FORK on Unix-like machine
+    o  tweaks to c.estimatetables and c.selectedstatistics()
     
 Changes in version 2.8.2 (2023-03-11)
 
