@@ -349,8 +349,8 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         if (is.null(fitarg$model)) {
             fitarg$model <- defaultmodel(fitarg$CL, fitarg$detectfn)
         }
-        
-        if (fitarg$start[1] == 'true') {
+
+        if (!is.null(fitarg$start) && (fitarg$start[1] == 'true')) {
             ## check to see if simple 'true' values will work
             ## requires intercept-only model for all parameters
             model <- eval(fitarg$model)
