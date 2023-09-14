@@ -1,4 +1,4 @@
-Changes in version 2.9.0 (2023-09-04)
+Changes in version 2.9.0 (2023-09-15)
 
 New features or changed behaviour of old functions
     o  multi-model fits (nested fit.args for one fitindex)
@@ -6,6 +6,7 @@ New features or changed behaviour of old functions
 Bugs fixed
     o  run.scenarios() could ignore maskset
     o  run.scenarios() failed with byscenario = TRUE
+    o  Enrm() and related functions: E(m) sometimes NA due to near-zero hazard
 
 Other
     o  outputtype<- in-place replacement (also reassigns class)
