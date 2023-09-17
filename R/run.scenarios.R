@@ -262,7 +262,7 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             
             ## 2022-11-24
             ## remember this realisation of D from function
-            attr(CHi, 'D') <- attr(detarg$pop, 'D')
+            attr(CHi, 'D') <- attr(detarg$popn, 'D')
             ##
             
             ## 2023-02-06
