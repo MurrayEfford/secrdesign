@@ -189,7 +189,9 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
                     stop("nrepeats > 1 not allowed for IHP, linear")
             }
             else {
-                poparg$core <- attr(mask, "boundingbox")
+                # if (!inherits(poparg$core, 'mask')) {    # conditional 2023-11-07
+                    poparg$core <- attr(mask, "boundingbox")
+                # }
                 poparg$D <- D[i]*nrepeats[i]  ## optionally simulate inflated density
             }
             poparg$buffer <- 0
@@ -276,7 +278,10 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
         if (ns > 1) {
             ## assume a 'group' column is present if ns>1
             names(CH) <- 1:ns
-            if (multisession) {
+            if (is.function(multisession)) {
+                CH <- multisession(CH, group)
+            }
+            else if (multisession) {
                 CH <- MS.capthist(CH)
                 if (!is.null(group)) session(CH) <- group
                 CH
@@ -376,6 +381,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
                 fitarg$details <- as.list(replace(fitarg$details, 'hessian', FALSE))
             }
         }
+        
         ##-------------------------------------------------------------------
         if (fitfunction == "secr.fit") {
             fit <- try(do.call(secr.fit, fitarg))
@@ -521,14 +527,12 @@ run.scenarios <- function (
     fit.function <- match.arg(fit.function)
     
     starttime <- format(Sys.time(), "%H:%M:%S %d %b %Y")
-    # if (is.null(ncores)) {
-    #     ncores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
-    # }
     ncores <- secr::setNumThreads(ncores)   ## 2022-12-29
     if (byscenario && (ncores > nrow(scenarios)))
         stop ("when allocating by scenario, ncores should not exceed number of scenarios")
-    if (multisession & !anyDuplicated(scenarios$scenario))
-        warning ("multisession = TRUE ignored because no scenario duplicated")
+    if (is.function(multisession) || multisession && !anyDuplicated(scenarios$scenario)) {
+        warning ("multisession ignored because no scenario duplicated")
+    }
 
     ##--------------------------------------------
     ## default extractfn
