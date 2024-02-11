@@ -80,7 +80,7 @@ c.estimatetables <- function (...) {
     scenarios <- lapply(allargs, '[[', 'scenarios')
     output    <- lapply(allargs, '[[', 'output') 
     estnames  <- lapply(allargs, function(x)  names(x$output[[1]][[1]]))
-browser()    
+
     # check scenario compatibility
     inputscen <- sapply(scenarios, nrow) 
     names1 <- names(scenarios[[1]])
