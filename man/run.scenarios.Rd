@@ -37,7 +37,8 @@ run.scenarios(nrepl, scenarios, trapset, maskset, xsigma = 4, nx = 32,
     pop.args, CH.function = c("sim.capthist", "simCH"), det.args, 
     fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit"), 
     fit.args, chatnsim, extractfn = NULL, multisession = FALSE,
-    ncores = NULL, byscenario = FALSE, seed = 123, trap.args, ...)
+    joinsessions = FALSE, ncores = NULL, byscenario = FALSE, seed = 123, 
+    trap.args, ...)
 
 fit.models(rawdata, fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit"), 
     fit.args, chatnsim, extractfn = NULL, ncores = NULL, byscenario = FALSE,
@@ -67,6 +68,7 @@ fit.models(rawdata, fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit"),
   \item{chatnsim}{integer number of simulations for overdispersion of mark-resight models}
   \item{extractfn}{function to extract a vector of statistics from secr model}
   \item{multisession}{logical; if TRUE groups are treated as additional sessions}
+  \item{joinsessions}{logical; if TRUE function \code{\link{join}} is applied to multisession capthist}
   \item{ncores}{integer number of cores for parallel processing or NULL}
   \item{byscenario}{logical; if TRUE then each scenario is sent to a different core}
   \item{seed}{integer pseudorandom number seed}

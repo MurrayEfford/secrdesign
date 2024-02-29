@@ -1,7 +1,8 @@
-Changes in version 2.9.0 (2023-09-15)
+Changes in version 2.9.0 (2024-03-01)
 
 New features or changed behaviour of old functions
     o  multi-model fits (nested fit.args for one fitindex)
+    o  run.scenarios() acquires argument 'joinsessions'
 
 Bugs fixed
     o  run.scenarios() could ignore maskset

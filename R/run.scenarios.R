@@ -32,6 +32,7 @@
 ## 2023-04-29 maskset could be ignored in fitarg
 ## 2023-05-26 byscenario = TRUE fixed
 ## 2023-05-28 dynamic maskset for trapset function UNTESTED
+## 2024-03-01 joinsessions argument
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -154,7 +155,7 @@ defaultextractfn <- function(x, ...) {
 
 #####################
 makeCH <- function (scenario, trapset, full.pop.args, full.det.args, 
-    mask, multisession, detfunction) {
+    mask, multisession, joinsessions, detfunction) {
     ns <- nrow(scenario)
     with( scenario, {
         CH <- vector(mode = 'list', ns)
@@ -256,6 +257,7 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             ## simulate detection
 
             CHi <- do.call(CHfun, detarg)
+            if (joinsessions && ms(CHi)) CHi <- join(CHi)   ## 2024-03-01
             
             #####################
             
@@ -481,6 +483,7 @@ run.scenarios <- function (
     chatnsim = 0, 
     extractfn = NULL, 
     multisession = FALSE, 
+    joinsessions = FALSE,
     ncores = NULL, 
     byscenario = FALSE, 
     seed = 123,  
@@ -506,7 +509,7 @@ run.scenarios <- function (
         }
         fitarg$mask <- findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
         CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
-                     fitarg$mask, multisession, CH.function)
+                     fitarg$mask, multisession, joinsessions, CH.function)
         processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
     }
     #--------------------------------------------------------------------------
@@ -590,7 +593,7 @@ run.scenarios <- function (
     if (missing(pop.args)) pop.args <- NULL
     pop.args <- wrapifneeded(pop.args, default.args)
     full.pop.args <- fullargs (pop.args, default.args, scenarios$popindex, FALSE)
-
+    
     ##---------------------------------------------
     ## CAPTHIST ARGS
     ## allow user changes to default sim.capthist or sim.resight arguments
@@ -729,7 +732,7 @@ run.scenarios <- function (
             clusterExport(clust, c(
                 "runscenario", "onesim", "full.fit.args", "findarg",
                 "maskset", "trapset", "trap.args", "full.det.args", 
-                "multisession", "CH.function", "makeCH", 
+                "multisession", "joinsessions", "CH.function", "makeCH", 
                 "processCH", "extractfn", "fit", "fit.function", 
                 "byscenario", ...
             ), environment())
@@ -950,7 +953,7 @@ fit.models <- function (
             clusterExport(clust, c(
                 "runscenario", "onesim", "full.fit.args", "findarg",
                 "maskset", "trapset", "trap.args", "full.det.args", 
-                "multisession", "CH.function", "makeCH", 
+                "multisession", "joinsessions", "CH.function", "makeCH", 
                 "processCH", "extractfn", "fit", "fit.function", 
                 "byscenario", ...
             ), environment())
