@@ -216,7 +216,7 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
                 dp <- list(g0 = g0[i], sigma = sigma[i],
                            recapfactor = recapfactor[i])
             }
-            if ('detectpar' %in% names(detarg)) {
+            if ('detectpar' %in% names(detarg) && !is.symbol(detarg$detectpar)) {
                 dp <- replace (dp, names(detarg$detectpar), detarg$detectpar)
             }
             
@@ -792,43 +792,49 @@ run.scenarios <- function (
     }
     ##-------------------------------------------
     ## tidy output
-    outputtype <- getoutputtype(output)
-    if (outputtype == 'selectedstatistics')
-        ## collapse replicates within a scenario into a matrix
-        output <- lapply(output, do.call, what = rbind)
-    message("Completed in ", round((proc.time() - ptm)[3]/60,3), " minutes")
-    desc <- packageDescription("secrdesign")  ## for version number
-    value <- list (
-        call      = cl,
-        version   = paste('secrdesign', desc$Version),
-        starttime = starttime,
-        proctime  = (proc.time() - ptm)[3],
-        scenarios = scenarios,
-        trapset   = trapset,
-        trap.args = trap.args,
-        maskset   = if (is.null(uts)) maskset else NULL,
-        xsigma    = xsigma,
-        nx        = nx,
-        pop.args  = pop.args,
-        CH.function = CH.function,
-        det.args  = det.args,
-        fit       = fit,
-        fit.function = fit.function,
-        fit.args  = fit.args,
-        extractfn = extractfn,
-        seed      = seed,
-        chatnsim  = chatnsim,
-        nrepl     = nrepl,
-        output    = output,
-        outputtype = outputtype
-    )
-    class(value) <- getoutputclass(outputtype)
-    if (outputtype == 'regionN')
-        attr(value, 'regionsize') <- sapply(output, function(x) attr(x[[1]], 'regionsize'))
-
-    value
+    
+    makeoutput (output, scenarios) 
+    
+    #  
+    # # ##-------------------------------------------
+    # # ## tidy output
+    # 
+    # outputtype <- getoutputtype(output)
+    # if (outputtype == 'selectedstatistics')
+    #     ## collapse replicates within a scenario into a matrix
+    #     output <- lapply(output, do.call, what = rbind)
+    # message("Completed in ", round((proc.time() - ptm)[3]/60,3), " minutes")
+    # desc <- packageDescription("secrdesign")  ## for version number
+    # value <- list (
+    #     call      = cl,
+    #     version   = paste('secrdesign', desc$Version),
+    #     starttime = starttime,
+    #     proctime  = (proc.time() - ptm)[3],
+    #     scenarios = scenarios,
+    #     trapset   = trapset,
+    #     trap.args = trap.args,
+    #     maskset   = if (is.null(uts)) maskset else NULL,
+    #     xsigma    = xsigma,
+    #     nx        = nx,
+    #     pop.args  = pop.args,
+    #     CH.function = CH.function,
+    #     det.args  = det.args,
+    #     fit       = fit,
+    #     fit.function = fit.function,
+    #     fit.args  = fit.args,
+    #     extractfn = extractfn,
+    #     seed      = seed,
+    #     chatnsim  = chatnsim,
+    #     nrepl     = nrepl,
+    #     output    = output,
+    #     outputtype = outputtype
+    # )
+    # class(value) <- getoutputclass(outputtype)
+    # if (outputtype == 'regionN')
+    #     attr(value, 'regionsize') <- sapply(output, function(x) attr(x[[1]], 'regionsize'))
+    # 
+    # value
 }
-
 
 ########################################################################################
 
@@ -1009,9 +1015,10 @@ fit.models <- function (
     else {
         output <- lapply(tmpscenarios, runscenario)
     }
-
+    
     ##-------------------------------------------
     ## tidy output
+    
     outputtype <- getoutputtype(output)
     if (outputtype == 'selectedstatistics')
         ## collapse replicates within a scenario into a matrix
