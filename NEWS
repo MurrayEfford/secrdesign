@@ -1,7 +1,14 @@
-Changes in version 2.9.1 (2024-03-02)
+Changes in version 2.9.1 (2024-03-25)
 
 New features or changed behaviour of old functions
-    o  none
+    o  run.scenarios() default extractfn keeps raw counts as attribute
+    o  run.scenarios() acquires argument 'prefix' for saving intermediate output
+
+Bugs fixed
+    o  estimateSummary() failed when some estimates NA
+
+Other
+    o  run.scenarios() tweak to allow missing detectpar in det.pars
 
 Changes in version 2.9.0 (2024-03-01)
 
