@@ -94,3 +94,11 @@ findarg <- function (object, name, item, default) {
 }
 ##############################################################################
 
+expand.arg <- function (...) {
+    inplist <- list(...)
+    inplist$KEEP.OUT.ATTRS <- FALSE
+    inplist$stringsAsFactors <- FALSE
+    comb <- do.call(expand.grid, inplist)
+    lapply(split(comb,1:nrow(comb)), as.list)
+}
+##############################################################################

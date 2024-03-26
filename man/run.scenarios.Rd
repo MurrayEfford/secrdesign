@@ -247,6 +247,9 @@ Murray Efford
 
 
 \seealso{
+
+  \code{\link{expand.arg}},
+  
   \code{\link{select.stats}},
   
   \code{\link{summary.secrdesign}},
