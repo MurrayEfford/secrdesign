@@ -3,6 +3,7 @@ Changes in version 2.9.1 (2024-03-25)
 New features or changed behaviour of old functions
     o  run.scenarios() default extractfn keeps raw counts as attribute
     o  run.scenarios() acquires argument 'prefix' for saving intermediate output
+    o  expand.arg() new utility function to generate lists of arguments
 
 Bugs fixed
     o  estimateSummary() failed when some estimates NA
