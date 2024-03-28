@@ -94,11 +94,23 @@ findarg <- function (object, name, item, default) {
 }
 ##############################################################################
 
-expand.arg <- function (...) {
+expand.arg <- function (..., sublist = list()) {
+    pushdown  <- function (lis) {
+        for (i in names(sublist)) {
+            lis[[i]] <- lis[sublist[[i]]]
+            lis[sublist[[i]]] <- NULL
+        }
+        lis
+    }
     inplist <- list(...)
     inplist$KEEP.OUT.ATTRS <- FALSE
     inplist$stringsAsFactors <- FALSE
     comb <- do.call(expand.grid, inplist)
-    lapply(split(comb,1:nrow(comb)), as.list)
+    out <- lapply(split(comb,1:nrow(comb)), as.list)
+    if (length(sublist) > 0) {
+        out <- lapply(out, pushdown)
+    }
+    attr(out, 'comb') <- comb
+    out
 }
 ##############################################################################
