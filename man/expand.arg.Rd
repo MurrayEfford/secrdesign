@@ -18,7 +18,7 @@ expand.arg(..., sublist = list())
 \arguments{
 
   \item{\dots}{named vectors of argument values}
-  \item{sublist{named list of character vectors}
+  \item{sublist}{named list of character vectors}
 
 }
 
@@ -52,6 +52,7 @@ A list of lists. A flat dataframe of combinations is returned as the attribute '
 expand.arg(detectfn = c('HN','EX'), noccasions = 5)
 
 ## detectpar sub-list
+
 expand.arg(lambda0 = c(0.1, 0.2), sigma = 20, detectfn = c('HHN','HEX'),
     sublist = list(detectpar = c('lambda0','sigma')))
 
