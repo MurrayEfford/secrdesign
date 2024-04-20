@@ -23,6 +23,12 @@ estimateArray <- function (object) {
     else {
         ngrp <- 1
         groupnames <- 1
+        nulltypical <- typical
+        nulltypical[] <- NA
+        fillnull <- function (x) {
+            lapply(x, function(y) if (nrow(y)==0) nulltypical else y)
+        }
+        object$output <- lapply(object$output, fillnull)
         npar <- unique(unlist(lapply(object$output, sapply, nrow)))
         if (length(npar)>1) stop("number of parameters varies among scenarios or replicates")
     }
