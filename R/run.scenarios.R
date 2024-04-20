@@ -93,7 +93,7 @@ defaultextractfn <- function(x, ...) {
                 c(n = 0, ndet = 0, nmov = 0, dpa = 0,
                   unmarked=0, nonID = 0, nzero = 0)
             else
-                c(n=0, ndet=0, nmov=0, dpa = NA)
+                c(n=0, ndet=0, nmov=0, dpa = NA, rse = NA, rpsv = NA)
         }
         else {
             n <- nrow(CH)
@@ -113,7 +113,7 @@ defaultextractfn <- function(x, ...) {
                   unmarked=unmarked, nonID = nonID, nzero = nzero)
             }
             else {
-                c(n=n, r=r2, nmov=nmoves, dpa = dpa, rse = 1 / sqrt(min(n,r2)))
+                c(n=n, r=r2, nmov=nmoves, dpa = dpa, rse = 1 / sqrt(min(n,r2)), rpsv = RPSV(CH, CC = TRUE))
             }
         }
     }
