@@ -6,6 +6,7 @@
 ## 2018-11-28 distribution; openCR
 ## 2019-02-15 try-error catch bad uniroot in interpRSE
 ## 2020-01-20 2.6.0 removed openCR
+## 2024-04-28 "bg" added to dotargs in plot method
 ##############################################################################
 
 interpRSE <- function (values) {
@@ -300,8 +301,8 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("RSE", "nrm"), ...
     }
 
     if (plottype == "RSE") {
-        defaultargs <- list(col = "black", lwd = 1, cex = 1, pch = 16)
-        dotsargs <- args[names(args) %in% c("col", "lwd", "lty", "cex", "pch")]
+        defaultargs <- list(col = "black", lwd = 1, cex = 1, pch = 21)
+        dotsargs <- args[names(args) %in% c("col", "lwd", "lty", "cex", "pch", "bg")]
         plotargs <- replacedefaults(defaultargs, dotsargs)
 
         plotargs$x <- R
@@ -315,7 +316,6 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("RSE", "nrm"), ...
         #     do.call(points, plotargs)
         # }
         if (!is.null(x$simRSE)) {
-            plotargs$pch <- 1
             plotargs$x <- x$simRSE$summary$R
             plotargs$y <- x$simRSE$summary$RSE.mean
             ## 2017-09-18

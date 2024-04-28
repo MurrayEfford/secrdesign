@@ -1,3 +1,15 @@
+Changes in version 2.9.2 (2024-04-29)
+
+New features or changed behaviour of old functions
+    o  none
+
+Bugs fixed
+    o  run.scenarios() with fit="multifit" failed with default (shared) mask
+
+Other
+    o  internal function dfcast accepts character detectfn
+    o  plot.optimalSpacing tweaked to allow pch other than 1
+
 Changes in version 2.9.1 (2024-04-20)
 
 New features or changed behaviour of old functions
