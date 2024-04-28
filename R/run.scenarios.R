@@ -382,7 +382,6 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
                 fitarg$details <- as.list(replace(fitarg$details, 'hessian', FALSE))
             }
         }
-        
         ##-------------------------------------------------------------------
         if (fitfunction == "secr.fit") {
             fit <- try(do.call(secr.fit, fitarg))
@@ -390,7 +389,6 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         else {
             fit <- try(do.call(ipsecr::ipsecr.fit, fitarg))
         }
-
         ##-------------------------------------------------------------------
         ## code for overdispersion adjustment of mark-resight data
         if (!ms(CH) && sighting(traps(CH)) && !inherits(fit, 'try-error')) {
@@ -507,9 +505,16 @@ run.scenarios <- function (
                                   nx = nx, type = 'trapbuffer')
             }
         }
-        fitarg$mask <- findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
+        msk <- findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
+        if (fit == "multifit") {
+            for (i in 1:length(fitarg))
+                fitarg[[i]]$mask <- findarg(fitarg[[i]], 'mask', 1, maskset[[scenario$maskindex[1]]])
+        }
+        else {
+            fitarg$mask <- msk
+        }
         CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
-                     fitarg$mask, multisession, joinsessions, CH.function)
+                     msk, multisession, joinsessions, CH.function)
         processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
     }
     #--------------------------------------------------------------------------
