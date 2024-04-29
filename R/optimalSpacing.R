@@ -265,7 +265,7 @@ optimalSpacing <- function (
 }
 ##############################################################################
 
-plot.optimalSpacing <- function (x, add = FALSE, plottype = c("RSE", "nrm"), ...) {
+plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nrm"), ...) {
     ## need to define missing cases
     args <- list(...)
     plottype <- match.arg(plottype)
@@ -300,14 +300,16 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("RSE", "nrm"), ...
         do.call(plot, plotargs)
     }
 
-    if (plottype == "RSE") {
+    if (plottype %in% c("both","RSE")) {
         defaultargs <- list(col = "black", lwd = 1, cex = 1, pch = 21)
         dotsargs <- args[names(args) %in% c("col", "lwd", "lty", "cex", "pch", "bg")]
         plotargs <- replacedefaults(defaultargs, dotsargs)
 
-        plotargs$x <- R
-        plotargs$y <- y
-        do.call(lines, plotargs)
+        if (plottype == "both") {
+            plotargs$x <- R
+            plotargs$y <- y
+            do.call(lines, plotargs)
+        }
 
         # suspend this 2018-11-30
         # if (!is.null(x$rotRSE$optimum.R)) {
