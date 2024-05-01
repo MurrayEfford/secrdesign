@@ -1,4 +1,4 @@
-Changes in version 2.9.2 (2024-04-30)
+Changes in version 2.9.2 (2024-05-01)
 
 New features or changed behaviour of old functions
     o  none
@@ -9,6 +9,7 @@ Bugs fixed
 Other
     o  internal function dfcast accepts character detectfn
     o  plot.optimalSpacing tweaked to allow pch other than 1 and new plottype option
+    o  run.scenarios() with trapset functions outputs a message as each is tested
 
 Changes in version 2.9.1 (2024-04-20)
 

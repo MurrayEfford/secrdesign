@@ -33,6 +33,7 @@
 ## 2023-05-26 byscenario = TRUE fixed
 ## 2023-05-28 dynamic maskset for trapset function UNTESTED
 ## 2024-03-01 joinsessions argument
+## 2024-05-01 is.function(trapset) messages
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -255,7 +256,6 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             
             #####################
             ## simulate detection
-           
             CHi <- do.call(CHfun, detarg)
             if (joinsessions && ms(CHi)) CHi <- join(CHi)   ## 2024-03-01
             
@@ -578,7 +578,6 @@ run.scenarios <- function (
     # not forcing match.arg for CH.function allows user function
     CH.function <- CH.function[1]
     fit.function <- match.arg(fit.function)
-    
     starttime <- format(Sys.time(), "%H:%M:%S %d %b %Y")
     ncores <- secr::setNumThreads(ncores)   ## 2022-12-29
     if (byscenario && (ncores > nrow(scenarios)))
@@ -609,16 +608,23 @@ run.scenarios <- function (
     if (is.null(names(trapset)))
         names(trapset) <- paste('traps',1:nk, sep='')
 
-    if (is.function(trapset[[1]])) {
+    if (any(sapply(trapset, is.function))) {
+        if (!all(sapply(trapset, is.function)))
+            stop ("all trapset must be a function if any is a function")
         if (missing(maskset)) 
             stop ("maskset should be provided if trapset is list of functions")
         temptrapset <- list()
         for (i in 1:length(trapset)) {
+            message ("Testing trapset function ", i, "...")
             temptrapset[[i]] <- do.call(trapset[[i]], trap.args[[i]])
         }
         dettype <- sapply(temptrapset, detector)[scenarios$trapsindex]
         sight <- sapply(temptrapset, function(x)
             if(ms(x)) sighting(x[[1]]) else  sighting(x))
+        message ("Testing complete")
+        message ("Detectors ", paste(
+            sapply(temptrapset, function(x) if(ms(x)) nrow(x[[1]]) else nrow(x)),
+            collapse = ', '))
     }
     else {
         dettype <- sapply(trapset, detector)[scenarios$trapsindex]

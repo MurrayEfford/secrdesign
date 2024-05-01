@@ -163,7 +163,7 @@ A similar effect may be achieved by providing a custom extractfn and passing arg
 
 From 2.2.0, two or more rows in \code{scenarios} may share the same scenario number. This is used to generate multiple population subclasses (e.g. sexes) differing in density and/or detection parameters. If \code{multisession = TRUE} the subclasses become separate sessions in a multi-session capthist object (this may require a custom \code{extractfn}). \code{multisession} is ignored with a warning if each scenario row has a unique number.
   
-From 2.7.0, each component of `trapset' may be a function that constructs a detector layout. This allows layouts to be constructed dynamically at the time each capthist is generated; arguments of each function are provided in the `trap.args' list. The primary purpose is to allow systematic grids, laceworks etc. to be constructed with a unique random origin for each replicate. The `maskset' argument must be provided - it should cover all potential layouts, regardless of origins.
+From 2.7.0, each component of `trapset' may be a function that constructs a detector layout. This allows layouts to be constructed dynamically at the time each capthist is generated; arguments of each function are provided in the `trap.args' list which should be of the same length as `trapset' The primary purpose is to allow systematic grids, laceworks etc. to be constructed with a unique random origin for each replicate. The `maskset' argument must be provided - it should cover all potential layouts, regardless of origins.
   
 In \code{fit.models} the arguments \code{scen} and \code{repl} may be used to select a subset of datasets for model fitting.
   
