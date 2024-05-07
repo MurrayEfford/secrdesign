@@ -1,7 +1,7 @@
-Changes in version 2.9.2 (2024-05-01)
+Changes in version 2.9.2 (2024-05-08)
 
 New features or changed behaviour of old functions
-    o  none
+    o  minsimRSE new method for optimalSpacing simulations
 
 Bugs fixed
     o  run.scenarios() with fit="multifit" failed with default (shared) mask

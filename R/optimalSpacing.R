@@ -255,7 +255,12 @@ optimalSpacing <- function (
         ## fixed 2017-08-24
         args$x <- out
         if (is.null(args$add)) args$add <- FALSE
-        if (is.null(args$plottype)) args$plottype <- "RSE"
+        if (is.null(args$plottype)) { 
+            if (is.null(out$simRSE)) 
+                args$plottype <- "nrm"
+            else 
+                args$plottype <- "RSE"
+        }
         do.call(plot, args)
         invisible(out)
     }
@@ -355,3 +360,38 @@ print.optimalSpacing <- function (x, ...) {
     attr(x,"class") <- NULL
     print(x)
 }
+
+##############################################################################
+
+minsimRSE <- function (object, ...) UseMethod("minRSE")
+minsimRSE.optimalSpacing <- function (object, cut = 0.2, plt = FALSE, 
+                                   verbose = FALSE, incr = 0.1, ...) {
+    if (is.null(object$simRSE)) stop ("requires optimalSpacing object with simulations")
+    object$simRSE$summary <- object$simRSE$summary[object$simRSE$summary$RSE.mean<10,]
+    sumy <- object$simRSE$summary   
+    ok <- sumy$RSE.mean <= min(sumy$RSE.mean)*(1+cut)
+    sumy <- sumy[ok,]
+    lm1 <- lm(RSE.mean ~ R + I(R^2), data = sumy)
+    cba <- coef(lm1)
+    R <- c(-cba[2]/2/cba[3])  # -b/2a
+    rse <- predict(lm1, newdata=data.frame(R=R))
+    newR <- seq(min(sumy$R), max(sumy$R), incr)
+    newRSE <- predict(lm1, newdata = data.frame(R = newR))
+    if (plt) {
+        object$rotRSE$values$RSE[] <- NA  # suppress ROT values for plot
+        plot(object, ...)
+        lines (newR, newRSE)
+    }
+    if (verbose) {
+        out <- list(
+            model  = lm1, 
+            fitted = data.frame(R = newR, RSE = newRSE),
+            R      = unname(R), 
+            RSE    = unname(rse))
+    }
+    else {
+        out <- c(R = unname(R), RSE = unname(rse))
+    }
+    if (plt) invisible(out) else out
+}
+##############################################################################
