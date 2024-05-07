@@ -494,10 +494,11 @@ run.scenarios <- function (
         fitarg <- full.fit.args[[scenario$fitindex[1]]]
         if (is.function(trapset[[1]])) {
             # create each detector layout for this simulation
-            if (length(trapset) != length(trap.args)) {
-                stop ("trapset is list of functions, trap.args should be a list of the same length")
+            # trapset <- mapply (do.call, trapset, trap.args, SIMPLIFY = FALSE)
+            for (i in scenario$trapsindex) {
+                # replace only within scope of this function May 2024
+                trapset[[i]] <- do.call(trapset[[i]], trap.args[[i]])
             }
-            trapset <- mapply (do.call, trapset, trap.args, SIMPLIFY = FALSE)
             ## allow dynamic mask
             if (is.null(maskset)) {
                 warning ('dynamic mask under development')
@@ -613,6 +614,9 @@ run.scenarios <- function (
             stop ("all trapset must be a function if any is a function")
         if (missing(maskset)) 
             stop ("maskset should be provided if trapset is list of functions")
+        if (length(trapset) != length(trap.args)) {
+            stop ("trapset is list of functions, trap.args should be a list of the same length")
+        }
         temptrapset <- list()
         for (i in 1:length(trapset)) {
             message ("Testing trapset function ", i, "...")
@@ -803,7 +807,6 @@ run.scenarios <- function (
     }
     ##-------------------------------------------
     ## tidy output
-    
     makeoutput (output, scenarios) 
     
 }
