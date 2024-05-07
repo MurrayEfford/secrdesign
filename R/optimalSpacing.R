@@ -279,7 +279,7 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
     }
     else {
         y <- x$rotRSE$values$RSE
-        if(all(is.na(y))) {
+        if(is.null(x$simRSE) && all(is.na(y))) {
             warning ("RSE all NA")
         }
     }
@@ -363,7 +363,7 @@ print.optimalSpacing <- function (x, ...) {
 
 ##############################################################################
 
-minsimRSE <- function (object, ...) UseMethod("minRSE")
+minsimRSE <- function (object, ...) UseMethod("minsimRSE")
 minsimRSE.optimalSpacing <- function (object, cut = 0.2, plt = FALSE, 
                                    verbose = FALSE, incr = 0.1, ...) {
     if (is.null(object$simRSE)) stop ("requires optimalSpacing object with simulations")

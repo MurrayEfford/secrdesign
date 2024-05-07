@@ -29,7 +29,7 @@ A method to obtain a unique `optimal' spacing from previously simulated scenaios
 
 \details{
 
-A quadratic is fitted to the simulated RSE (y) vs simulationR (x), including only values of x and y for which \eqn{y \le \mbox{min}(y) + \mbox{cut}}. The restriction allows the user to exclude extreme x-values for which the quadratic is a poor fit.
+A quadratic is fitted to the simulated RSE (y) vs simulationR (x), including only values of x and y for which \eqn{y \le \mbox{min}(y) \times (1+\mbox{cut})}. The restriction allows the user to exclude extreme x-values for which the quadratic is a poor fit.
 
 The optimum is the minimum of the quadratic \eqn{ax^2 + bx + c}, given by \eqn{-b/2a}.
 
@@ -63,6 +63,7 @@ grid <- make.grid(8, 8, spacing = 20, detector = 'proximity')
 # method = "none" uses the shortcut variance
 tmp <- optimalSpacing(D = 5, traps = grid, detectfn = "HHN", detectpar = 
     list(lambda0 = 1, sigma = 20), noccasions = 1, nx = 32, 
-    fit.function = "secr.fit", method = "none", simulationR = seq(1,3,0.4))
+    fit.function = "secr.fit", method = "none", simulationR = seq(1.2,2.2,0.2))
+minsimRSE(tmp, plt = TRUE)
 
 }
