@@ -279,9 +279,10 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
         }
         if (ns > 1) {
             ## assume a 'group' column is present if ns>1
-            names(CH) <- 1:ns
+            names(CH) <- 1:ns  # group?
             if (is.function(multisession)) {
-                CH <- multisession(CH, group)
+                # CH <- multisession(CH, group)   # drop group 2024-05-21
+                CH <- multisession(CH)
             }
             else if (multisession) {
                 CH <- MS.capthist(CH)
@@ -339,7 +340,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         ## 'par' does not allow for varying link or any non-null model (b, T etc.)
         ## D, lambda0, g0, sigma are columns in 'scenario'
         par <- with(scenario, {
-            if (!is.null(attr(CH, 'D'))) D <- mean(attr(CH, 'D'))
+            if (!is.null(attr(CH, 'D')) && is.numeric(attr(CH, 'D'))) D <- mean(attr(CH, 'D'))
             wt <- D/sum(D)
             if (detectfn[1] %in% 14:19) {
                 list(D = sum(D) * nrepeats, lambda0 = sum(lambda0*wt), sigma = sum(sigma*wt))
@@ -583,7 +584,7 @@ run.scenarios <- function (
     ncores <- secr::setNumThreads(ncores)   ## 2022-12-29
     if (byscenario && (ncores > nrow(scenarios)))
         stop ("when allocating by scenario, ncores should not exceed number of scenarios")
-    if (is.function(multisession) || multisession && !anyDuplicated(scenarios$scenario)) {
+    if ((is.function(multisession) || multisession) && !anyDuplicated(scenarios$scenario)) {
         warning ("multisession ignored because no scenario duplicated")
     }
 
@@ -770,6 +771,7 @@ run.scenarios <- function (
             avD <- NA
             if (is.character(full.pop.args[[pi]]$D)) {          
                 # avD <- mean (covariates(maskset[[mi]])[,full.pop.args[[pi]]$D])
+                # bug 2024-05-19 does not have core at this point if core not in poparg
                 avD <- mean (covariates(full.pop.args[[pi]]$core)[,full.pop.args[[pi]]$D])
             }
             else if (!is.function(full.pop.args[[pi]]$D)) {
