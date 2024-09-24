@@ -24,7 +24,7 @@ make.scenarios <- function (trapsindex = 1, noccasions = 3, nrepeats = 1,
     parameters <- inputs[c('D', 'g0', 'sigma', 'detectfn', 'recapfactor',
                            'popindex', 'detindex', 'fitindex')]
     ## allow uniform detectfn = 4 for simulation
-    parameters$detectfn <- secr:::valid.detectfn(parameters$detectfn, valid = c(0:19))
+    parameters$detectfn <- secr::valid.detectfn(parameters$detectfn, valid = c(0:19))
     if (!crosstraps) {
         trapmat <- matrix(nrow = max(sapply(trapping, length)), ncol = 3)
         for (i in 1:3) trapmat[,i] <- trapping[[i]]

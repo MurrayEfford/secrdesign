@@ -1,10 +1,11 @@
-Changes in version 2.9.2 (2024-05-08)
+Changes in version 2.9.2 (2024-05-24)
 
 New features or changed behaviour of old functions
     o  minsimRSE new method for optimalSpacing simulations
 
 Bugs fixed
     o  run.scenarios() with fit="multifit" failed with default (shared) mask
+    o  estimateSummary() lost scenario number in some grouped examples
 
 Other
     o  internal function dfcast accepts character detectfn
