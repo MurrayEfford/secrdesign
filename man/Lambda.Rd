@@ -74,7 +74,7 @@ given constant density `D', detectors `trp', mask `msk' and detection parameters
 \value{
 
 \code{Lambda} --
-    \link{mask} object with covariates `Lambda' (\eqn{\Lambda(x)}{\Lambda(x)}), `sumpk' and `sumq2' (intermediate values for computation of expected counts - see \url{../doc/expectedcounts.pdf})
+    \link[secr]{mask} object with covariates `Lambda' (\eqn{\Lambda(x)}{\Lambda(x)}), `sumpk' and `sumq2' (intermediate values for computation of expected counts - see \url{../doc/expectedcounts.pdf})
 %\code{Lambdak} --
 %    Vector of with single-occasion hazard at each detector integrated over \link{mask} object.
 
