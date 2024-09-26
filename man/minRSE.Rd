@@ -58,6 +58,8 @@ When \code{verbose = TRUE}, a list with components --
 
 \examples{
 
+\donttest{
+
 grid <- make.grid(8, 8, spacing = 20, detector = 'proximity')
 
 # method = "none" uses the shortcut variance
@@ -65,5 +67,7 @@ tmp <- optimalSpacing(D = 5, traps = grid, detectfn = "HHN", detectpar =
     list(lambda0 = 1, sigma = 20), noccasions = 1, nx = 32, 
     fit.function = "secr.fit", method = "none", simulationR = seq(1.2,2.2,0.2))
 minsimRSE(tmp, plt = TRUE)
+
+}
 
 }
