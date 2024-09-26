@@ -23,11 +23,11 @@ optimalSpacing (D, traps, detectpar, noccasions, nrepeats = 1,
 \arguments{
 
   \item{D}{population density animals / hectare (constant)}
-  \item{traps}{ \code{\link{traps}} object }
+  \item{traps}{ \code{\link[secr]{traps}} object }
   \item{detectpar}{named list giving a value for each parameter of detection function (sigma not needed)}
   \item{noccasions}{integer number of sampling occasions}
   \item{nrepeats}{integer number of replicate arrays (not yet used)}
-  \item{detectfn}{integer code or character string for shape of detection function -- see \link{detectfn}}
+  \item{detectfn}{integer code or character string for shape of detection function -- see \link[secr]{detectfn}}
   \item{fittedmodel}{secr fitted model (instead of preceding arguments)}
   \item{xsigma}{numeric buffer width as multiple of sigma}
   \item{R}{numeric vector of relative spacings at which to plot rule-of-thumb RSE(D-hat)}

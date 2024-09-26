@@ -14,8 +14,8 @@ the number of sampling occasions, and specified density (D) and detection
 parameters (usually \eqn{g_0} and \eqn{\sigma}).
 
 Detector layouts are provided in a separate list \code{trapset}. This
-may comprise an actual field design input with \code{\link{read.traps}} or
-`traps' objects constructed with \code{\link{make.grid}} etc., as in the
+may comprise an actual field design input with \code{\link[secr]{read.traps}} or
+`traps' objects constructed with \code{\link[secr]{make.grid}} etc., as in the
 Examples. Even a single layout must be presented as a component of a
 list (e.g., \code{list(make.grid())}).
 
@@ -68,7 +68,7 @@ fit.models(rawdata, fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit"),
   \item{chatnsim}{integer number of simulations for overdispersion of mark-resight models}
   \item{extractfn}{function to extract a vector of statistics from secr model}
   \item{multisession}{logical; if TRUE groups are treated as additional sessions}
-  \item{joinsessions}{logical; if TRUE function \code{\link{join}} is applied to multisession capthist}
+  \item{joinsessions}{logical; if TRUE function \code{\link[secr]{join}} is applied to multisession capthist}
   \item{ncores}{integer number of cores for parallel processing or NULL}
   \item{byscenario}{logical; if TRUE then each scenario is sent to a different core}
   \item{seed}{integer pseudorandom number seed}
@@ -132,7 +132,7 @@ For \code{ncores > 1} it pays to keep an eye on the processes from the
 
 \subsection{Alternate functions for simulation and fitting}{
 
-The default is to use functions \code{\link{sim.capthist}} and \code{\link{secr.fit}} from \pkg{secr}. Either may be substituted by the corresponding function (\code{\link[ipsecr]{simCH}} or \code{\link[ipsecr]{ipsecr.fit}}) from package \pkg{ipsecr} if that has been installed.
+The default is to use functions \code{\link[secr]{sim.capthist}} and \code{\link[secr]{secr.fit}} from \pkg{secr}. Either may be substituted by the corresponding function (\code{\link[ipsecr]{simCH}} or \code{\link[ipsecr]{ipsecr.fit}}) from package \pkg{ipsecr} if that has been installed.
 
 }
 
@@ -144,7 +144,7 @@ Multiple models may be fitted to the same simulated data for multi-model inferen
 
 \subsection{Design-only statistics}{
 
-Designs for distance sampling were evaluated by Fewster and Buckland (2004) by computing statistics from simulated detections without fitting a model to estimate the detection parameters. An analogous procedure for SECR is implemented by setting \code{fit = 'design'}. A new default extractfn (designextractfn) computes the effective sampling area with the \pkg{secr} function \code{\link{pdot}} and returns a vector of values -
+Designs for distance sampling were evaluated by Fewster and Buckland (2004) by computing statistics from simulated detections without fitting a model to estimate the detection parameters. An analogous procedure for SECR is implemented by setting \code{fit = 'design'}. A new default extractfn (designextractfn) computes the effective sampling area with the \pkg{secr} function \code{\link[secr]{pdot}} and returns a vector of values -
 
 \tabular{lll}{
   n   \tab \tab number of individuals detected \cr

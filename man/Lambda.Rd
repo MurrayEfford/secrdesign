@@ -33,12 +33,12 @@ Qpm(D, traps, mask, detectpar, noccasions, detectfn = c("HHN", "HHR", "HEX",
 }
 
 \arguments{
-  \item{traps}{ \code{\link{traps}} object }
-  \item{mask}{ \code{\link{mask}} object }
+  \item{traps}{ \code{\link[secr]{traps}} object }
+  \item{mask}{ \code{\link[secr]{mask}} object }
   \item{detectpar}{ a named list giving a value for each parameter of detection function }
   \item{noccasions}{integer number of sampling occasions}
   \item{detectfn}{integer code or character string for shape of detection function 
-      -- see \link{detectfn}}
+      -- see \link[secr]{detectfn}}
   \item{D}{population density animals / hectare; may be scalar or vector of length \code{nrow(mask)}}
   \item{\dots}{arguments passed to \code{Lambda}}
   \item{CF}{numeric correction factor}

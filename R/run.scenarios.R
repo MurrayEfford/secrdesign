@@ -340,6 +340,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         ## 'par' does not allow for varying link or any non-null model (b, T etc.)
         ## D, lambda0, g0, sigma are columns in 'scenario'
         par <- with(scenario, {
+            ## 2.9.2 test for numeric to avoid bad start values for D (below)
             if (!is.null(attr(CH, 'D')) && is.numeric(attr(CH, 'D'))) D <- mean(attr(CH, 'D'))
             wt <- D/sum(D)
             if (detectfn[1] %in% 14:19) {
@@ -772,6 +773,9 @@ run.scenarios <- function (
             if (is.character(full.pop.args[[pi]]$D)) {          
                 # avD <- mean (covariates(maskset[[mi]])[,full.pop.args[[pi]]$D])
                 # bug 2024-05-19 does not have core at this point if core not in poparg
+                # 2024-09-27 catch
+                if (is.null(full.pop.args[[pi]]$core) || !inherits(full.pop.args[[pi]]$core, 'mask'))
+                    stop ("For model2D = 'IHP' please specify a mask as argument 'core' in pop.args")
                 avD <- mean (covariates(full.pop.args[[pi]]$core)[,full.pop.args[[pi]]$D])
             }
             else if (!is.function(full.pop.args[[pi]]$D)) {
