@@ -775,7 +775,7 @@ run.scenarios <- function (
                 # bug 2024-05-19 does not have core at this point if core not in poparg
                 # 2024-09-27 catch
                 if (is.null(full.pop.args[[pi]]$core) || !inherits(full.pop.args[[pi]]$core, 'mask'))
-                    stop ("For model2D = 'IHP' please specify a mask as argument 'core' in pop.args")
+                    stop ("pop.args: for model2D = 'IHP' with character 'D' specify a mask as argument 'core'")
                 avD <- mean (covariates(full.pop.args[[pi]]$core)[,full.pop.args[[pi]]$D])
             }
             else if (!is.function(full.pop.args[[pi]]$D)) {
