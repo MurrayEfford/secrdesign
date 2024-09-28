@@ -34,6 +34,7 @@
 ## 2023-05-28 dynamic maskset for trapset function UNTESTED
 ## 2024-03-01 joinsessions argument
 ## 2024-05-01 is.function(trapset) messages
+## 2024-09-27 pop.args model2D requires core
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
