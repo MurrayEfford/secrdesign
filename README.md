@@ -15,6 +15,11 @@ It may be installed using
 devtools::install_github("MurrayEfford/secrdesign")
 ```
 
+Alternatively, the development version may be installed with
+```
+install.packages("secrdesign", repos = "https://MurrayEfford.r-universe.dev")
+```
+
 Compilation of C code is required.
 
 Please report bugs as Issues on this GitHub page. 
