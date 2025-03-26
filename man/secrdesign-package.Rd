@@ -74,11 +74,11 @@ Help pages are also available as \url{../doc/secrdesign-manual.pdf}.
 
 Durbach, I., Borchers, D., Sutherland, C. and Sharma, K. (2021) Fast, flexible 
 alternatives to regular grid designs for spatial capture--recapture. 
-\emph{Methods in Ecology and Evolution} \bold{12}, 298--310. DOI 10.1111/2041-210X.13517
+\emph{Methods in Ecology and Evolution} \bold{12}, 298--310. \doi{10.1111/2041-210X.13517}
 
 Efford, M. G., and Boulanger, J. (2019) Fast evaluation of study designs for 
 spatially explicit capture--recapture. 
-\emph{Methods in Ecology and Evolution}, \bold{10}, 1529--1535. DOI: 10.1111/2041-210X.13239
+\emph{Methods in Ecology and Evolution}, \bold{10}, 1529--1535. \doi{10.1111/2041-210X.13239}
 
 }
 

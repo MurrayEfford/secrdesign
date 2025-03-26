@@ -779,7 +779,7 @@ run.scenarios <- function (
                     stop ("pop.args: for model2D = 'IHP' with character 'D' specify a mask as argument 'core'")
                 avD <- mean (covariates(full.pop.args[[pi]]$core)[,full.pop.args[[pi]]$D])
             }
-            else if (!is.function(full.pop.args[[pi]]$D)) {
+            else if (is.numeric(full.pop.args[[pi]]$D)) {
                 avD <- mean(full.pop.args[[pi]]$D)
             }
             scenarios[i, 'nrepeats'] <- 1   ## override
