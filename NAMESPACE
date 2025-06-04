@@ -73,6 +73,8 @@ export (estimateSummary)
 export (transformOutput)
 
 export (minsimRSE)
+export (simOU)
+export (simOU.capthist)
 
 S3method (plot, optimalSpacing)
 S3method (print, optimalSpacing)

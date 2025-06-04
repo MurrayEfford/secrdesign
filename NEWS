@@ -1,9 +1,9 @@
-Changes in version 2.9.4 (2025-03-28)
+Changes in version 2.9.4 (2025-06-05)
 
 New features or changed behaviour of old functions
-    o  none
+    o  simOU() and simOU.capthist() for Ornstein-Uhlenbeck movement
 
-Changes in version 2.9.4 (2025-03-27)
+Changes in version 2.9.3 (2025-03-27)
 
 New features or changed behaviour of old functions
     o  none
