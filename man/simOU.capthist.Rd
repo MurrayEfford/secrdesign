@@ -41,7 +41,7 @@ simOU.capthist(traps, popn, detectpar, noccasions, epsilon,
   \item{detectpar}{list with values of detection parameters tau and sigma}
   \item{epsilon}{numeric radius within which individual detected with certainty}
   \item{keep.locs}{logical; if TRUE the movement paths are saved as an attribute}
-  \item{\dots}{other arguments passed to \code{\link{reduce.capthist}}}
+  \item{\dots}{other arguments passed to \code{\link[secr]{reduce.capthist}}}
 }
 
 \details{
@@ -63,13 +63,17 @@ simOU.capthist - single-session capthist object for \pkg{secr}
 }
 
 \seealso{
+
+\code{\link[secr]{sim.capthist}}
+
 }
 
 \examples{
 
 # one animal
 locs <- simOU(c(0,0), 20, 1, 100)
-MASS::eqscplot(locs, type = 'o', xlim=c(-2.5,2.5), ylim=c(-2.5,2.5))
+par(pty = 's')
+plot(locs, type = 'o', xlim=c(-2.5,2.5), ylim=c(-2.5,2.5))
 points(0,0, pch = 16)
 
 # simulate some capture data
