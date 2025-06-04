@@ -28,7 +28,7 @@ LinkingTo:
 Suggests: 
     secrlinear,   
     ipsecr (>= 1.4.0),
-    testthat (>= 0.11.0)
+    testthat (>= 0.11.0),
     mvtnorm
 License: GPL (>=2)
 URL: https://www.otago.ac.nz/density/, https://github.com/MurrayEfford/secrdesign/
