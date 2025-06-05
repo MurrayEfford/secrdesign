@@ -76,6 +76,8 @@ par(pty = 's')
 plot(locs, type = 'o', xlim=c(-2.5,2.5), ylim=c(-2.5,2.5))
 points(0,0, pch = 16)
 
+\donttest{
+
 # simulate some capture data
 set.seed(123)
 grid <- make.grid(8, 8, spacing = 2)
@@ -89,7 +91,9 @@ sapply(attr(ch, 'locs'), lines, col='grey')
 plot(pop, add=TRUE, pch=16, cex=0.6)
 
 # fit a model
-fit <- secr.fit(capthist = ch, buffer = 8, detectfn = 14)
+fit <- secr.fit(capthist = ch, buffer = 8, detectfn = 14, trace = FALSE)
 predict(fit)
+
+}
 
 }
