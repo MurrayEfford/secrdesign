@@ -68,6 +68,7 @@ export (Qpm)
 export (En2)
 export (expand.arg)
 
+export (countSummary)
 export (estimateArray)
 export (estimateSummary)
 export (transformOutput)
