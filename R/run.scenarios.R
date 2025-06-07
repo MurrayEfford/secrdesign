@@ -35,6 +35,7 @@
 ## 2024-03-01 joinsessions argument
 ## 2024-05-01 is.function(trapset) messages
 ## 2024-09-27 pop.args model2D requires core
+## 2025-06-07 add simOU.capthist option to args
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -475,7 +476,7 @@ run.scenarios <- function (
     xsigma = 4,
     nx = 32, 
     pop.args, 
-    CH.function = c("sim.capthist", "simCH"),
+    CH.function = c("sim.capthist", "simOU.capthist", "simCH"),
     det.args, 
     fit = FALSE, 
     fit.function = c("secr.fit", "ipsecr.fit"),

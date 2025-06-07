@@ -24,7 +24,7 @@ individual at time \eqn{t} (occasion \eqn{t}) is within distance epsilon \eqn{\e
 simOU(xy, tau, sigma, noccasions, start = NULL)
 
 simOU.capthist(traps, popn, detectpar, noccasions, epsilon, 
-    keep.locs = FALSE, ...)
+    savepopn = FALSE, savepath = FALSE, ...)
 
 }
 
@@ -40,13 +40,20 @@ simOU.capthist(traps, popn, detectpar, noccasions, epsilon,
   \item{popn}{secr popn object or a 2-column matrix of x-y coordinates of activity centres}
   \item{detectpar}{list with values of detection parameters tau and sigma}
   \item{epsilon}{numeric radius within which individual detected with certainty}
-  \item{keep.locs}{logical; if TRUE the movement paths are saved as an attribute}
+  \item{savepopn}{logical; if TRUE the population is saved as an attribute}
+  \item{savepath}{logical; if TRUE the movement paths are saved as an attribute}
   \item{\dots}{other arguments passed to \code{\link[secr]{reduce.capthist}}}
 }
 
 \details{
 
 The first location for \code{simOU} by default is drawn at random from the asymptotic distribution.
+
+If 'detectpar' does not include a component 'tau' then the value of tau will be 
+taken from detectpar$lambda0.
+
+In a final step, `simOU.capthist' uses the reduce method for capthist objects to 
+coerce the simulated capthist object to the detector type of the traps argument. 
 
 The \dots argument may be used to pass 'by = "ALL"' to reduce.capthist, 
 collapsing the binary data for a single detector on noccasions to a count. 
@@ -83,11 +90,11 @@ set.seed(123)
 grid <- make.grid(8, 8, spacing = 2)
 pop <- sim.popn(D = 1000, core = grid, buffer = 4)
 ch <- simOU.capthist(grid, pop, detectpar=list(tau = 50, sigma = 1), 
-   noccasions = 100, epsilon = 0.25, keep.locs = TRUE)
+   noccasions = 100, epsilon = 0.25, savepath = TRUE)
 
 # plot simulated capthist with overlay of movements and AC
 plot(ch, rad = 0.1, tracks = TRUE, varycol = FALSE, border = 4)
-sapply(attr(ch, 'locs'), lines, col='grey')
+sapply(attr(ch, 'path'), lines, col='grey')
 plot(pop, add=TRUE, pch=16, cex=0.6)
 
 # fit a model

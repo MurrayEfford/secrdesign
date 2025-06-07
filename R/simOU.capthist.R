@@ -21,7 +21,8 @@ simOU.capthist <- function (
         detectpar,     # list of tau/lambda0, sigma
         noccasions,    # effective "duration"
         epsilon,       # proximity threshold radius for detection
-        keep.locs = FALSE,
+        savepopn = FALSE,
+        savepath = FALSE,
         ...)
 {
     captfn <- function (xy) secr::edist(xy,traps) <= epsilon   
@@ -39,6 +40,7 @@ simOU.capthist <- function (
     traps(ch) <- traps
     # cast as required detector type
     ch <- reduce(ch, outputdetector = detector(traps)[1], dropunused = FALSE, ...)
-    if (keep.locs) attr(ch, 'locs') <- locs
+    if (savepopn) attr(ch, 'popn') <- popn
+    if (savepath) attr(ch, 'path') <- locs
     ch
 }
