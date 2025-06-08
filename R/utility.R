@@ -6,8 +6,8 @@
 ##############################################################################
 
 .local <- new.env()
-.local$packageType <- "pre-release"
-## .local$packageType <- ""
+##.local$packageType <- "pre-release"
+.local$packageType <- ""
 .local$originCounter <- 1
 
 ##############################################################################
