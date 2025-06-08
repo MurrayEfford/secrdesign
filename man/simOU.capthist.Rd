@@ -80,8 +80,8 @@ simOU.capthist - single-session capthist object for \pkg{secr}
 # one animal
 locs <- simOU(c(0,0), 20, 1, 100)
 par(pty = 's')
-plot(locs, type = 'o', xlim=c(-2.5,2.5), ylim=c(-2.5,2.5))
-points(0,0, pch = 16)
+plot(locs, type = 'o', xlim = c(-2.5,2.5), ylim = c(-2.5,2.5))
+points(0,0, pch = 16, col = 'red')
 
 \donttest{
 
@@ -94,8 +94,8 @@ ch <- simOU.capthist(grid, pop, detectpar=list(tau = 50, sigma = 1),
 
 # plot simulated capthist with overlay of movements and AC
 plot(ch, rad = 0.1, tracks = TRUE, varycol = FALSE, border = 4)
-sapply(attr(ch, 'path'), lines, col='grey')
-plot(pop, add=TRUE, pch=16, cex=0.6)
+sapply(attr(ch, 'path'), lines, col = 'grey')
+plot(pop, add = TRUE, pch = 16, cex = 0.6)
 
 # fit a model
 fit <- secr.fit(capthist = ch, buffer = 8, detectfn = 14, trace = FALSE)
