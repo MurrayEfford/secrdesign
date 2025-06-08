@@ -12,8 +12,8 @@ An alternative approach to summarising output from \code{run.scenarios}
 especially useful when \code{extractfn = predict} or \code{extractfn = coef},
 and all scenarios have group structure.
 
-\code{countSummary} summarises the raw data when a model has been fitted and 
-the counts stored as an attribute of the 'predict' output (the default extractfn). 
+\code{countSummary} summarises the raw data when the default extractfn is used 
+with a fitted model (counts are then stored as an attribute of the 'predict' output).
 The same results may be obtained by running the simulations without fitting a 
 model and using \code{summary(..., fields = c('n','mean','se','sd','min','max'))}.
 
