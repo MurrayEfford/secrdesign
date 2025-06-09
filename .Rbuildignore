@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README.md$
+extraC
 extraR
 vignettes
 ^Rprof.out$
