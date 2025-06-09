@@ -1,16 +1,17 @@
+# Do not need mvtnorm when x,y uncorrelated
+
 simOU <- function(xy, tau, sigma, noccasions, start = NULL){
     xy <- as.numeric(xy)   # dodge issue with dataframe
-    if (!requireNamespace("mvtnorm")) stop("simOU requires package mvtnorm")
-    if (is.null(start)) {
-        start <- mvtnorm::rmvnorm(1, mean = xy, sigma = sigma^2*diag(2))
-    }
+    if (is.null(start)) start <- rnorm(2, mean = xy, sd = sigma)
     beta <- 1/tau
     out <- matrix(0, nrow = noccasions, ncol = 2)
     out[1, ] <- start
     for (i in 2:noccasions){
-        out[i, ] <- mvtnorm::rmvnorm(1, 
+        out[i, ] <- rnorm(
+            2, 
             mean = (1 - exp(-beta)) * xy + exp(-beta) * out[i - 1, ],
-            sigma = sigma^2 * (1 - exp(-2*beta)) * diag(2))
+            sd = sigma * sqrt((1 - exp(-2*beta)))
+        )
     }
     out
 }
@@ -18,18 +19,16 @@ simOU <- function(xy, tau, sigma, noccasions, start = NULL){
 simOU.capthist <- function (
         traps,
         popn,
-        detectpar,     # list of tau/lambda0, sigma
+        detectpar,     # list of epsilon, sigma, tau
         noccasions,    # effective "duration"
-        epsilon,       # proximity threshold radius for detection
+        # epsilon,       # proximity threshold radius for detection
         savepopn = FALSE,
         savepath = FALSE,
         ...)
 {
-    captfn <- function (xy) secr::edist(xy,traps) <= epsilon   
+    captfn <- function (xy) secr::edist(xy,traps) <= detectpar$epsilon   
     N <- nrow(popn)
-    tau <- detectpar$tau
-    if (is.null(tau)) tau <- detectpar$lambda0
-    locs <- apply(popn, 1, simOU, tau, detectpar$sigma, noccasions, simplify = FALSE)
+    locs <- apply(popn, 1, simOU, detectpar$tau, detectpar$sigma, noccasions, simplify = FALSE)
     capt <- lapply(locs, captfn)
     capt <- do.call(rbind, capt)  
     ch <- array(capt, dim = c(noccasions, N, ncol(capt)), 

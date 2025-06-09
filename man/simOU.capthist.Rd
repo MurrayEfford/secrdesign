@@ -23,7 +23,7 @@ individual at time \eqn{t} (occasion \eqn{t}) is within distance epsilon \eqn{\e
 
 simOU(xy, tau, sigma, noccasions, start = NULL)
 
-simOU.capthist(traps, popn, detectpar, noccasions, epsilon, 
+simOU.capthist(traps, popn, detectpar, noccasions,
     savepopn = FALSE, savepath = FALSE, ...)
 
 }
@@ -38,8 +38,7 @@ simOU.capthist(traps, popn, detectpar, noccasions, epsilon,
 
   \item{traps}{secr traps object}
   \item{popn}{secr popn object or a 2-column matrix of x-y coordinates of activity centres}
-  \item{detectpar}{list with values of detection parameters tau and sigma}
-  \item{epsilon}{numeric radius within which individual detected with certainty}
+  \item{detectpar}{list with values of detection parameters epsilon, sigma, and tau}
   \item{savepopn}{logical; if TRUE the population is saved as an attribute}
   \item{savepath}{logical; if TRUE the movement paths are saved as an attribute}
   \item{\dots}{other arguments passed to \code{\link[secr]{reduce.capthist}}}
@@ -49,9 +48,13 @@ simOU.capthist(traps, popn, detectpar, noccasions, epsilon,
 
 The first location for \code{simOU} by default is drawn at random from the asymptotic distribution.
 
-If 'detectpar' does not include a component 'tau' then the value of tau will be 
-taken from detectpar$lambda0.
+The detection parameters are:
 
+\tabular{ll}{
+epsilon \tab radius within which individual detected with certainty \cr
+sigma \tab spatial scale \cr
+tau \tab serial correlation parameter 1/beta \cr
+}
 In a final step, `simOU.capthist' uses the reduce method for capthist objects to 
 coerce the simulated capthist object to the detector type of the traps argument. 
 
