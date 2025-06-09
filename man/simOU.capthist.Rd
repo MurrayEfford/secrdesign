@@ -92,8 +92,8 @@ points(0,0, pch = 16, col = 'red')
 set.seed(123)
 grid <- make.grid(8, 8, spacing = 2)
 pop <- sim.popn(D = 1000, core = grid, buffer = 4)
-ch <- simOU.capthist(grid, pop, detectpar=list(tau = 50, sigma = 1), 
-   noccasions = 100, epsilon = 0.25, savepath = TRUE)
+ch <- simOU.capthist(grid, pop, detectpar=list(tau = 50, sigma = 1, epsilon = 0.25), 
+   noccasions = 100, savepath = TRUE)
 
 # plot simulated capthist with overlay of movements and AC
 plot(ch, rad = 0.1, tracks = TRUE, varycol = FALSE, border = 4)
