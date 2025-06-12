@@ -64,11 +64,25 @@ simOU.capthist <- function (
         popn,
         detectpar,     # list of epsilon, sigma, tau
         noccasions,    # effective "duration"
-        # epsilon,       # proximity threshold radius for detection
+        seed = NULL,
         savepopn = FALSE,
         savepath = FALSE,
         ...)
 {
+    ##################
+    ## set random seed
+    if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
+        runif(1)
+    if (is.null(seed))
+        RNGstate <- get(".Random.seed", envir = .GlobalEnv)
+    else {
+        R.seed <- get(".Random.seed", envir = .GlobalEnv)
+        set.seed(seed)
+        RNGstate <- structure(seed, kind = as.list(RNGkind()))
+        on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
+    }
+    ##################
+    
     captfn <- function (xy) secr::edist(xy,traps) <= detectpar$epsilon   
     N <- nrow(popn)
     locs <- apply(popn, 1, simOU, detectpar$tau, detectpar$sigma, noccasions, simplify = FALSE)
@@ -82,6 +96,8 @@ simOU.capthist <- function (
     traps(ch) <- traps
     # cast as required detector type
     ch <- reduce(ch, outputdetector = detector(traps)[1], dropunused = FALSE, ...)
+    attr(ch, 'seed')      <- RNGstate      ## save random seed
+    attr(ch, 'detectpar') <- detectpar
     if (savepopn) attr(ch, 'popn') <- popn
     if (savepath) attr(ch, 'path') <- locs
     ch

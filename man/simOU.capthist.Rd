@@ -23,7 +23,7 @@ individual at time \eqn{t} (occasion \eqn{t}) is within distance epsilon \eqn{\e
 
 simOU(xy, tau, sigma, noccasions, start = NULL)
 
-simOU.capthist(traps, popn, detectpar, noccasions,
+simOU.capthist(traps, popn, detectpar, noccasions, seed = NULL,
     savepopn = FALSE, savepath = FALSE, ...)
 
 }
@@ -31,7 +31,7 @@ simOU.capthist(traps, popn, detectpar, noccasions,
 \arguments{
 
   \item{xy}{numeric vector of x,y coordinates for one animal}
-  \item{tau}{numeric parameter of serial correlation = \eqn{1 \ \beta}}
+  \item{tau}{numeric parameter of serial correlation = \eqn{1 / \beta}}
   \item{sigma}{numeric spatial scale parameter}
   \item{noccasions}{integer number of time steps}
   \item{start}{numeric vector of x,y coordinates for initial location (optional)}
@@ -39,6 +39,7 @@ simOU.capthist(traps, popn, detectpar, noccasions,
   \item{traps}{secr traps object}
   \item{popn}{secr popn object or a 2-column matrix of x-y coordinates of activity centres}
   \item{detectpar}{list with values of detection parameters epsilon, sigma, and tau}
+  \item{seed}{either NULL or an integer that will be used in a call to \code{set.seed}}
   \item{savepopn}{logical; if TRUE the population is saved as an attribute}
   \item{savepath}{logical; if TRUE the movement paths are saved as an attribute}
   \item{\dots}{other arguments passed to \code{\link[secr]{reduce.capthist}}}
@@ -58,9 +59,11 @@ tau \tab serial correlation parameter 1/beta \cr
 In a final step, `simOU.capthist' uses the reduce method for capthist objects to 
 coerce the simulated capthist object to the detector type of the traps argument. 
 
-The \dots argument may be used to pass 'by = "ALL"' to reduce.capthist, 
-collapsing the binary data for a single detector on noccasions to a count. 
-This requires that the input traps object has detector type 'count'.
+The \dots argument may be used to pass the 'by' argument to reduce.capthist. For
+example, 'by = "ALL"' collapses the initially binary data for a single detector 
+on noccasions to a single integer. Alternatively, 'by = 10' collapses the 
+original occasions in groups of 10. Data will be lost unless the input traps 
+object has detector type 'count'.
 
 }
 
