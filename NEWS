@@ -1,9 +1,9 @@
-Changes in version 2.10.0 (2025-06-09)
+Changes in version 2.10.0 (2025-06-12)
 
 New features or changed behaviour of old functions
     o  simOU() and simOU.capthist() for Ornstein-Uhlenbeck movement
     o  countSummary() new function
-    o  make.scenarios() allows any detectfn parameters
+    o  make.scenarios() allows diverse detectfn parameters
 
 Changes in version 2.9.3 (2025-03-27)
 
