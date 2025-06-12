@@ -52,7 +52,7 @@ The detection parameters are:
 
 \tabular{ll}{
 epsilon \tab radius within which individual detected with certainty \cr
-sigma \tab spatial scale \cr
+sigma \tab spatial scale of asymptotic bivariate normal\cr
 tau \tab serial correlation parameter 1/beta \cr
 }
 In a final step, `simOU.capthist' uses the reduce method for capthist objects to 
