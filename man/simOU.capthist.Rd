@@ -65,6 +65,17 @@ on noccasions to a single integer. Alternatively, 'by = 10' collapses the
 original occasions in groups of 10. Data will be lost unless the input traps 
 object has detector type 'count'.
 
+The x- and y-dimensions are simulated separately, assuming circularity, and time advances in steps of one occasion. 
+The distribution of location on the \eqn{x} axis at time \eqn{t+1} 
+conditional on the location at time \eqn{t} is then
+\deqn{x_{t+1} | x_{t} \sim N(\mu_x + e^{\frac{-1}{\tau}(x_{t} - \mu_x)}, \; \sigma^2 (1 - e^{\frac{-2}{\tau}}),} 
+where \eqn{\mu = (\mu_x, \mu_y)} is the long-term activity centre and 
+\eqn{\tau} (tau) is a parameter for the strength of serial correlation 
+(\eqn{\tau = 1/\beta} in other formulations). 
+The scale of the long-term (asymptotic) bivariate normal home range is governed
+by \eqn{\sigma} as usual, and \eqn{\Delta t} is omitted (steps are implicitly 
+of length 1 occasion).
+
 }
 
 \value{
