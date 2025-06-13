@@ -1,4 +1,4 @@
-Changes in version 2.10.0 (2025-06-12)
+Changes in version 2.10.0 (2025-06-13)
 
 New features or changed behaviour of old functions
     o  simOU() and simOU.capthist() for Ornstein-Uhlenbeck movement
