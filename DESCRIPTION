@@ -31,3 +31,4 @@ Suggests:
     testthat (>= 0.11.0)
 License: GPL (>=2)
 URL: https://www.otago.ac.nz/density/, https://github.com/MurrayEfford/secrdesign/
+Additional_repositories: https://MurrayEfford.r-universe.dev
