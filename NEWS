@@ -1,3 +1,13 @@
+Changes in version 2.10.1 (2025-07-28)
+
+New features or changed behaviour of old functions
+    o  none
+
+Other
+    o  simOU() and simOU.capthist() moved to secr
+    o  simOU.capthist() speed up and verify argument
+    o  secr::: calls updated for functions renamed in secr 5.3.0
+
 Changes in version 2.10.0 (2025-06-13)
 
 New features or changed behaviour of old functions
