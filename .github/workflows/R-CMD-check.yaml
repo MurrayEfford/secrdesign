@@ -53,7 +53,9 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          # see r-universe for latest version of secr
+          extra-repositories: murrayefford=https://MurrayEfford.r-universe.dev
+          extra-packages: any::rcmdcheck 
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
