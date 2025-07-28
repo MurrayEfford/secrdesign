@@ -211,12 +211,15 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             ## form dp for sim.capthist or sim.resight
             ## form par for starting values in secr.fit()
             ## 'par' does not allow for varying link or any non-null model (b, T etc.)
-            pnames <-  parnames(scenario$detectfn[i])
+            pnames <-  secr:::secr_parnames(scenario$detectfn[i])
             dp <- c(as.list(scenario[i,pnames]), recapfactor = scenario$recapfactor[i])
             if ('detectpar' %in% names(detarg) && !is.symbol(detarg$detectpar)) {
                 dp <- replace (dp, names(detarg$detectpar), detarg$detectpar)
             }
-            
+            # 2025-07-06 add any other arguments in provided detectpar
+            if (!all(names(detarg$detectpar) %in% names(dp))) {
+                dp <- c(dp, detarg$detectpar[!(names(detarg$detectpar) %in% names(dp))])
+            }
             #####################
             ## override det args as required
             detarg$traps      <- grid
@@ -379,7 +382,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         ## no simulations in first iteration; defer hessian
         if (fitfunction == "secr.fit") {
             chatnsim <- fitarg$details$nsim
-            if (abs(chatnsim)>0) {
+            if (!is.null(chatnsim) && abs(chatnsim)>0) {
                 fitarg$details <- as.list(replace(fitarg$details, 'nsim', 0))
                 fitarg$details <- as.list(replace(fitarg$details, 'hessian', FALSE))
             }
@@ -394,7 +397,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         ##-------------------------------------------------------------------
         ## code for overdispersion adjustment of mark-resight data
         if (!ms(CH) && sighting(traps(CH)) && !inherits(fit, 'try-error')) {
-            if ((abs(chatnsim) > 0) &  (logLik(fit)>-1e9)) {
+            if (!is.null(chatnsim) && (abs(chatnsim) > 0) &&  (logLik(fit)>-1e9)) {
                 fitarg$details$nsim <- abs(chatnsim)
                 fitarg$details$hessian <- TRUE
                 fit$call <- NULL
@@ -492,7 +495,7 @@ run.scenarios <- function (
 
     #--------------------------------------------------------------------------
     onesim <- function (r, scenario) {
-        ## only one mask an fitarg allowed per scenario
+        ## only one mask and fitarg allowed per scenario
         fitarg <- full.fit.args[[scenario$fitindex[1]]]
         if (is.function(trapset[[1]])) {
             # create each detector layout for this simulation
@@ -695,7 +698,7 @@ run.scenarios <- function (
         default.args$start     <- "true"  ## known values
         default.args$detectfn  <- 0       ## halfnormal
         default.args$biasLimit <- NA      ## never check
-        default.args$details   <- list(nsim = 0)
+##        default.args$details   <- list(nsim = 0)
         default.args$trace     <- FALSE
     }
     else if (fit.function == 'ipsecr.fit') {
@@ -711,13 +714,18 @@ run.scenarios <- function (
     else stop ("unrecognised fit function")
     if (missing(fit.args)) fit.args <- NULL
     fit.args <- wrapifneeded(fit.args, default.args)
-    
     full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex, fit == "multifit")
     if (fit.function == "secr.fit") {
-        for (i in 1:length(full.fit.args)) {
-            if ('details' %in% names(full.fit.args[[i]]))
-                full.fit.args[[i]]$details$nsim <- replace(full.fit.args$details,'nsim',chatnsim)
-            ## stop("chatnsim not currently available for multifit models")
+        if ( fit == "multifit") {
+            # multifit not ready for MR
+        }
+        else {
+            for (i in 1:length(full.fit.args)) {
+                if ('details' %in% names(full.fit.args[[i]]))
+                    full.fit.args[[i]]$details$nsim <- chatnsim
+                else
+                    full.fit.args[[i]]$details <- list(nsim = 0)   ## 2025-06-19
+            }
         }
     }
     
