@@ -37,7 +37,7 @@
 ## 2024-09-27 pop.args model2D requires core
 ## 2025-06-07 add simOU.capthist option to args
 ## 2025-06-09 generalised detection parameters for OU
-
+## 2025-08-14 allow fit.function = "openCR.fit" (tentative)
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -161,6 +161,7 @@ defaultextractfn <- function(x, ...) {
 #####################
 makeCH <- function (scenario, trapset, full.pop.args, full.det.args, 
     mask, multisession, joinsessions, detfunction) {
+
     ns <- nrow(scenario)
     # with( scenario, {
         CH <- vector(mode = 'list', ns)
@@ -391,8 +392,11 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         if (fitfunction == "secr.fit") {
             fit <- try(do.call(secr.fit, fitarg))
         }
-        else {
+        else if (fitfunction == "ipsecr.fit") {
             fit <- try(do.call(ipsecr::ipsecr.fit, fitarg))
+        }
+        else if (fitfunction == "openCR.fit") {
+            fit <- try(do.call(openCR::openCR.fit, fitarg))
         }
         ##-------------------------------------------------------------------
         ## code for overdispersion adjustment of mark-resight data
@@ -480,7 +484,7 @@ run.scenarios <- function (
     CH.function = c("sim.capthist", "simOU.capthist", "simCH"),
     det.args, 
     fit = FALSE, 
-    fit.function = c("secr.fit", "ipsecr.fit"),
+    fit.function = c("secr.fit", "ipsecr.fit", "openCR.fit"),
     fit.args, 
     chatnsim = 0, 
     extractfn = NULL, 
@@ -511,10 +515,10 @@ run.scenarios <- function (
                                   nx = nx, type = 'trapbuffer')
             }
         }
-        msk <- findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
+        msk <- secrdesign:::findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
         if (fit == "multifit") {
             for (i in 1:length(fitarg))
-                fitarg[[i]]$mask <- findarg(fitarg[[i]], 'mask', 1, maskset[[scenario$maskindex[1]]])
+                fitarg[[i]]$mask <- secrdesign:::findarg(fitarg[[i]], 'mask', 1, maskset[[scenario$maskindex[1]]])
         }
         else {
             fitarg$mask <- msk
@@ -711,6 +715,14 @@ run.scenarios <- function (
         default.args$proxyfn  <- ipsecr::proxy.ms
         default.args$verbose  <- FALSE
     }
+    else if (fit.function == 'openCR.fit') {
+        nsess <- sapply(pop.args, '[[', 'nsessions')
+        if (any(is.null(nsess)) || any(nsess<=1)) warning("openCR.fit applied to single-session data")
+        if (!requireNamespace("openCR")) stop ("requires package openCR; please install")
+        default.args <- as.list(formals(openCR::openCR.fit))
+        default.args[["..."]] <- NULL   # not relevant
+        default.args$detectfn <- 0        ## halfnormal
+    }
     else stop ("unrecognised fit function")
     if (missing(fit.args)) fit.args <- NULL
     fit.args <- wrapifneeded(fit.args, default.args)
@@ -810,7 +822,7 @@ run.scenarios <- function (
         if (clustertype == "PSOCK") {
             clusterEvalQ(clust, library(secr))
             clusterExport(clust, c(
-                "runscenario", "onesim", "full.fit.args", "findarg",
+                "runscenario", "onesim", "full.fit.args", "secrdesign:::findarg",
                 "maskset", "trapset", "trap.args", "full.det.args", 
                 "multisession", "joinsessions", "CH.function", "makeCH", 
                 "processCH", "extractfn", "fit", "fit.function", 
@@ -839,7 +851,7 @@ run.scenarios <- function (
 fit.models <- function (
     rawdata, 
     fit = FALSE, 
-    fit.function = c("secr.fit", "ipsecr.fit"),
+    fit.function = c("secr.fit", "ipsecr.fit", "openCR.fit"),
     fit.args, 
     chatnsim = 0, 
     extractfn = NULL,
@@ -939,6 +951,14 @@ fit.models <- function (
         default.args$start   <- "true"  ## known values
         default.args$verbose <- FALSE
     }
+    else if (fit.function == 'openCR.fit') {
+        nsess <- sapply(pop.args, '[[', 'nsessions')
+        if (any(is.null(nsess)) || any(nsess<=1)) warning("openCR.fit applied to single-session data")
+        if (!requireNamespace("openCR")) stop ("requires package openCR; please install")
+        default.args <- as.list(formals(openCR::openCR.fit))
+        default.args[["..."]] <- NULL   # not relevant
+        default.args$detectfn <- 0        ## halfnormal
+    }
     else stop ("unrecognised fit function")
 
     if (missing(fit.args)) fit.args <- NULL
@@ -997,7 +1017,7 @@ fit.models <- function (
         if (clustertype == "PSOCK") {
             clusterEvalQ(clust, library(secr))
             clusterExport(clust, c(
-                "runscenario", "onesim", "full.fit.args", "findarg",
+                "runscenario", "onesim", "full.fit.args", "secrdesign:::findarg",
                 "maskset", "trapset", "trap.args", "full.det.args", 
                 "multisession", "joinsessions", "CH.function", "makeCH", 
                 "processCH", "extractfn", "fit", "fit.function", 
