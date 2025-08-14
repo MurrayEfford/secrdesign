@@ -36,7 +36,7 @@ for this shortcut.
 run.scenarios(nrepl, scenarios, trapset, maskset, xsigma = 4, nx = 32,
     pop.args, CH.function = c("sim.capthist", "simOU.capthist", "simCH"), det.args, 
     fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit", "openCR.fit"), 
-    fit.args, chatnsim, extractfn = NULL, multisession = FALSE,
+    fit.args, chatnsim = 0, extractfn = NULL, multisession = FALSE,
     joinsessions = FALSE, ncores = NULL, byscenario = FALSE, seed = 123, 
     trap.args, prefix = NULL, ...)
 

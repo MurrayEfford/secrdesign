@@ -515,10 +515,10 @@ run.scenarios <- function (
                                   nx = nx, type = 'trapbuffer')
             }
         }
-        msk <- secrdesign:::findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
+        msk <- findarg(fitarg, 'mask', 1, maskset[[scenario$maskindex[1]]])
         if (fit == "multifit") {
             for (i in 1:length(fitarg))
-                fitarg[[i]]$mask <- secrdesign:::findarg(fitarg[[i]], 'mask', 1, maskset[[scenario$maskindex[1]]])
+                fitarg[[i]]$mask <- findarg(fitarg[[i]], 'mask', 1, maskset[[scenario$maskindex[1]]])
         }
         else {
             fitarg$mask <- msk
@@ -716,7 +716,7 @@ run.scenarios <- function (
         default.args$verbose  <- FALSE
     }
     else if (fit.function == 'openCR.fit') {
-        nsess <- sapply(pop.args, '[[', 'nsessions')
+        nsess <- sapply(full.pop.args, '[[', 'nsessions')
         if (any(is.null(nsess)) || any(nsess<=1)) warning("openCR.fit applied to single-session data")
         if (!requireNamespace("openCR")) stop ("requires package openCR; please install")
         default.args <- as.list(formals(openCR::openCR.fit))
@@ -822,7 +822,7 @@ run.scenarios <- function (
         if (clustertype == "PSOCK") {
             clusterEvalQ(clust, library(secr))
             clusterExport(clust, c(
-                "runscenario", "onesim", "full.fit.args", "secrdesign:::findarg",
+                "runscenario", "onesim", "full.fit.args", "findarg",
                 "maskset", "trapset", "trap.args", "full.det.args", 
                 "multisession", "joinsessions", "CH.function", "makeCH", 
                 "processCH", "extractfn", "fit", "fit.function", 
@@ -952,8 +952,7 @@ fit.models <- function (
         default.args$verbose <- FALSE
     }
     else if (fit.function == 'openCR.fit') {
-        nsess <- sapply(pop.args, '[[', 'nsessions')
-        if (any(is.null(nsess)) || any(nsess<=1)) warning("openCR.fit applied to single-session data")
+        if (!ms(CHlist[[1]])) warning("openCR.fit applied to single-session data")
         if (!requireNamespace("openCR")) stop ("requires package openCR; please install")
         default.args <- as.list(formals(openCR::openCR.fit))
         default.args[["..."]] <- NULL   # not relevant
@@ -1017,7 +1016,7 @@ fit.models <- function (
         if (clustertype == "PSOCK") {
             clusterEvalQ(clust, library(secr))
             clusterExport(clust, c(
-                "runscenario", "onesim", "full.fit.args", "secrdesign:::findarg",
+                "runscenario", "onesim", "full.fit.args", "findarg",
                 "maskset", "trapset", "trap.args", "full.det.args", 
                 "multisession", "joinsessions", "CH.function", "makeCH", 
                 "processCH", "extractfn", "fit", "fit.function", 
