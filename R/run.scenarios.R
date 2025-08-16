@@ -369,7 +369,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
             if (!is.list(model)) model <- list(model)
             vars <- unlist(lapply(lapply(model, terms), attr, 'term.labels'))
             if (fitfunction == "secr.fit") {
-                if (fitarg$CL) par$D <- NULL
+                if (fitarg$CL) par$D <- NULL 
                 if ((length(vars) != 0) && (fitarg$method == 'none')) {
                     ## not yet ready for interspersed beta coef
                     stop("method = 'none' requires full start vector for complex models")
@@ -390,6 +390,15 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         }
         ##-------------------------------------------------------------------
         if (fitfunction == "secr.fit") {
+            #----------------------------------------------
+            # 2025-08-16 optionally transfer Lambda surface
+            # for density model; also maybe other sources? check D model?
+            sourcemask <- attr(attr(fitarg$capthist,'popn'),'Lambda')
+            if (!is.null(sourcemask)) {
+                fitarg$mask <- addCovariates(fitarg$mask, sourcemask, replace = TRUE)
+            }
+            #----------------------------------------------
+            
             fit <- try(do.call(secr.fit, fitarg))
         }
         else if (fitfunction == "ipsecr.fit") {
