@@ -46,6 +46,40 @@ wrapifneeded <- function (args, default) {
         args
 }
 ###############################################################################
+
+get.default.fit.args <- function (fit.function) {
+    if (fit.function == 'secr.fit') {
+        default.args           <- as.list(formals(secr.fit))[1:21]
+        default.args$biasLimit <- NA       ## never check
+        default.args$verify    <- FALSE    ## never check
+        default.args$start     <- "true"   ## known values
+        default.args$detectfn  <- 0        ## halfnormal
+        default.args$details   <- list(nsim = 0)
+        default.args$trace     <- FALSE
+        default.args[["..."]]  <- NULL     ## not relevant
+    }
+    else if (fit.function == 'ipsecr.fit') {
+        if (!requireNamespace("ipsecr")) stop ("requires package ipsecr; please install")
+        default.args <- as.list(formals(ipsecr::ipsecr.fit))[1:16]
+        default.args$proxyfn   <- ipsecr::proxy.ms
+        default.args$verify    <- FALSE   ## never check
+        default.args$start     <- "true"  ## known values
+        default.args$verbose   <- FALSE
+        default.args[["..."]]  <- NULL   # not relevant
+        
+    }
+    else if (fit.function == 'openCR.fit') {
+        if (!requireNamespace("openCR")) stop ("requires package openCR; please install")
+        default.args <- as.list(formals(openCR::openCR.fit))
+        default.args[["..."]]  <- NULL   # not relevant
+        default.args$detectfn  <- 0        ## halfnormal
+        default.args[["..."]]  <- NULL   # not relevant
+    }
+    else stop ("unrecognised fit function")
+    default.args
+}
+
+###############################################################################
 ## complete a partial argument list (arg) with default args
 ## always return a list of arg lists long enough to match max(index)
 fullargs <- function (args, default, index, multifit) {
@@ -405,6 +439,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
             fit <- try(do.call(ipsecr::ipsecr.fit, fitarg))
         }
         else if (fitfunction == "openCR.fit") {
+            if (!ms(CH)) warning("openCR.fit applied to single-session data")
             fit <- try(do.call(openCR::openCR.fit, fitarg))
         }
         ##-------------------------------------------------------------------
@@ -733,7 +768,9 @@ run.scenarios <- function (
         default.args$detectfn <- 0        ## halfnormal
     }
     else stop ("unrecognised fit function")
-    if (missing(fit.args)) fit.args <- NULL
+    
+    default.fit.args <- get.default.fitargs(fit.function)
+        if (missing(fit.args)) fit.args <- NULL
     fit.args <- wrapifneeded(fit.args, default.args)
     full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex, fit == "multifit")
     if (fit.function == "secr.fit") {
@@ -927,9 +964,6 @@ fit.models <- function (
     ptm  <- proc.time()
     cl   <- match.call(expand.dots = TRUE)
     starttime <- format(Sys.time(), "%H:%M:%S %d %b %Y")
-    # if (is.null(ncores)) {
-    #     ncores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
-    # }
     ncores <- secr::setNumThreads(ncores)   ## 2022-12-29
     if (byscenario & (ncores > nrow(scenarios))) {
         stop ("ncores exceeds number of scenarios")
@@ -943,38 +977,13 @@ fit.models <- function (
 
     ##---------------------------------------------
     ## allow user changes to default arguments
-    if (fit.function == 'secr.fit') {
-        default.args <- as.list(args(secr.fit))[1:21]
-        default.args$biasLimit <- NA       ## never check
-        default.args$verify    <- FALSE    ## never check
-        default.args$start     <- "true"   ## known values
-        default.args$detectfn  <- 0        ## halfnormal
-        default.args$details   <- list(nsim = 0)
-        default.args$trace     <- FALSE
-    }
-    else if (fit.function == 'ipsecr.fit') {
-        if (!requireNamespace("ipsecr")) stop ("requires package ipsecr; please install")
-        default.args <- as.list(formals(ipsecr::ipsecr.fit))[1:16]
-        default.args$proxyfn <- ipsecr::proxy.ms
-        default.args$verify  <- FALSE   ## never check
-        default.args$start   <- "true"  ## known values
-        default.args$verbose <- FALSE
-    }
-    else if (fit.function == 'openCR.fit') {
-        if (!ms(CHlist[[1]])) warning("openCR.fit applied to single-session data")
-        if (!requireNamespace("openCR")) stop ("requires package openCR; please install")
-        default.args <- as.list(formals(openCR::openCR.fit))
-        default.args[["..."]] <- NULL   # not relevant
-        default.args$detectfn <- 0        ## halfnormal
-    }
-    else stop ("unrecognised fit function")
 
+    default.fit.args <- get.default.fit.args(fit.function)
     if (missing(fit.args)) fit.args <- NULL
-    fit.args <- wrapifneeded(fit.args, default.args)
+    fit.args <- wrapifneeded(fit.args, default.fit.args)
     nfit <- length(fit.args)
     if (nfit > 1) {
         ## expand scenarios by the required number of different model fits
-        ##      scenarios <- scenarios[rep(scenarios$scenario, each = nfit),]
         scenarios <- scenarios[rep(1:nrow(scenarios), each = nfit),]
         scenarios$fitindex <- rep(1:nfit, length.out = nrow(scenarios))
         ## assign new unique scenario number by adding decimal fraction
@@ -982,11 +991,10 @@ fit.models <- function (
             10 ^ trunc(log10(nfit)+1)
         scenarios <- scenarios[order(scenarios$scenario),]
         rownames(scenarios) <- 1:nrow(scenarios)
-
     }
     full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex, fit == "multifit")
 
-    for (i in 1: length(full.fit.args))
+    for (i in 1:length(full.fit.args))
         full.fit.args[[i]]$details <- as.list(replace(full.fit.args[[i]]$details,'nsim',chatnsim))
 
     ## construct masks as required
@@ -1048,23 +1056,23 @@ fit.models <- function (
         output <- lapply(output, do.call, what = rbind)
     message("Completed in ", round((proc.time() - ptm)[3]/60,3), " minutes")
     desc <- packageDescription("secrdesign")  ## for version number
-    value <- list (call = cl,
-                   version = paste('secrdesign', desc$Version),
-                   starttime = starttime,
-                   proctime = (proc.time() - ptm)[3],
-                   scenarios = scenarios,
-                   trapset = trapset,
-                   maskset = maskset,
-                   xsigma = rawdata$xsigma,
-                   nx = rawdata$nx,
-                   pop.args = rawdata$pop.args,
-                   det.args = rawdata$det.args,
-                   fit = fit,
-                   fit.args = fit.args,
-                   extractfn = extractfn,
-                   seed = rawdata$seed,
-                   nrepl = nrepl,     ## rawdata$nrepl, 2015-01-26
-                   output = output,
+    value <- list (call       = cl,
+                   version    = paste('secrdesign', desc$Version),
+                   starttime  = starttime,
+                   proctime   = (proc.time() - ptm)[3],
+                   scenarios  = scenarios,
+                   trapset    = trapset,
+                   maskset    = maskset,
+                   xsigma     = rawdata$xsigma,
+                   nx         = rawdata$nx,
+                   pop.args   = rawdata$pop.args,
+                   det.args   = rawdata$det.args,
+                   fit        = fit,
+                   fit.args   = fit.args,
+                   extractfn  = extractfn,
+                   seed       = rawdata$seed,
+                   nrepl      = nrepl,     ## rawdata$nrepl, 2015-01-26
+                   output     = output,
                    outputtype = outputtype
                    )
     class(value) <- getoutputclass (outputtype)
