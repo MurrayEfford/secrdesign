@@ -50,31 +50,30 @@ wrapifneeded <- function (args, default) {
 
 get.default.fit.args <- function (fit.function) {
     if (fit.function == 'secr.fit') {
-        default.args           <- as.list(formals(secr.fit))[1:21]
+        default.args           <- as.list(formals(secr.fit))
+        default.args[["..."]]  <- NULL
         default.args$biasLimit <- NA       ## never check
         default.args$verify    <- FALSE    ## never check
         default.args$start     <- "true"   ## known values
         default.args$detectfn  <- 0        ## halfnormal
         default.args$details   <- list(nsim = 0)
         default.args$trace     <- FALSE
-        default.args[["..."]]  <- NULL     ## not relevant
     }
     else if (fit.function == 'ipsecr.fit') {
         if (!requireNamespace("ipsecr")) stop ("requires package ipsecr; please install")
-        default.args <- as.list(formals(ipsecr::ipsecr.fit))[1:16]
+        default.args           <- as.list(formals(ipsecr::ipsecr.fit))
+        default.args[["..."]]  <- NULL
         default.args$proxyfn   <- ipsecr::proxy.ms
         default.args$verify    <- FALSE   ## never check
         default.args$start     <- "true"  ## known values
         default.args$verbose   <- FALSE
-        default.args[["..."]]  <- NULL   # not relevant
         
     }
     else if (fit.function == 'openCR.fit') {
         if (!requireNamespace("openCR")) stop ("requires package openCR; please install")
-        default.args <- as.list(formals(openCR::openCR.fit))
-        default.args[["..."]]  <- NULL   # not relevant
+        default.args           <- as.list(formals(openCR::openCR.fit))
+        default.args[["..."]]  <- NULL
         default.args$detectfn  <- 0        ## halfnormal
-        default.args[["..."]]  <- NULL   # not relevant
     }
     else stop ("unrecognised fit function")
     default.args
@@ -570,6 +569,7 @@ run.scenarios <- function (
         }
         CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
                      msk, multisession, joinsessions, CH.function)
+        
         processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
     }
     #--------------------------------------------------------------------------
@@ -628,7 +628,6 @@ run.scenarios <- function (
     ## record start time etc.
     ptm  <- proc.time()
     cl   <- match.call(expand.dots = TRUE)
-    
     # not forcing match.arg for CH.function allows user function
     CH.function <- CH.function[1]
     fit.function <- match.arg(fit.function)
@@ -742,8 +741,8 @@ run.scenarios <- function (
     ## allow user changes to default fit.function arguments
     default.fit.args <- get.default.fit.args(fit.function)
     if (missing(fit.args)) fit.args <- NULL
-    fit.args <- wrapifneeded(fit.args, default.args)
-    full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex, fit == "multifit")
+    fit.args <- wrapifneeded(fit.args, default.fit.args)
+    full.fit.args <- fullargs (fit.args, default.fit.args, scenarios$fitindex, fit == "multifit")
     if (fit.function == "secr.fit") {
         if ( fit == "multifit") {
             # multifit not ready for MR
@@ -965,7 +964,7 @@ fit.models <- function (
         scenarios <- scenarios[order(scenarios$scenario),]
         rownames(scenarios) <- 1:nrow(scenarios)
     }
-    full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex, fit == "multifit")
+    full.fit.args <- fullargs (fit.args, default.fit.args, scenarios$fitindex, fit == "multifit")
 
     for (i in 1:length(full.fit.args))
         full.fit.args[[i]]$details <- as.list(replace(full.fit.args[[i]]$details,'nsim',chatnsim))
