@@ -38,6 +38,7 @@
 ## 2025-06-07 add simOU.capthist option to args
 ## 2025-06-09 generalised detection parameters for OU
 ## 2025-08-14 allow fit.function = "openCR.fit" (tentative)
+## 2025-08-22 get.default.fit.args() common code
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -739,38 +740,8 @@ run.scenarios <- function (
     ##---------------------------------------------
     ## FIT ARGS
     ## allow user changes to default fit.function arguments
-    if (fit.function == 'secr.fit') {
-        default.args <- as.list(formals(secr.fit))
-        default.args[["..."]] <- NULL   # not relevant
-        default.args$verify    <- FALSE   ## never check
-        default.args$start     <- "true"  ## known values
-        default.args$detectfn  <- 0       ## halfnormal
-        default.args$biasLimit <- NA      ## never check
-##        default.args$details   <- list(nsim = 0)
-        default.args$trace     <- FALSE
-    }
-    else if (fit.function == 'ipsecr.fit') {
-        if (!requireNamespace("ipsecr")) stop ("requires package ipsecr; please install")
-        default.args <- as.list(formals(ipsecr::ipsecr.fit))
-        default.args[["..."]] <- NULL   # not relevant
-        default.args$verify   <- FALSE    ## never check
-        default.args$start    <- "true"   ## known values
-        default.args$detectfn <- 0        ## halfnormal
-        default.args$proxyfn  <- ipsecr::proxy.ms
-        default.args$verbose  <- FALSE
-    }
-    else if (fit.function == 'openCR.fit') {
-        nsess <- sapply(full.pop.args, '[[', 'nsessions')
-        if (any(is.null(nsess)) || any(nsess<=1)) warning("openCR.fit applied to single-session data")
-        if (!requireNamespace("openCR")) stop ("requires package openCR; please install")
-        default.args <- as.list(formals(openCR::openCR.fit))
-        default.args[["..."]] <- NULL   # not relevant
-        default.args$detectfn <- 0        ## halfnormal
-    }
-    else stop ("unrecognised fit function")
-    
-    default.fit.args <- get.default.fitargs(fit.function)
-        if (missing(fit.args)) fit.args <- NULL
+    default.fit.args <- get.default.fit.args(fit.function)
+    if (missing(fit.args)) fit.args <- NULL
     fit.args <- wrapifneeded(fit.args, default.args)
     full.fit.args <- fullargs (fit.args, default.args, scenarios$fitindex, fit == "multifit")
     if (fit.function == "secr.fit") {
@@ -924,8 +895,9 @@ fit.models <- function (
         flush.console()
         out
     }
-    ##--------------------------------------------------------------------------
+    ############################################################################
     ## mainline
+    
     fit.function <- match.arg(fit.function)
     if (!inherits(rawdata, "rawdata"))
         stop ("requires rawdata output from run.scenarios()")
@@ -933,7 +905,6 @@ fit.models <- function (
     if (missing(scen)) {
         scen <- unique(rawdata$scenarios$scenario)
     }
-
     else {
         scen <- unique(scen)
         if (!all(scen %in% unique(rawdata$scenarios$scenario)))
@@ -960,6 +931,7 @@ fit.models <- function (
     trapset <- rawdata$trapset
     maskset <- rawdata$maskset
     
+    ##--------------------------------------------
     ## record start time etc.
     ptm  <- proc.time()
     cl   <- match.call(expand.dots = TRUE)
@@ -976,7 +948,8 @@ fit.models <- function (
     }
 
     ##---------------------------------------------
-    ## allow user changes to default arguments
+    ## FIT ARGS
+    ## allow user changes to default fit arguments
 
     default.fit.args <- get.default.fit.args(fit.function)
     if (missing(fit.args)) fit.args <- NULL
@@ -997,6 +970,8 @@ fit.models <- function (
     for (i in 1:length(full.fit.args))
         full.fit.args[[i]]$details <- as.list(replace(full.fit.args[[i]]$details,'nsim',chatnsim))
 
+    ##--------------------------------------------
+    ## MASKS
     ## construct masks as required
     if (is.null(maskset)) {
         trapsigma <- scenarios[, c('trapsindex', 'sigma'), drop = FALSE]
