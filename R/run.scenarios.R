@@ -760,6 +760,7 @@ run.scenarios <- function (
     ##--------------------------------------------
     ## MASKS
     ## construct masks as required
+    ## uts = unique trapindex, sigma combination
     if (missing(maskset)) {
         trapsigma <- scenarios[, c('trapsindex', 'sigma'), drop = FALSE]
         uts <- unique (trapsigma)
