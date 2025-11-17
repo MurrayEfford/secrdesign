@@ -117,3 +117,9 @@ expand.arg <- function (..., sublist = list()) {
     out
 }
 ##############################################################################
+
+realisedDensity <- function (Dmask, traps, detectfn, dp, noccasions) {
+    D <- covariates(Dmask)$Lambda
+    pd <- pdot(Dmask, traps, detectfn = detectfn, detectpar = dp, noccasions = noccasions)
+    sum(D * pd) / sum(pd)
+}

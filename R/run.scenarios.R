@@ -195,7 +195,6 @@ defaultextractfn <- function(x, ...) {
 #####################
 makeCH <- function (scenario, trapset, full.pop.args, full.det.args, 
     mask, multisession, joinsessions, detfunction) {
-
     ns <- nrow(scenario)
     # with( scenario, {
         CH <- vector(mode = 'list', ns)
@@ -258,13 +257,22 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             #####################
             ## override det args as required
             detarg$traps      <- grid
-            detarg$popn       <- pop
             detarg$detectfn   <- scenario$detectfn[i]
             detarg$noccasions <- scenario$noccasions[i]
             if ("detectpar" %in% names(detarg))
                 detarg$detectpar  <- dp
             else
                 detarg$detparmat  <- dp
+            
+            
+            ## 2025-08-26 realised density cf Efford and Fletcher 2025 PCJ
+            if (poparg$model2D == 'rLGCP') {
+                Dmask<- attr(pop,'Lambda')
+                attr(pop, 'realD') <- realisedDensity(
+                    Dmask, grid, detarg$detectfn, detarg$detectpar, 
+                    detarg$noccasions)    
+            }
+            detarg$popn       <- pop
             
             ####################
             ## function-specific kludges
@@ -302,7 +310,7 @@ makeCH <- function (scenario, trapset, full.pop.args, full.det.args,
             ## remember this realisation of D from function
             attr(CHi, 'D') <- attr(detarg$popn, 'D')
             ##
-            
+
             ## 2023-02-06
             ## remember detection parameters
             attr(CHi, 'detectpar') <- detarg$detectpar
@@ -359,7 +367,8 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
             byscenario = byscenario)   # do not pass ...
         if (fitfunction == 'secr.fit') {
             fits <- secrlist(fits)
-            names(fits) <- sapply(fitarg, '[[', 'model')
+            modelnames <- sapply(lapply(fitarg, '[[', 'model'), secr:::secr_model.string, NULL)
+            if (length(unique(modelnames))>1) names(fits) <- modelnames
         }
         else {
             warning('multifit for non-secr fit returns list of fits rather than secrlist')
@@ -427,7 +436,9 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
             #----------------------------------------------
             # 2025-08-16 optionally transfer Lambda surface
             # for density model; also maybe other sources? check D model?
-            sourcemask <- attr(attr(fitarg$capthist,'popn'),'Lambda')
+            sourcemask <- attr(attr(fitarg$capthist,'popn'),'mask')
+            if (is.null(sourcemask))
+                sourcemask <- attr(attr(fitarg$capthist,'popn'),'Lambda')
             if (!is.null(sourcemask)) {
                 fitarg$mask <- addCovariates(fitarg$mask, sourcemask, replace = TRUE)
             }
