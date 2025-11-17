@@ -1,8 +1,11 @@
-Changes in version 2.10.1 (2025-08-14)
+Changes in version 2.10.1 (2025-09-09)
 
 New features or changed behaviour of old functions
     o  tentative option for openCR.fit (multi-session)
 
+Bugs fixed
+    o  fit = "multifit" failed when model specified for more than one parameter
+    
 Other
     o  simOU() and simOU.capthist() moved to secr
     o  simOU.capthist() speed up and verify argument
