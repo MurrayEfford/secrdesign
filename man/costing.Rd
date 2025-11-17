@@ -33,7 +33,7 @@ costing(traps, nr, noccasions, unitcost = list(), nrepeats = 1, routelength = NU
 
 The number of occasions (noccasions) is incremented by 1 if \code{setupoccasion} is TRUE.
 
-\tabular{llll}{
+\tabular{lll}{
 Component \tab Unit cost \tab Costing \cr
 Arrays \tab perarray \tab perarray x nrepeats \cr
 Detectors \tab perdetector \tab perdetector x nrow(traps) x nrepeats \cr
