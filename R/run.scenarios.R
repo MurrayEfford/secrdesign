@@ -184,6 +184,9 @@ defaultextractfn <- function(x, ...) {
             out <- out[[1]]
         }
         attr(out, 'counts') <- counts(x$capthist)
+        attr(out, 'start')  <- x$start
+        attr(out, 'method') <- x$method
+        attr(out, 'code')   <- if (!is.null(x$fit)) x$fit$code else NULL
         out
     }
     else {
