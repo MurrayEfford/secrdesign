@@ -39,6 +39,7 @@
 ## 2025-06-09 generalised detection parameters for OU
 ## 2025-08-14 allow fit.function = "openCR.fit" (tentative)
 ## 2025-08-22 get.default.fit.args() common code
+## 2025-12-27 etc. completion codes, start, method saved by defaultextractfn
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -186,7 +187,16 @@ defaultextractfn <- function(x, ...) {
         attr(out, 'counts') <- counts(x$capthist)
         attr(out, 'start')  <- x$start
         attr(out, 'method') <- x$method
-        attr(out, 'code')   <- if (!is.null(x$fit)) x$fit$code else NULL
+        
+        # ipsecr.fit completion 'code' 1 successful, 2 target not within final box, 3 exceeded maximum simulations
+        # nlm() completion 'code' 
+        # optim() completion code 'convergence'
+        if (fit.method == "ipsecr.fit" || x$method == "Newton-Raphson")
+            attr(out, 'code')   <- if (!is.null(x$fit)) x$fit$code else NULL
+        else if (x$method %in% c("Nelder-Mead", "BFGS", "CG", "L-BFGS-B",
+                                 "SANN", "Brent"))
+            attr(out, 'convergence') <- if (!is.null(x$fit)) x$fit$convergence else NULL
+
         out
     }
     else {

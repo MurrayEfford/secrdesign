@@ -3,7 +3,7 @@ Changes in version 2.10.1 (2025-12-30)
 New features or changed behaviour of old functions
     o  tentative option for openCR.fit (multi-session)
     o  run.scenarios() default extractfn saves start, method and maximization 
-       code from nlm() as attributes of output for each replicate 
+       code from nlm(), optim() or ipsecr.fit() as attributes of output for each replicate 
 
 Bugs fixed
     o  fit = "multifit" failed when model specified for more than one parameter
