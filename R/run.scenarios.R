@@ -191,11 +191,10 @@ defaultextractfn <- function(x, ...) {
         # ipsecr.fit completion 'code' 1 successful, 2 target not within final box, 3 exceeded maximum simulations
         # nlm() completion 'code' 
         # optim() completion code 'convergence'
-        if (fit.function == "ipsecr.fit" || x$method == "Newton-Raphson")
-            attr(out, 'code')   <- if (!is.null(x$fit)) x$fit$code else NULL
-        else if (x$method %in% c("Nelder-Mead", "BFGS", "CG", "L-BFGS-B",
-                                 "SANN", "Brent"))
-            attr(out, 'convergence') <- if (!is.null(x$fit)) x$fit$convergence else NULL
+        if (!is.null(x$fit) && !is.null(x$fit$code))
+            attr(out, 'code')   <- x$fit$code
+        if (!is.null(x$fit) && !is.null(x$fit$convergence))
+            attr(out, 'convergence') <- x$fit$convergence
 
         out
     }
