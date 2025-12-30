@@ -139,10 +139,11 @@ It is assumed that all scenarios (and all models in a multi-model fit) report th
 
 \seealso{
 
-\code{\link{run.scenarios}},
-\code{\link{header}},
-\code{\link{summary.estimatetables}},
-\code{\link{summary.selectedstatistics}}
+\code{\link{run.scenarios}},  
+\code{\link{header}},  
+\code{\link{summary.estimatetables}},  
+\code{\link{summary.selectedstatistics}},  
+\code{\link{validate}}
 
 }
 
