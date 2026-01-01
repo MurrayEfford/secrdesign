@@ -7,6 +7,8 @@
 ## 2019-02-15 try-error catch bad uniroot in interpRSE
 ## 2020-01-20 2.6.0 removed openCR
 ## 2024-04-28 "bg" added to dotargs in plot method
+## 2026-01-01 validate step in simRSE
+## 2026-01-01 minsimRSE checks for NA
 ##############################################################################
 
 interpRSE <- function (values) {
@@ -99,17 +101,30 @@ simRSEfn <- function (R, k, traps, xsigma, detectpar, noccasions, nrepeats, dete
     fitargs <- allargs[!(names(allargs) %in% c("seed", "ncores", "Ndist"))]
     fitargs <- fitargs[names(fitargs) %in% names(formals(fitfunction))]   ## 2019-02-15
     runargs$fit.args <- replacedefaults(defaultfitargs, fitargs)    
+    
     ## run
     sims1 <- do.call(run.scenarios, runargs)
+    allstats <- select.stats(sims1, parameter = "D", c("estimate", "RSE", "RB","ERR"))
     
-    allRSE <- select.stats(sims1, parameter = "D", c("estimate","RSE"))
-    eachRSE <- cbind(R = rep(R, each = nrepl), do.call(rbind, allRSE$output))
-    tmp <- summary(select.stats(sims1, parameter = "D", c("RSE","RB","ERR")),
-                   fields = c("n","mean","se","rms"))$OUTPUT
+    # optional validate step 2026-01-01
+    defaultvalidargs <- list(x = allstats, test = "RSE", validrange = c(0, Inf), quietly = TRUE)
+    validargs <- allargs[names(allargs) %in% c("test", "validrange")]
+    if (!is.null(validargs) && length(validargs)>0) {
+        validargs <- replacedefaults(defaultvalidargs, validargs)
+        allstats <- do.call(validate, validargs)
+    }
+    
+    # save each replicate
+    eachRSE <- do.call(rbind, allstats$output)[, c("estimate", "RSE")]
+    eachRSE <- cbind(R = rep(R, each = nrepl), eachRSE)
+    
+    # summarise
+    tmp <- summary(allstats, fields = c("n","mean","se","rms"))$OUTPUT
     tmp2 <- lapply(tmp, unlist)
-    simout <- as.data.frame(t(sapply(tmp2, '[', c(1,4,7,5,8,12))))
+    simout <- as.data.frame(t(sapply(tmp2, '[', c('n2','mean2','se2', 'mean3','se3','rms4'))))
     names(simout) <- c("n","RSE.mean","RSE.se","RB.mean", "RB.se","rRMSE")
     simout$rRMSE <- simout$rRMSE / scen1$D
+    
     list(eachRSE = eachRSE, summary = cbind(data.frame(R = R), simout))
 }
 ##############################################################################
@@ -153,7 +168,6 @@ optimalSpacing <- function (
     ## suppress simulations with nrepl = 0
     ## suppress optimisation with CF = NA
     ## control values with R
-    
     fit.function <- match.arg(fit.function)
     distribution <- match.arg(distribution)
     if (!is.null(fittedmodel)) {
@@ -270,10 +284,12 @@ optimalSpacing <- function (
 }
 ##############################################################################
 
-plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nrm"), ...) {
+plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nrm"), 
+                                 xtype = c('relative','absolute'), ...) {
     ## need to define missing cases
     args <- list(...)
     plottype <- match.arg(plottype)
+    xtype <- match.arg(xtype)
     if (plottype == "nrm") {
         y <- x$rotRSE$values$n + x$rotRSE$values$r
     }
@@ -299,6 +315,17 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
                             ylim = c(0, maxy),
                             xlim = c(minx, maxx))
         if (plottype == 'nrm') defaultargs$ylab <- "Number"
+        if (xtype == 'absolute') {
+            sigma <- attr(x, 'detectpar')$sigma
+            defaultargs$xlab <- "Spacing -  m"
+            minx <- minx * sigma
+            maxx <- maxx * sigma
+            defaultargs$ylim <- c(0, maxy)
+            defaultargs$xlim <- c(minx, maxx)
+        }
+        else {
+            sigma <- 1
+        }
         dotsargs <- args[names(args) %in% c("xlab", "ylab", "xlim", "ylim", "las",
                                             "xaxs", "yaxs")]
         plotargs <- replacedefaults(defaultargs, dotsargs)
@@ -311,7 +338,7 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
         plotargs <- replacedefaults(defaultargs, dotsargs)
 
         if (plottype == "both") {
-            plotargs$x <- R
+            plotargs$x <- R * sigma
             plotargs$y <- y
             do.call(lines, plotargs)
         }
@@ -323,7 +350,7 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
         #     do.call(points, plotargs)
         # }
         if (!is.null(x$simRSE)) {
-            plotargs$x <- x$simRSE$summary$R
+            plotargs$x <- x$simRSE$summary$R * sigma
             plotargs$y <- x$simRSE$summary$RSE.mean
             ## 2017-09-18
             segments(plotargs$x, plotargs$y - 2 * x$simRSE$summary$RSE.se,
@@ -336,17 +363,17 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
         dotsargs <- args[names(args) %in% c("col", "lwd", "lty", "cex", "pch")]
         plotargs <- replacedefaults(defaultargs, dotsargs)
 
-        plotargs$x <- R
+        plotargs$x <- R * sigma
         plotargs$y <- x$rotRSE$values$n
         do.call(lines, plotargs)
 
         plotargs$col <- "red"
-        plotargs$x <- R
+        plotargs$x <- R * sigma
         plotargs$y <- x$rotRSE$values$r
         do.call(lines, plotargs)
 
         plotargs$lty <- 2
-        plotargs$x <- R
+        plotargs$x <- R * sigma
         plotargs$y <- x$rotRSE$values$m
         do.call(lines, plotargs)
 
@@ -367,7 +394,8 @@ minsimRSE <- function (object, ...) UseMethod("minsimRSE")
 minsimRSE.optimalSpacing <- function (object, cut = 0.2, plt = FALSE, 
                                    verbose = FALSE, incr = 0.1, ...) {
     if (is.null(object$simRSE)) stop ("requires optimalSpacing object with simulations")
-    object$simRSE$summary <- object$simRSE$summary[object$simRSE$summary$RSE.mean<10,]
+    object$simRSE$summary <- object$simRSE$summary[
+        !(is.na(object$simRSE$summary$RSE.mean) | object$simRSE$summary$RSE.mean>=10),]
     sumy <- object$simRSE$summary   
     ok <- sumy$RSE.mean <= min(sumy$RSE.mean)*(1+cut)
     sumy <- sumy[ok,]
