@@ -12,7 +12,8 @@ Plotsor print results from optimalSpacing.
 
 \usage{
 
-\method{plot}{optimalSpacing}(x, add = FALSE, plottype = c("both", "RSE", "nrm"), ...)
+\method{plot}{optimalSpacing}(x, add = FALSE, plottype = c("both", "RSE", "nrm"), 
+    xtype = c('relative','absolute'),...)
 \method{print}{optimalSpacing}(x, ...)
 
 }
@@ -21,12 +22,15 @@ Plotsor print results from optimalSpacing.
   \item{x}{object from \code{\link{optimalSpacing}}}
   \item{add}{logical; if TRUE will add to existing plot}
   \item{plottype}{character code}
+  \item{xtype}{character scale of x-axis}
   \item{\dots}{other arguments for plot, lines or points}
 }
 
 \details{
 
 If \code{plottype = "RSE"} then RSE(D-hat) is plotted against R (relative detector spacing). If \code{plottype = "nrm"} then the expected numbers of individuals, recaptures and movements are plotted against R. 
+
+If \code{xtype = "absolute"} then the scale of the x-axis is R * sigma (from the detectpar attribute of x).
 
 The \dots argument may be used to pass other plotting arguments to override defaults:
 
