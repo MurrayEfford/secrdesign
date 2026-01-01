@@ -12,7 +12,7 @@ Plotsor print results from optimalSpacing.
 
 \usage{
 
-\method{plot}{optimalSpacing}(x, add = FALSE, plottype = c("both", "RSE", "nrm"), 
+\method{plot}{optimalSpacing}(x, add = FALSE, plottype = c("both", "RSE", "nrm", "RMSE"), 
     xtype = c('relative','absolute'),...)
 \method{print}{optimalSpacing}(x, ...)
 
@@ -28,7 +28,9 @@ Plotsor print results from optimalSpacing.
 
 \details{
 
-If \code{plottype = "RSE"} then RSE(D-hat) is plotted against R (relative detector spacing). If \code{plottype = "nrm"} then the expected numbers of individuals, recaptures and movements are plotted against R. 
+If \code{plottype = "RSE"} then RSE(D-hat) is plotted against R (relative detector spacing). 
+If \code{plottype = "nrm"} then the expected numbers of individuals, recaptures and movements are plotted against R. 
+If \code{plottype = "rRMSE"} then the relative root-mean-square-error of D-hat is plotted against R. 
 
 If \code{xtype = "absolute"} then the scale of the x-axis is R * sigma (from the detectpar attribute of x).
 

@@ -284,7 +284,7 @@ optimalSpacing <- function (
 }
 ##############################################################################
 
-plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nrm"), 
+plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nrm", "RMSE"), 
                                  xtype = c('relative','absolute'), ...) {
     ## need to define missing cases
     args <- list(...)
@@ -293,14 +293,24 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
     if (plottype == "nrm") {
         y <- x$rotRSE$values$n + x$rotRSE$values$r
     }
+    else if (plottype == "RMSE") {
+        if(is.null(x$simRSE)) stop ("simulations required for RMSE")
+        y <- x$simRSE$summary$rRMSE
+    }
     else {
         y <- x$rotRSE$values$RSE
         if(is.null(x$simRSE) && all(is.na(y))) {
             warning ("RSE all NA")
         }
     }
-
+    
     R <- x$rotRSE$values$R
+    if (xtype == 'absolute') {
+        sigma <- attr(x, 'detectpar')$sigma
+    }
+    else {
+        sigma <- 1
+    }
     if (!add) {
         maxy <- 0.5
         if (!all(is.na(y))) {
@@ -315,16 +325,13 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
                             ylim = c(0, maxy),
                             xlim = c(minx, maxx))
         if (plottype == 'nrm') defaultargs$ylab <- "Number"
+        if (plottype == 'RMSE') defaultargs$ylab <- "rRMSE"
         if (xtype == 'absolute') {
-            sigma <- attr(x, 'detectpar')$sigma
             defaultargs$xlab <- "Spacing -  m"
             minx <- minx * sigma
             maxx <- maxx * sigma
             defaultargs$ylim <- c(0, maxy)
             defaultargs$xlim <- c(minx, maxx)
-        }
-        else {
-            sigma <- 1
         }
         dotsargs <- args[names(args) %in% c("xlab", "ylab", "xlim", "ylim", "las",
                                             "xaxs", "yaxs")]
@@ -332,9 +339,9 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
         do.call(plot, plotargs)
     }
 
-    if (plottype %in% c("both","RSE")) {
-        defaultargs <- list(col = "black", lwd = 1, cex = 1, pch = 21)
-        dotsargs <- args[names(args) %in% c("col", "lwd", "lty", "cex", "pch", "bg")]
+    if (plottype %in% c("both","RSE","RMSE")) {
+        defaultargs <- list(col = "black", lwd = 1, cex = 1, pch = 21, type = "p")
+        dotsargs <- args[names(args) %in% c("col", "lwd", "lty", "cex", "pch", "bg", "type")]
         plotargs <- replacedefaults(defaultargs, dotsargs)
 
         if (plottype == "both") {
@@ -349,7 +356,7 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
         #     plotargs$y <- x$rotRSE$minimum.RSE
         #     do.call(points, plotargs)
         # }
-        if (!is.null(x$simRSE)) {
+        if (!is.null(x$simRSE) && (plottype %in% c("both","RSE"))) {
             plotargs$x <- x$simRSE$summary$R * sigma
             plotargs$y <- x$simRSE$summary$RSE.mean
             ## 2017-09-18
@@ -357,10 +364,15 @@ plot.optimalSpacing <- function (x, add = FALSE, plottype = c("both", "RSE", "nr
                      plotargs$x, plotargs$y + 2 * x$simRSE$summary$RSE.se)
             do.call(points, plotargs)
         }
+        if (plottype == "RMSE") {
+            plotargs$x <- x$simRSE$summary$R * sigma
+            plotargs$y <- x$simRSE$summary$rRMSE
+            do.call(points, plotargs)
+        }
     }
     if (plottype == "nrm") {
-        defaultargs <- list(col = "blue", lwd = 1, cex = 1, pch = 16)
-        dotsargs <- args[names(args) %in% c("col", "lwd", "lty", "cex", "pch")]
+        defaultargs <- list(col = "blue", lwd = 1, cex = 1, pch = 16, type = 'l')
+        dotsargs <- args[names(args) %in% c("col", "lwd", "lty", "cex", "pch", "type")]
         plotargs <- replacedefaults(defaultargs, dotsargs)
 
         plotargs$x <- R * sigma
