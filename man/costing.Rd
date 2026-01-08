@@ -48,7 +48,7 @@ Detections \tab perdetection \tab perdetection x total detections (E(\eqn{n}) + 
 
 `Detections' includes costs such as handling time and laboratory DNA analysis.
 
-See  \url{../doc/secrdesign-tools.pdf} for more.
+See \href{https://www.otago.ac.nz/density/pdfs/secrdesign-tools.pdf}{secrdesign-tools.pdf} for more.
 
 }
 
