@@ -40,6 +40,7 @@
 ## 2025-08-14 allow fit.function = "openCR.fit" (tentative)
 ## 2025-08-22 get.default.fit.args() common code
 ## 2025-12-27 etc. completion codes, start, method saved by defaultextractfn
+## 2026-08-28 verbose argument
 ###############################################################################
 wrapifneeded <- function (args, default) {
     if (any(names(args) %in% names(default)))
@@ -564,6 +565,7 @@ run.scenarios <- function (
     seed = 123,  
     trap.args = NULL,
     prefix = NULL,
+    verbose = FALSE,
     ...) {
 
     #--------------------------------------------------------------------------
@@ -592,10 +594,17 @@ run.scenarios <- function (
         else {
             fitarg$mask <- msk
         }
+        if (is.numeric(verbose) && (r == verbose)) browser()
+        
         CH <- makeCH(scenario, trapset, full.pop.args, full.det.args,
                      msk, multisession, joinsessions, CH.function)
         
-        processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
+        out <- processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
+        
+        if (verbose) message("Completed scenario ", scenario$scenario[1], " replicate ", r, 
+                             " ", format(Sys.time(), "%H:%M:%S %d %b %Y"))
+        out
+        
     }
     #--------------------------------------------------------------------------
     runscenario <- function(x) {

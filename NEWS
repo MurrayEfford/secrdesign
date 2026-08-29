@@ -1,7 +1,10 @@
-Changes in version 2.10.2 (2026-01-23)
+Changes in version 2.10.2 (2026-08-28)
 
 New features or changed behaviour of old functions
-    o  none
+    o  run.scenarios() acquires argument 'verbose' (reports completion of each replicate)
+
+Bugs fixed
+    o  scenarioSummary() converted all output to character when 'group' was character
 
 Changes in version 2.10.1 (2026-01-09)
 
