@@ -38,7 +38,7 @@ run.scenarios(nrepl, scenarios, trapset, maskset, xsigma = 4, nx = 32,
     fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit", "openCR.fit"), 
     fit.args, chatnsim = 0, extractfn = NULL, multisession = FALSE,
     joinsessions = FALSE, ncores = NULL, byscenario = FALSE, seed = 123, 
-    trap.args, prefix = NULL, ...)
+    trap.args, prefix = NULL, verbose = FALSE, ...)
 
 fit.models(rawdata, fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit", "openCR.fit"), 
     fit.args, chatnsim, extractfn = NULL, ncores = NULL, byscenario = FALSE,
@@ -74,6 +74,7 @@ fit.models(rawdata, fit = FALSE, fit.function = c("secr.fit", "ipsecr.fit", "ope
   \item{seed}{integer pseudorandom number seed}
   \item{trap.args}{list of arguments for trapset components if using function option }
   \item{prefix}{character to name files saving output of each scenario }
+  \item{verbose}{logical; if TRUE a message is posted for each completed replicate}
   \item{\dots}{other arguments passed to extractfn}
   \item{rawdata}{`rawdata' object from previous call to \code{run.scenarios}}
   \item{scen}{integer vector of scenario subscripts}
