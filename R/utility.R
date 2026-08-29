@@ -18,7 +18,8 @@ dfcast <- function (detectfn = 'HN', detectpar=list(g0 = 0.2, sigma = 25,
     if (is.character(detectfn)) {
         detectfn <- secr:::secr_detectionfunctionnumber(detectfn)
     }
-    if (!(detectfn %in% 14:19) ) {
+    
+    if (!all(detectfn %in% 14:19) ) {
         lambda0 <- -log(1- detectpar$g0)
         cast <- function (sigma2) {
             if (detectfn == 0)
