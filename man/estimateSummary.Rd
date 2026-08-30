@@ -38,7 +38,8 @@ countSummary(object, verbose = FALSE, dec = 3)
   \item{parameter}{character name of parameter (row in estimate table)}
   \item{statistics}{character choice of outputs}
   \item{true}{numeric vector of true values, one per scenario and group}
-  \item{validrange}{numeric allowed for estimates or other checkfields}
+  \item{validrange}{numeric vector comprising the minimum and maximum
+  permitted values of checkfields, or a matrix (see \code{\link{validate}})}
   \item{checkfields}{character choice of columns in each estimate table that 
   will be checked against validrange}
   \item{format}{character choice of output}

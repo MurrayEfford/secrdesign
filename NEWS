@@ -1,7 +1,8 @@
-Changes in version 2.10.2 (2026-08-28)
+Changes in version 2.10.2 (2026-08-30)
 
 New features or changed behaviour of old functions
     o  run.scenarios() acquires argument 'verbose' (reports completion of each replicate)
+    o  estimateSummary() accepts matrix of scenario-specific values for validrange (cf validate)
 
 Bugs fixed
     o  scenarioSummary() converted all output to character when 'group' was character
