@@ -187,9 +187,11 @@ defaultextractfn <- function(x, ...) {
             warning ("summarising only first session, group or mixture class")
             out <- out[[1]]
         }
-        attr(out, 'counts') <- counts(x$capthist)
-        attr(out, 'start')  <- x$start
-        attr(out, 'method') <- x$method
+        attr(out, 'counts')   <- counts(x$capthist)
+        attr(out, 'start')    <- x$start
+        attr(out, 'method')   <- x$method
+        attr(out, 'proctime') <- x$proctime
+        attr(out, 'chat')     <- x$details$chat
         
         # ipsecr.fit completion 'code' 1 successful, 2 target not within final box, 3 exceeded maximum simulations
         # nlm() completion 'code' 
@@ -476,9 +478,15 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
                 fitarg$details$hessian <- TRUE
                 fit$call <- NULL
                 fitarg$start <- fit
-                if (chatnsim<0)
+                if (chatnsim<0) {
                     fitarg$method <- "none"
+                }
+                # sum times 2026-08-31
+                temptime <- fit$proctime
                 fit <- try(do.call(fitfunction, fitarg))
+                if (!inherits(fit, 'try-error')) {
+                    fit$proctime <- fit$proctime + temptime
+                }
             }
         }
         ##-------------------------------------------------------------------
