@@ -496,37 +496,41 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
 #####################
 
 getoutputtype <- function (output) {
+    typicalrepl <- NULL
     for (i in 1:length(output)) {
-        typical <- output[[i]][[1]]  ## ith scenario, first replicate
-        if (length(typical) > 0) break
+        typical <- output[[i]]
+        if (length(typical)>0) {
+            typicalrepl <- typical[[1]]  ## ith scenario, first replicate
+            if (length(typicalrepl) > 0) break
+        }
     }
-    if (length(typical) == 0) stop ("no results found")
+    if (length(typicalrepl) == 0) stop ("no results found")
 
     ## outputtype: secrfit, predicted, coef, numeric
     outputtype <-
-        if (inherits(typical, 'secr'))
+        if (inherits(typicalrepl, 'secr'))
             'secrfit'
-    else if (inherits(typical, 'secrlist'))
+    else if (inherits(typicalrepl, 'secrlist'))
         'multifit'
-    else if (inherits(typical, 'ipsecr'))
+    else if (inherits(typicalrepl, 'ipsecr'))
         'ipsecrfit'
-    else if (inherits(typical, 'summary.secr'))
+    else if (inherits(typicalrepl, 'summary.secr'))
             'secrsummary'
-        else if (inherits(typical, 'data.frame')) {
-            if (all(c('estimate','SE.estimate','lcl','ucl') %in% names(typical)) &
-                    any(c('R.N','E.N') %in% rownames(typical)))
+        else if (inherits(typicalrepl, 'data.frame')) {
+            if (all(c('estimate','SE.estimate','lcl','ucl') %in% names(typicalrepl)) &
+                    any(c('R.N','E.N') %in% rownames(typicalrepl)))
                 'regionN'
-            else if ( all(c('estimate','SE.estimate','lcl','ucl', 'CVn') %in% names(typical)))
+            else if ( all(c('estimate','SE.estimate','lcl','ucl', 'CVn') %in% names(typicalrepl)))
                 'derived'
-            else if (all(c('estimate','SE.estimate','lcl','ucl') %in% names(typical)))
+            else if (all(c('estimate','SE.estimate','lcl','ucl') %in% names(typicalrepl)))
                 'predicted'
-            else if (all(c('beta','SE.beta','lcl','ucl') %in% names(typical)))
+            else if (all(c('beta','SE.beta','lcl','ucl') %in% names(typicalrepl)))
                 'coef'
             else 'user'
         }
-        else if (inherits(typical, 'capthist'))          ## rawdata
+        else if (inherits(typicalrepl, 'capthist'))          ## rawdata
             'capthist'
-        else if (is.vector(typical, mode = 'numeric'))   ## usually, summary of unfitted data
+        else if (is.vector(typicalrepl, mode = 'numeric'))   ## usually, summary of unfitted data
             'selectedstatistics'
         else
             'user'
@@ -919,7 +923,6 @@ fit.models <- function (
     scen, 
     repl, 
     ...) {
-    
     #--------------------------------------------------------------------------
     onesim <- function (CH, scenario) {
         fitarg <- full.fit.args[[scenario$fitindex[1]]]
@@ -967,7 +970,8 @@ fit.models <- function (
         if (nrepl<1)
             stop ("invalid repl argument")
     }
-    CHlist <- lapply(rawdata$output[scen], '[', repl)
+    scenindex <- match(scen, unique(rawdata$scenarios$scenario))
+    CHlist <- lapply(rawdata$output[scenindex], '[', repl)
     scenarios <- rawdata$scenarios[rawdata$scenarios$scenario %in% scen,]
 
     trapset <- rawdata$trapset
@@ -1066,7 +1070,6 @@ fit.models <- function (
     
     ##-------------------------------------------
     ## tidy output
-    
     outputtype <- getoutputtype(output)
     if (outputtype == 'selectedstatistics')
         ## collapse replicates within a scenario into a matrix

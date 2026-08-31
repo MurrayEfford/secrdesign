@@ -8,6 +8,7 @@ New features or changed behaviour of old functions
 
 Bugs fixed
     o  scenarioSummary() converted all output to character when 'group' was character
+    o  fit.models() did not allow selected scenarios
 
 Changes in version 2.10.1 (2026-01-09)
 
