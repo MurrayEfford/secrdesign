@@ -1,7 +1,7 @@
 Changes in version 2.10.2 (2026-08-31)
 
 New features or changed behaviour of old functions
-    o  run.scenarios() acquires argument 'verbose' (reports completion of each replicate)
+    o  run.scenarios() and fit.models() acquire argument 'verbose' (reports completion of each replicate)
     o  estimateSummary() accepts matrix of scenario-specific values for validrange (cf validate)
     o  default extractfn() saves proctime and chat of fit as attributes
     o  run.scenarios() reported proctime for chat adjusted-variance models includes both steps

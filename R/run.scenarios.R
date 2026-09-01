@@ -922,20 +922,28 @@ fit.models <- function (
     byscenario = FALSE, 
     scen, 
     repl, 
+    verbose = FALSE,
     ...) {
     #--------------------------------------------------------------------------
-    onesim <- function (CH, scenario) {
+    onesim <- function (r, CH, scenario) {
         fitarg <- full.fit.args[[scenario$fitindex[1]]]
         if (is.null(fitarg$mask)) {  
             fitarg$mask <- maskset[[scenario$maskindex[1]]]
         }
-        processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
+        if (is.numeric(verbose) && (r == verbose)) browser()
+        out <- processCH(scenario, CH, fitarg, extractfn, fit, fit.function, byscenario, ...)
+        if (verbose) message("Completed scenario ", scenario$scenario[1], " replicate ", r, 
+                             " ", format(Sys.time(), "%H:%M:%S %d %b %Y"))
+        out
+        
     }
     #--------------------------------------------------------------------------
     runscenario <- function(x) {
         ## match by name, not number 2015-01-27
         scenID <- as.character(trunc(x$scenario[1]))
-        out <- lapply(CHlist[[scenID]], onesim, scenario = x)
+        # out <- lapply(CHlist[[scenID]], onesim, scenario = x)
+        nrepl <- length(CHlist[[scenID]])
+        out <- mapply(onesim, 1:nrepl, CHlist[[scenID]], MoreArgs = list(scenario = x), SIMPLIFY = FALSE)
         message("Completed scenario ", x$scenario[1])
         flush.console()
         out
