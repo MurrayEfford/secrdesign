@@ -128,6 +128,7 @@ designextractfn <- function(CH, ...) {
 
 counts <- function(CH) {
     ## for single-session CH
+    ## modified 2026-09-04 to exclude telemetry
     if (nrow(CH)==0) { ## 2015-01-24
         if (sighting(traps(CH)))
             c(n = 0, ndet = 0, nmov = 0, dpa = 0,
@@ -137,23 +138,27 @@ counts <- function(CH) {
     }
     else {
         n <- nrow(CH)
-        ndet <- sum(abs(CH)>0)
-        r2 <- sum(abs(CH)) - n   ## 2020-01-28
+        S <- secr:::secr_noccasions(CH, notelem = TRUE)
+        K <- secr:::secr_ndetector(traps(CH), notelem = TRUE)
+        absCH <- abs(CH)[, 1:S, 1:K, drop = FALSE]
+        ndet <- sum(absCH>0)
+        r2 <- sum(absCH) - n   ## 2020-01-28
         nmoves <- sum(unlist(sapply(moves(CH), function(y) y>0)))
         ## detectors per animal
         dpa <- if (length(dim(CH)) == 2)
-            mean(apply(abs(CH), 1, function(y) length(unique(y[y>0]))))
+            mean(apply(absCH, 1, function(y) length(unique(y[y>0]))))
         else
-            mean(apply(apply(abs(CH), c(1,3), sum)>0, 1, sum))
+            mean(apply(apply(absCH, c(1,3), sum)>0, 1, sum))
         if (sighting(traps(CH))) {
             unmarked <- if (is.null(Tu <- Tu(CH))) NA else sum(Tu)
             nonID <- if (is.null(Tm <- Tm(CH))) NA else sum(Tm)
-            nzero <- sum(apply(abs(CH),1,sum) == 0)
-            c(n = n, ndet = ndet, nmov = nmoves, dpa = dpa,
+            nzero <- sum(apply(absCH,1,sum) == 0)
+            data.frame(n = n, ndet = ndet, nmov = nmoves, dpa = dpa,
               unmarked=unmarked, nonID = nonID, nzero = nzero)
         }
         else {
-            c(n=n, r=r2, nmov=nmoves, dpa = dpa, rse = 1 / sqrt(min(n,r2)), rpsv = RPSV(CH, CC = TRUE))
+            data.frame(n = n, r = r2, nmov = nmoves, dpa = dpa, 
+                       rse = 1 / sqrt(min(n,r2)), rpsv = RPSV(CH, CC = TRUE))
         }
     }
 }
