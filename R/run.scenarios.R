@@ -153,11 +153,11 @@ counts <- function(CH) {
             unmarked <- if (is.null(Tu <- Tu(CH))) NA else sum(Tu)
             nonID <- if (is.null(Tm <- Tm(CH))) NA else sum(Tm)
             nzero <- sum(apply(absCH,1,sum) == 0)
-            data.frame(n = n, ndet = ndet, nmov = nmoves, dpa = dpa,
+            c(n = n, ndet = ndet, nmov = nmoves, dpa = dpa,
               unmarked=unmarked, nonID = nonID, nzero = nzero)
         }
         else {
-            data.frame(n = n, r = r2, nmov = nmoves, dpa = dpa, 
+            c(n = n, r = r2, nmov = nmoves, dpa = dpa, 
                        rse = 1 / sqrt(min(n,r2)), rpsv = RPSV(CH, CC = TRUE))
         }
     }
