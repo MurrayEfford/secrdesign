@@ -138,8 +138,8 @@ counts <- function(CH) {
     }
     else {
         n <- nrow(CH)
-        S <- secr:::secr_noccasions(CH, notelem = TRUE)
-        K <- secr:::secr_ndetector(traps(CH), notelem = TRUE)
+        S <- secrdesign_noccasions(CH, notelem = TRUE)
+        K <- secrdesign_ndetector(traps(CH), notelem = TRUE)
         absCH <- abs(CH)[, 1:S, 1:K, drop = FALSE]
         ndet <- sum(absCH>0)
         r2 <- sum(absCH) - n   ## 2020-01-28

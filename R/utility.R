@@ -124,3 +124,33 @@ realisedDensity <- function (Dmask, traps, detectfn, dp, noccasions) {
     pd <- pdot(Dmask, traps, detectfn = detectfn, detectpar = dp, noccasions = noccasions)
     sum(D * pd) / sum(pd)
 }
+##############################################################################
+
+secrdesign_ndetector <- function (traps, notelem = FALSE) {
+    if (is.null(traps)) {
+        return(1)
+    }
+    else if (all(detector(traps) %in% c('polygon','transect','polygonX','transectX'))) {
+        length(levels(polyID(traps)))
+    }
+    else {
+        if (notelem && any(detector(traps) == 'telemetry'))
+            nrow(traps) - 1
+        else
+            nrow(traps)    # includes notional telemetry detector if present
+    }
+}
+
+#-------------------------------------------------------------------------------
+
+secrdesign_noccasions <- function (capthist, notelem = FALSE) {
+    if (is.null(capthist))
+        return(0)
+    else {
+        if (notelem)
+            ncol(capthist[, detector(traps(capthist)) != 'telemetry',, drop = FALSE])
+        else
+            ncol(capthist)
+    }
+}
+################################################################################
