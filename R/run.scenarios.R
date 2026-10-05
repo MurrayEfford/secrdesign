@@ -446,11 +446,17 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         ##-------------------------------------------------------------------
         ## 2015-11-03 code for overdispersion adjustment of mark-resight data
         ## no simulations in first iteration; defer hessian
+        ## 2026-10-06 details$chatmethod = "analytic" requests the analytic overdispersion
+        ## (secr >= 5.5.1) in place of simulation; it is applied in the second step
+        chatnsim <- NULL
+        chatanalytic <- FALSE
         if (fitfunction == "secr.fit") {
             chatnsim <- fitarg$details$nsim
-            if (!is.null(chatnsim) && abs(chatnsim)>0) {
+            chatanalytic <- identical(fitarg$details$chatmethod, "analytic")
+            if (chatanalytic || (!is.null(chatnsim) && abs(chatnsim)>0)) {
                 fitarg$details <- as.list(replace(fitarg$details, 'nsim', 0))
                 fitarg$details <- as.list(replace(fitarg$details, 'hessian', FALSE))
+                fitarg$details$chatmethod <- "simulate"    # no adjustment in first step
             }
         }
         ##-------------------------------------------------------------------
@@ -478,12 +484,20 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
         ##-------------------------------------------------------------------
         ## code for overdispersion adjustment of mark-resight data
         if (!ms(CH) && sighting(traps(CH)) && !inherits(fit, 'try-error')) {
-            if (!is.null(chatnsim) && (abs(chatnsim) > 0) &&  (logLik(fit)>-1e9)) {
-                fitarg$details$nsim <- abs(chatnsim)
+            if ((chatanalytic || (!is.null(chatnsim) && (abs(chatnsim) > 0))) && (logLik(fit)>-1e9)) {
+                if (chatanalytic) {
+                    ## analytic c-hat at the first-step estimates; no simulation,
+                    ## so the magnitude of chatnsim is irrelevant
+                    fitarg$details$chatmethod <- "analytic"
+                    fitarg$details$nsim <- 1
+                }
+                else {
+                    fitarg$details$nsim <- abs(chatnsim)
+                }
                 fitarg$details$hessian <- TRUE
                 fit$call <- NULL
                 fitarg$start <- fit
-                if (chatnsim<0) {
+                if (!is.null(chatnsim) && chatnsim<0) {
                     fitarg$method <- "none"
                 }
                 # sum times 2026-08-31

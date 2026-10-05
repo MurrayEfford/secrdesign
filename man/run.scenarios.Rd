@@ -171,6 +171,8 @@ In \code{fit.models} the arguments \code{scen} and \code{repl} may be used to se
 }
   
 \subsection{Mark-resight}{  \code{chatnsim} controls an additional quasi-likelihood model step to adjust for overdispersion of sighting counts. No adjustment happens when \code{chatnsim = 0}; otherwise \code{abs(chatnsim)} gives the number of simulations to perform to estimate overdispersion. If \code{chatnsim < 0} then the quasilikelihood is used only to re-estimate the variance at the previous MLE (method = "none").
+
+With \code{secr} >= 5.5.1 the overdispersion may instead be computed analytically, without simulation, by including \code{details = list(chatmethod = "analytic")} in \code{fit.args} (see \code{\link[secr]{details}}). This is the only option for telemetry type `marking', and is available for sighting-only models (all \code{markocc} 0). The adjustment then happens whatever the value of \code{chatnsim}, which is otherwise used only for its sign: if \code{chatnsim < 0} the variance is re-estimated at the previous MLE, and otherwise the model is refitted with the analytic adjustment. The analytic calculation uses no random numbers, so simulated datasets are the same as for a run with the same \code{seed} that makes no adjustment.
 }
 
 \subsection{Intermediate output}{ If 'prefix' is provided than results will be saved for each scenario separately. The filename of scenario 1 is of the form 'prefix1.RDS'. The prefix may include a file path.

@@ -5,6 +5,9 @@ New features or changed behaviour of old functions
     o  estimateSummary() accepts matrix of scenario-specific values for validrange (cf validate)
     o  default extractfn() saves proctime and chat of fit as attributes
     o  run.scenarios() reported proctime for chat adjusted-variance models includes both steps
+    o  run.scenarios() and fit.models(): fit.args details = list(chatmethod = "analytic") requests the
+       analytic overdispersion of secr >= 5.5.1 in the second step instead of simulation (required for
+       telemetry type 'marking'); chatnsim < 0 then re-estimates the variance only (method = "none")
 
 Bugs fixed
     o  scenarioSummary() converted all output to character when 'group' was character
