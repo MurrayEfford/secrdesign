@@ -903,13 +903,14 @@ run.scenarios <- function (
         clust <- parallel::makeCluster(ncores, type = clustertype, methods = TRUE)
         if (clustertype == "PSOCK") {
             clusterEvalQ(clust, library(secr))
-            clusterExport(clust, c(
-                "runscenario", "onesim", "full.fit.args", "findarg",
-                "maskset", "trapset", "trap.args", "full.det.args", 
-                "multisession", "joinsessions", "CH.function", "makeCH", 
-                "processCH", "extractfn", "fit", "fit.function", 
-                "byscenario", ...
-            ), environment())
+            clusterExport(clust, ls(globalenv()), globalenv())  # 2026-10-06 Everything!
+            # clusterExport(clust, c(
+            #     "runscenario", "onesim", "full.fit.args", "findarg",
+            #     "maskset", "trapset", "trap.args", "full.det.args", 
+            #     "multisession", "joinsessions", "CH.function", "makeCH", 
+            #     "processCH", "extractfn", "fit", "fit.function", 
+            #     "byscenario", ...
+            # ), environment())
         }
         parallel::clusterSetRNGStream(clust, seed)
         on.exit(parallel::stopCluster(clust))

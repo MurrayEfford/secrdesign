@@ -1,4 +1,4 @@
-Changes in version 2.10.2 (2026-09-04)
+Changes in version 2.10.2 (2026-10-06)
 
 New features or changed behaviour of old functions
     o  run.scenarios() and fit.models() acquire argument 'verbose' (reports completion of each replicate)
@@ -13,7 +13,11 @@ Bugs fixed
     o  scenarioSummary() converted all output to character when 'group' was character
     o  fit.models() did not allow selected scenarios
     o  attr 'counts' from run.scenarios() included telemetry, hence nzero always 0 for telemetry
-
+    o  run.scenarios() failed on Windows with byscenario = TRUE and ncores > 1 (i.e. PSOCK parallel clusters) 
+       when the extractfn required other arguments or used functions from the global environment. 
+       This has been fixed by copying the global environment to each worker; the cost in time or memory 
+       may be excessive if the global environment contains large objects. The issue does not arise on Unix.
+    
 Changes in version 2.10.1 (2026-01-09)
 
 New features or changed behaviour of old functions

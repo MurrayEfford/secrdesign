@@ -119,8 +119,15 @@ process using \code{parLapply} from \pkg{parallel} (see also \link[secr]{Paralle
 
 If \code{byscenario = FALSE} then from \pkg{secrdesign} 2.6.0 onwards the usual multithreading of \pkg{secr} 4.5 is applied. The number of cores should usually be preset with `setNumThreads`. If \code{ncores} is provided then the environment variable RCPP_PARALLEL_NUM_THREADS is reset. The default behaviour of the fitting functions (secr.fit, ipsecr.fit, openCR.fit) is to use this value (unless specified in fit.args).
 
-  When `byscenario = TRUE` the L'Ecuyer pseudorandom generator is used with a separate random
+When `byscenario = TRUE` the L'Ecuyer pseudorandom generator is used with a separate random
   number stream for each core (see \code{\link{clusterSetRNGStream}}).
+  
+In earlier versions, \code{run.scenarios} failed on Windows with byscenario = TRUE and ncores > 1 (i.e. PSOCK parallel clusters)
+       when run.scenarios or its functions (CH.function, extractfn) used objects from the global environment, including arguments passed as variables. 
+       This has been fixed by copying the global environment to each worker; the cost in time or memory 
+       may be excessive if the global environment contains large objects. 
+The size of the 5 largest objects being copied may be checked with \code{sort(sapply(ls(globalenv()), function(x) object.size(get(x))), decreasing = TRUE)[1:5]}.
+       The issue does not arise on Unix.  
 
 For \code{ncores > 1} it pays to keep an eye on the processes from the
   Performance page of Windows Task Manager (<ctrl><alt><del>), or `top' in
