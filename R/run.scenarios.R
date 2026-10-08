@@ -135,10 +135,10 @@ trapsat <- function (CH) {
         S <- secrdesign_noccasions(CH, notelem = TRUE)
         K <- secrdesign_ndetector(traps(CH), notelem = TRUE)
         CH[] <- abs(CH[])>0
-        tsat <- apply(apply(CH[,1:S,1:K],2:3,sum)>0,1,sum)
+        tsat <- apply(apply(CH[,1:S,1:K, drop = FALSE],2:3,sum)>0,1,sum)
         if (!is.null(usage(traps(CH)))) {
             usge <- usage(traps(CH))
-            tuse <- apply(usge[1:K, 1:S],2,sum)
+            tuse <- apply(usge[1:K, 1:S, drop = FALSE],2,sum)
         }
         else {
             tuse <- K   # constant over occasions
