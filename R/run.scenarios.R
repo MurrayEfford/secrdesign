@@ -126,6 +126,27 @@ designextractfn <- function(CH, ...) {
 }
 ###############################################################################
 
+trapsat <- function (CH) {
+    # trap saturation by occasion
+    if (ms(CH)) {
+        lapply(CH, trapsat)   
+    }
+    else {
+        S <- secrdesign_noccasions(CH, notelem = TRUE)
+        K <- secrdesign_ndetector(traps(CH), notelem = TRUE)
+        CH[] <- abs(CH[])>0
+        tsat <- apply(apply(CH[,1:S,1:K],2:3,sum)>0,1,sum)
+        if (!is.null(usage(traps(CH)))) {
+            usge <- usage(traps(CH))
+            tuse <- apply(usge[1:K, 1:S],2,sum)
+        }
+        else {
+            tuse <- K   # constant over occasions
+        }
+        tsat/tuse
+    }
+}
+
 counts <- function(CH) {
     ## for single-session CH
     ## modified 2026-09-04 to exclude telemetry
@@ -142,6 +163,7 @@ counts <- function(CH) {
         K <- secrdesign_ndetector(traps(CH), notelem = TRUE)
         absCH <- abs(CH)[, 1:S, 1:K, drop = FALSE]
         ndet <- sum(absCH>0)
+        tsat <- mean(trapsat(CH))
         r2 <- sum(absCH) - n   ## 2020-01-28
         nmoves <- sum(unlist(sapply(moves(CH), function(y) y>0)))
         ## detectors per animal
@@ -154,11 +176,17 @@ counts <- function(CH) {
             nonID <- if (is.null(Tm <- Tm(CH))) NA else sum(Tm)
             nzero <- sum(apply(absCH,1,sum) == 0)
             c(n = n, ndet = ndet, nmov = nmoves, dpa = dpa,
-              unmarked=unmarked, nonID = nonID, nzero = nzero)
+              unmarked = unmarked, nonID = nonID, nzero = nzero, 
+              tsat = tsat)
         }
         else {
-            c(n = n, r = r2, nmov = nmoves, dpa = dpa, 
-                       rse = 1 / sqrt(min(n,r2)), rpsv = RPSV(CH, CC = TRUE))
+            c(n = n, 
+              r = r2, 
+              nmov = nmoves, 
+              dpa = dpa, 
+              rse = 1 / sqrt(min(n,r2)), 
+              rpsv = RPSV(CH, CC = TRUE), 
+              tsat = tsat)
         }
     }
 }

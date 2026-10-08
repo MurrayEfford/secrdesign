@@ -113,7 +113,7 @@ If format = "data.frame" - a data frame with rows corresponding to group x scena
 
 \code{countSummary} --
 
-A matrix (verbose = FALSE) or list of matrices, one per scenario (verbse = TRUE).
+A matrix (verbose = FALSE) or list of matrices, one per scenario (verbose = TRUE).
 
 Columns are defined as 
 
@@ -123,6 +123,7 @@ Columns are defined as
 \item{dpa}{detectors per animal}
 \item{rse}{approximate RSE(\eqn{\hat D}) from 1 / sqrt(min(n,r))}
 \item{rpsv}{spatial variance computed with \code{\link[secr]{RPSV}}, CC = TRUE}
+\item{tsat}{trap saturation (mean proportion of used detectors occupied per occasion)}
 
 }
 

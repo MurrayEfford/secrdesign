@@ -4,6 +4,7 @@ New features or changed behaviour of old functions
     o  run.scenarios() and fit.models(): details = list(chatmethod = "analytic") in fit.args requests the
        analytic overdispersion of secr >= 5.5.1 (required for telemetry type 'marking');
        chatnsim < 0 then re-estimates the variance only (method = "none")
+    o  default counts include trap saturation (tsat) (e.g., attribute of fitted model)
 
 Bugs fixed
     o  run.scenarios() failed on Windows with byscenario = TRUE and ncores > 1 (i.e. PSOCK parallel clusters) 
