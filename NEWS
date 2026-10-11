@@ -1,4 +1,4 @@
-Changes in version 2.10.3 (2026-10-08)
+Changes in version 2.10.3 (2026-10-12)
 
 New features or changed behaviour of old functions
     o  run.scenarios() and fit.models(): details = list(chatmethod = "analytic") in fit.args requests the
@@ -11,6 +11,9 @@ Bugs fixed
        when the extractfn required other arguments or used functions from the global environment. 
        This has been fixed by copying the global environment to each worker; the cost in time or memory 
        may be excessive if the global environment contains large objects. The issue does not arise on Unix.
+
+Other
+    o  depends secr >= 5.5.1
 
 Changes in version 2.10.2 (2026-09-04)
 
