@@ -1,3 +1,11 @@
+Changes in version 2.10.4 (2026-10-25)
+
+New features or changed behaviour of old functions
+    o  internal defaultextractfn() moved to own .R file and saves capthist attribute 'D' if present
+    
+Bugs fixed
+    o  none
+
 Changes in version 2.10.3 (2026-10-17)
 
 New features or changed behaviour of old functions
