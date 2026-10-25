@@ -20,6 +20,11 @@ defaultextractfn <- function(x, ...) {
         (inherits(x, 'secr') && !is.null(x$fit)) ||
         (inherits(x, 'ipsecr') && x$code == 1)
     ) {
+        
+        keepdensity <- FALSE
+        args <- list(...)
+        if (keepdensity %in% names(args)) keepdensity <- args$keepdensity
+        
         ## fitted model:
         ## default predictions of 'real' parameters
         out <- predict(x)
@@ -32,7 +37,9 @@ defaultextractfn <- function(x, ...) {
         attr(out, 'method')   <- x$method
         attr(out, 'proctime') <- x$proctime
         attr(out, 'chat')     <- x$details$chat
-        attr(out, 'D')        <- attr(x$capthist, 'D')    # usually NULL
+        if (keepdensity) {
+            attr(out, 'D')    <- attr(x$capthist, 'D')    # usually NULL
+        }
         
         # ipsecr.fit completion 'code' 1 successful, 2 target not within final box, 3 exceeded maximum simulations
         # nlm() completion 'code' 
