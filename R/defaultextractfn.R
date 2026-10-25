@@ -23,8 +23,7 @@ defaultextractfn <- function(x, ...) {
         
         keepdensity <- FALSE
         args <- list(...)
-        if (keepdensity %in% names(args)) keepdensity <- args$keepdensity
-        
+        if ('keepdensity' %in% names(args)) keepdensity <- args$keepdensity
         ## fitted model:
         ## default predictions of 'real' parameters
         out <- predict(x)
