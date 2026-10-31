@@ -1,7 +1,8 @@
-Changes in version 2.10.4 (2026-10-25)
+Changes in version 2.10.4 (2026-11-01)
 
 New features or changed behaviour of old functions
     o  internal defaultextractfn() moved to own .R file and saves capthist attribute 'D' if present
+    o  new field 'nsight' (total detections of marked animals) replaces 'ndet' in count summaries of sighting data
     
 Bugs fixed
     o  none

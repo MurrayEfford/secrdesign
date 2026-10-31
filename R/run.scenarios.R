@@ -152,7 +152,7 @@ counts <- function(CH) {
     ## modified 2026-09-04 to exclude telemetry
     if (nrow(CH)==0) { ## 2015-01-24
         if (sighting(traps(CH)))
-            c(n = 0, ndet = 0, nmov = 0, dpa = 0,
+            c(n = 0, nsight = 0, nmov = 0, dpa = 0,
               unmarked=0, nonID = 0, nzero = 0)
         else
             c(n=0, ndet=0, nmov=0, dpa = NA, rse = NA, rpsv = NA)
@@ -162,7 +162,7 @@ counts <- function(CH) {
         S <- secrdesign_noccasions(CH, notelem = TRUE)
         K <- secrdesign_ndetector(traps(CH), notelem = TRUE)
         absCH <- abs(CH)[, 1:S, 1:K, drop = FALSE]
-        ndet <- sum(absCH>0)
+        nsight <- sum(absCH)   ## identified sightings (cues) of marked animals
         tsat <- mean(trapsat(CH))
         r2 <- sum(absCH) - n   ## 2020-01-28
         nmoves <- sum(unlist(sapply(moves(CH), function(y) y>0)))
@@ -175,7 +175,7 @@ counts <- function(CH) {
             unmarked <- if (is.null(Tu <- Tu(CH))) NA else sum(Tu)
             nonID <- if (is.null(Tm <- Tm(CH))) NA else sum(Tm)
             nzero <- sum(apply(absCH,1,sum) == 0)
-            c(n = n, ndet = ndet, nmov = nmoves, dpa = dpa,
+            c(n = n, nsight = nsight, nmov = nmoves, dpa = dpa,
               unmarked = unmarked, nonID = nonID, nzero = nzero, 
               tsat = tsat)
         }

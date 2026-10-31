@@ -58,6 +58,12 @@ predict \tab \tab  D, g0, sigma \tab \tab  estimate, SE.estimate, lcl, ucl \cr
 
 }
 
+\note{
+Before secrdesign 2.10.4 the summary counts of sighting data included a field `ndet' that was 
+the number of non-zero animal x detector x occasion cells. This was changed in 2.10.4 to `nsight', 
+the total number of detections of identified marked individuals.
+}
+
 \examples{
 
 ## generate some simulations

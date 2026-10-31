@@ -16,6 +16,9 @@ and all scenarios have group structure.
 with a fitted model (counts are then stored as an attribute of the 'predict' output).
 The same results may be obtained by running the simulations without fitting a 
 model and using \code{summary(..., fields = c('n','mean','se','sd','min','max'))}.
+For sighting data (e.g., telemetry type `marking' in \pkg{secr}) the counts include \code{nsight},
+the total number of identified sightings of marked animals, and the totals of unmarked
+(\code{unmarked}) and unidentified marked (\code{nonID}) sightings.
 
 }
 
