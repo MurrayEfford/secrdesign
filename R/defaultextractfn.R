@@ -50,6 +50,13 @@ defaultextractfn <- function(x, ...) {
         
         out
     }
+    else if (inherits(x, 'secrlist') ||
+        (is.list(x) && length(x) > 0 && !is.data.frame(x) &&
+         all(sapply(x, inherits, c('secr', 'ipsecr', 'try-error'))))) {
+        ## fit = "multifit": several models fitted to the same data;
+        ## named list of the usual estimate tables, one per model
+        lapply(x, defaultextractfn, ...)
+    }
     else {
         ## null output: dataframe of 0 rows and 0 columns
         data.frame()

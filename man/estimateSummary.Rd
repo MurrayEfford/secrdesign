@@ -29,7 +29,7 @@ estimateArray(object)
 estimateSummary(object, parameter = "D", statistics = c("true", "nvalid", 
     "EST", "seEST", "RB", "seRB", "RSE", "RMSE", "rRMSE", "COV"), true,
     validrange = c(0, Inf), checkfields = c('estimate','SE.estimate'),
-    format = c('data.frame', 'list'), cols = NULL)
+    format = c('data.frame', 'list'), cols = NULL, model = NULL)
 
 countSummary(object, verbose = FALSE, dec = 3)
 
@@ -47,6 +47,8 @@ countSummary(object, verbose = FALSE, dec = 3)
   will be checked against validrange}
   \item{format}{character choice of output}
   \item{cols}{indices of scenario columns to include when format = "data.frame"}
+  \item{model}{character name or integer index of the model(s) to summarise
+  when \code{object} comes from \code{fit = "multifit"} (default all models)}
   \item{verbose}{logical; if TRUE then the mean, SD, minimum and maximum are tabulated}
   \item{dec}{integer number of decimal places in output (verbose only)}
   
@@ -64,8 +66,17 @@ The alternative is to use 'predict' as the run.scenarios extractfn, which
 retains all estimate tables. This requires a different function for 
 summarisation; \code{estimateSummary} will suffice for many purposes.
 
-\code{estimateSummary} internally calls \code{estimateArray} to pre-process 
+\code{estimateSummary} internally calls \code{estimateArray} to pre-process
 the output from run.scenarios.
+
+Output from \code{run.scenarios(fit = "multifit")} with the default extract
+function holds, for each replicate, a named list of estimate tables, one per model
+fitted to the same simulated data (see \code{\link{defaultextractfn}}).
+\code{estimateSummary} then summarises each model separately and, for
+\code{format = "data.frame"}, combines the results in one data frame with a
+\code{model} column; use \code{model} to select particular models.
+\code{countSummary} uses the counts of the first model, as the data are shared.
+\code{estimateArray} requires a single model.
 
 The code should be examined for the precise definition of each statistic.
 

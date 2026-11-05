@@ -108,6 +108,9 @@ fullargs <- function (args, default, index, multifit) {
                 if (is.character(tmpargs[[i]]))
                     tmpargs[[i]] <- tmpargs[[i]][1]
             }
+            ## 2026-11-05 keep user's names (model names for fit = "multifit")
+            if (!is.null(names(args)) && length(names(args)) >= nind)
+                names(tmpargs) <- names(args)[1:nind]
             full.args <- tmpargs
         }
     }
@@ -364,10 +367,23 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
             fit = TRUE, 
             fitfunction = fitfunction, 
             byscenario = byscenario)   # do not pass ...
+        ## 2026-11-05 model names: names of fit.args if given, otherwise the model
+        ## formulae if they differ, otherwise model1, model2, ...
+        modelnames <- names(fitarg)
+        if (is.null(modelnames) || any(modelnames == "")) {
+            modelnames <- paste0("model", seq_along(fits))
+            if (fitfunction == 'secr.fit') {
+                formulae <- try(sapply(lapply(fitarg, '[[', 'model'), secr:::secr_model.string, NULL),
+                    silent = TRUE)
+                if (!inherits(formulae, 'try-error') &&
+                    length(formulae) == length(fits) &&
+                    length(unique(formulae)) > 1) modelnames <- formulae
+            }
+        }
+        names(fits) <- modelnames
         if (fitfunction == 'secr.fit') {
-            fits <- secrlist(fits)
-            modelnames <- sapply(lapply(fitarg, '[[', 'model'), secr:::secr_model.string, NULL)
-            if (length(unique(modelnames))>1) names(fits) <- modelnames
+            ## a failed fit (try-error) cannot be held in a secrlist; pass a plain list
+            if (!any(sapply(fits, inherits, 'try-error'))) fits <- secrlist(fits, names = modelnames)
         }
         else {
             warning('multifit for non-secr fit returns list of fits rather than secrlist')
@@ -491,7 +507,7 @@ processCH <- function (scenario, CH, fitarg, extractfn, fit, fitfunction, byscen
 }
 #####################
 
-getoutputtype <- function (output) {
+getoutputtype <- function (output, fit = FALSE) {
     typicalrepl <- NULL
     for (i in 1:length(output)) {
         typical <- output[[i]]
@@ -504,7 +520,12 @@ getoutputtype <- function (output) {
 
     ## outputtype: secrfit, predicted, coef, numeric
     outputtype <-
-        if (inherits(typicalrepl, 'secr'))
+        ## 2026-11-05 fit = "multifit" with defaultextractfn: list of estimate tables, one per model
+        if (identical(fit, "multifit") && is.list(typicalrepl) && !is.data.frame(typicalrepl) &&
+                !inherits(typicalrepl, c('secr', 'secrlist', 'ipsecr')) &&
+                all(sapply(typicalrepl, is.data.frame)))
+            'multipredicted'
+        else if (inherits(typicalrepl, 'secr'))
             'secrfit'
     else if (inherits(typicalrepl, 'secrlist'))
         'multifit'
@@ -539,6 +560,7 @@ getoutputclass <- function (outputtype) {
         secrfit     = c("fittedmodels", 'secrdesign', 'list'),
         ipsecrfit   = c("fittedmodels", 'secrdesign', 'list'),
         predicted   = c("estimatetables", 'secrdesign', 'list'),
+        multipredicted = c("estimatetables", "secrdesign", "list"),
         derived     = c("estimatetables", 'secrdesign', 'list'),
         regionN     = c("estimatetables", 'secrdesign', 'list'),
         coef        = c("estimatetables", 'secrdesign', 'list'),
@@ -629,7 +651,7 @@ run.scenarios <- function (
     }
     ##--------------------------------------------------------------------------
     makeoutput <- function (output, scen) {
-        outputtype <- getoutputtype(output)
+        outputtype <- getoutputtype(output, fit)
         if (outputtype == 'selectedstatistics')
             ## collapse replicates within a scenario into a matrix
             output <- lapply(output, do.call, what = rbind)
@@ -1075,7 +1097,7 @@ fit.models <- function (
     
     ##-------------------------------------------
     ## tidy output
-    outputtype <- getoutputtype(output)
+    outputtype <- getoutputtype(output, fit)
     if (outputtype == 'selectedstatistics')
         ## collapse replicates within a scenario into a matrix
         output <- lapply(output, do.call, what = rbind)

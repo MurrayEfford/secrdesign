@@ -6,9 +6,39 @@
 ## 2024-03-14 check for NA
 ###############################################################################
 
+# fit = "multifit": replicates are named lists of estimate tables, one per model
+# 2026-11-05
+modelNames <- function (object) {
+    for (scen in object$output) for (repl in scen) {
+        if (is.list(repl) && !is.data.frame(repl) && length(repl) > 0) return(names(repl))
+    }
+    NULL
+}
+
+# Convert output of fit = "multifit" to the usual output for one model
+# (model is a name or index); returns object suitable for estimateArray etc.
+selectModel <- function (object, model) {
+    if (!identical(object$outputtype, "multipredicted")) return(object)
+    if (length(model) != 1) stop ("select one model")
+    modelnames <- modelNames(object)
+    if (is.character(model) && !(model %in% modelnames))
+        stop ("model '", model, "' not found; available: ", paste(modelnames, collapse = ", "))
+    if (is.numeric(model) && (model < 1 || model > length(modelnames)))
+        stop ("model index out of range 1:", length(modelnames))
+    onerepl <- function(r) {
+        # failed replicate (empty data.frame) gives empty table
+        if (is.list(r) && !is.data.frame(r)) r[[model]] else data.frame()
+    }
+    object$output <- lapply(object$output, lapply, onerepl)
+    object$outputtype <- "predicted"
+    object
+}
+
 # Convert output (nested list of estimate tables) to array
 # with dimensions (Parameter, statistic, Group, Scenario, Replicate)
 estimateArray <- function (object) {
+    if (identical(object$outputtype, "multipredicted"))
+        stop ("output from fit = 'multifit' has several models; use selectModel() to choose one")
     nscen <- length(object$output)
     nrepl <- length(object$output[[1]])
     groups <- unique(object$scenarios$group)
@@ -68,7 +98,33 @@ estimateSummary <- function (object, parameter = 'D',
     statistics = c('true', 'nvalid', 'EST', 'seEST', 'RB', 
         'seRB', 'RSE', 'RMSE', 'rRMSE', 'COV'), true, validrange = c(0, Inf), 
     checkfields = c('estimate','SE.estimate'),
-    format = c('data.frame', 'list'), cols = NULL) {
+    format = c('data.frame', 'list'), cols = NULL, model = NULL) {
+    if (identical(object$outputtype, "multipredicted")) {
+        ## fit = "multifit": summarise each model (all models by default)
+        format <- match.arg(format)
+        modelnames <- modelNames(object)
+        if (is.null(model)) model <- seq_along(modelnames)
+        if (is.numeric(model)) model <- modelnames[model]
+        notrue <- missing(true)
+        one <- function (m) {
+            obj <- selectModel(object, m)
+            if (notrue)
+                estimateSummary(obj, parameter = parameter, statistics = statistics,
+                    validrange = validrange, checkfields = checkfields,
+                    format = format, cols = cols)
+            else
+                estimateSummary(obj, parameter = parameter, statistics = statistics,
+                    true = true, validrange = validrange, checkfields = checkfields,
+                    format = format, cols = cols)
+        }
+        out <- lapply(model, one)
+        names(out) <- model
+        if (format == 'data.frame') {
+            out <- do.call(rbind, lapply(model, function(m) cbind(model = m, out[[m]])))
+            row.names(out) <- NULL
+        }
+        return(out)
+    }
     arr <- estimateArray(object)
     if (missing(true)) {
         # assumes groups, if present, are used in model

@@ -1,8 +1,13 @@
-Changes in version 2.10.4 (2026-11-01)
+Changes in version 2.10.4 (2026-11-05)
 
 New features or changed behaviour of old functions
     o  internal defaultextractfn() moved to own .R file and saves capthist attribute 'D' if present
     o  new field 'nsight' (total detections of marked animals) replaces 'ndet' in count summaries of sighting data
+    o  function Etcc() for expected telemetry-calibrated cue counts
+    o  function RSEtcc() for predicted RSE of density estimate from telemetry-calibrated cue counts
+    o  function Echat() for expected variance inflation factor from sighting data
+    o  defaultextractfn() exported and handles fit = ‘multifit’ (named list of tables, one per model)
+    o  estimateSummary() and select.stats() have a model argument for multifit output
     
 Bugs fixed
     o  none

@@ -17,7 +17,7 @@
 
 \usage{
 
-select.stats(object, parameter = "D", statistics, true)
+select.stats(object, parameter = "D", statistics, true, model = NULL)
 find.param(object)
 find.stats(object)
 
@@ -28,10 +28,15 @@ find.stats(object)
   \item{parameter}{character name of parameter to extract}
   \item{statistics}{character vector of statistic names}
   \item{true}{numeric vector of `'true' values of parameter, one per scenario}
+  \item{model}{character name or integer index of the model(s) to use with output from \code{fit = "multifit"} (default all models)}
 }
 
 \details{
-  
+
+For output from \code{run.scenarios(fit = "multifit")} (several models fitted to each
+simulated dataset) the result is a named list with one `selectedstatistics' object per
+model, or a single object if one model is requested with \code{model}.
+
 \code{select.stats} is used to select a particular vector of numeric
 values for summarization. The `parameter' argument indexes a row in the
 data.frame for one replicate (i.e., one `real' parameter). Each

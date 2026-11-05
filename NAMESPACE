@@ -7,7 +7,7 @@ importFrom("graphics", "abline", "hist", "lines", "mtext", "par",
            "plot", "points", "segments", "legend", "axis", "box", "polygon", "text")
 importFrom("stats", "coef", "logLik", "lm", "pgamma", "predict", "qnorm", "quantile",
            "terms", "uniroot", "optimize", "approx", "dist", "pnorm", "symnum",
-           "median", "sd", "rnorm", "runif")
+           "median", "sd", "rnorm", "runif", "rpois")
 
 importFrom("utils", 
     "flush.console", 
@@ -56,6 +56,9 @@ export (Lambda)
 export (Enrm)
 export (getdetectpar)
 export (minnrRSE)
+export (Echat)
+export (Etcc)
+export (RSEtcc)
 export (optimalSpacing)
 export (costing)
 export (scenarioSummary)
@@ -71,6 +74,7 @@ export (expand.arg)
 export (countSummary)
 export (estimateArray)
 export (estimateSummary)
+export (defaultextractfn)
 export (transformOutput)
 
 export (minsimRSE)

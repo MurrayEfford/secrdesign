@@ -22,10 +22,24 @@ weighted <- function (onescenario, param) {
     })
 }
 
-select.stats <- function (object, parameter = 'D', statistics, true) {
-  
+select.stats <- function (object, parameter = 'D', statistics, true, model = NULL) {
+
   if (!inherits(object, 'estimatetables'))
     stop ("select.stats requires input of class estimatetables")
+  if (identical(object$outputtype, "multipredicted")) {
+      ## 2026-11-05 fit = "multifit": one selectedstatistics object per model;
+      ## a single object if one model is requested
+      modelnames <- modelNames(object)
+      if (is.null(model)) model <- modelnames
+      if (is.numeric(model)) model <- modelnames[model]
+      args <- list(parameter = parameter)
+      if (!missing(statistics)) args$statistics <- statistics
+      if (!missing(true)) args$true <- true
+      out <- lapply(model, function(m)
+          do.call(select.stats, c(list(object = selectModel(object, m)), args)))
+      names(out) <- model
+      return(if (length(out) == 1) out[[1]] else out)
+  }
   if (is.na(object$outputtype))
     stop ("cannot select.stats output of unknown type")
   if (object$outputtype %in% c('secrfit'))
