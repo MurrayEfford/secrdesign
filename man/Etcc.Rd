@@ -52,7 +52,7 @@ RSEtcc(D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
 
 \details{
 
-The arguments \code{D}, \code{lambda0}, \code{sigma}, \code{noccasions}, \code{ncollar}, \code{q} and \code{nfix} are recycled to a common length; each element defines one setting and gives one row of the result. Use \code{\link{expand.grid}} to combine settings. Only the hazard half-normal (\code{"HHN"}) and hazard exponential (\code{"HEX"}) detection functions are implemented (as for telemetrytype 'marking' in \pkg{secr}), and detectors are assumed to be used on every occasion.
+The arguments \code{D}, \code{lambda0}, \code{sigma}, \code{noccasions}, \code{ncollar}, \code{q} and \code{nfix} are recycled to a common length; each element defines one setting and gives one row of the result. Use \code{\link{expand.grid}} to combine settings. Only the hazard half-normal (\code{"HHN"}) and hazard exponential (\code{"HEX"}) detection functions are implemented (as for telemetrytype 'marking' in \pkg{secr}). If \code{traps} has a \code{usage} attribute (see \code{\link[secr]{usage}}) it is taken as the effort that multiplies the hazard, in any units (0/1, days, trap-nights), and the expected cues from a detector are \code{noccasions} times its mean usage per occasion times the hazard. This equals the sum of usage over occasions when \code{noccasions = ncol(usage(traps))}, which is the usual case. Without a \code{usage} attribute all detectors are assumed to be used with unit effort on every occasion.
 
 \subsection{Expected counts}{
 
@@ -105,6 +105,7 @@ A data frame with one row for each setting. \code{Etcc} returns the columns
   \item{N}{expected number of animals in the mask}
   \item{En}{expected number of animals detected at least once}
   \item{J1}{expected total number of cues from all animals}
+  \item{Lambda}{expected number of cues per animal per unit density, summed over the mask (\eqn{\Lambda = a \sum_x L(x) = J_1/D}, in the area units of the mask, e.g. hectares); the denominator of \eqn{\hat D = T^a/\Lambda}}
   \item{U}{expected number of cues of unmarked animals}
   \item{R}{expected number of identified cues of collared animals}
   \item{Tm}{expected number of unidentified cues of collared animals}

@@ -41,10 +41,17 @@
     perCell <- length(D) > 1
     n <- max(if (perCell) 1 else length(D), length(lambda0), length(sigma), length(noccasions), length(ncollar), length(q), length(nfix))
     rc <- function(x) rep_len(x, n)
+    ## mean effort per occasion of each detector, fk = rowMeans(usage) (1 if traps has no usage attribute); usage is any
+    ## non-negative effort that multiplies the hazard (secr::usage), not necessarily 0/1 or a proportion;
+    ## expected cues from a detector are noccasions * fk * hazard (= sum of usage over occasions when noccasions = ncol(usage))
+    if (ms(traps)) stop ("Etcc does not accept multi-session traps")
+    us <- usage(traps)
+    fk <- if (is.null(us)) rep(1, nrow(traps)) else rowMeans(us)
     dx <- outer(mask$x, traps$x, '-'); dy <- outer(mask$y, traps$y, '-')
     list(n = n, perCell = perCell, detectfn = detectfn, D = if (perCell) D else rc(D), lambda0 = rc(lambda0), sigma = rc(sigma),
          noccasions = rc(noccasions), ncollar = rc(ncollar), q = rc(q), nfix = rc(nfix), deployment = deployment,
-         a = attr(mask, 'area'), nmask = nrow(mask), dx = dx, dy = dy, d2 = dx^2 + dy^2)
+         a = attr(mask, 'area'), nmask = nrow(mask), dx = dx, dy = dy, d2 = dx^2 + dy^2,
+         fk = fk)
 }
 
 ## expected counts and the pieces needed for the RSE, for setting i
@@ -61,10 +68,11 @@
         gk <- g / s2
         vloc <- s2
     }
-    L1 <- lam * rowSums(g)                                  # per occasion
+    fk <- z$fk
+    L1 <- lam * as.vector(g %*% fk)                         # per occasion (mean over occasions if usage varies)
     L  <- S * L1
-    Lx <- -S * lam * rowSums(gk * z$dx)                     # gradient of L
-    Ly <- -S * lam * rowSums(gk * z$dy)
+    Lx <- -S * lam * as.vector((gk * z$dx) %*% fk)          # gradient of L
+    Ly <- -S * lam * as.vector((gk * z$dy) %*% fk)
     Dx <- if (z$perCell) z$D else rep(z$D[i], z$nmask)
     mom <- .cuemoments(L, Dx, z$a, Ndist)               # J1, J2, N, E(n), as in Echat()
     J1 <- mom$J1; Nexp <- mom$N; En <- mom$En               # En: expected number of animals detected
@@ -74,7 +82,7 @@
     Vs <- m * sum(w * (Lx^2 + Ly^2)) * vloc / z$nfix[i]
     mu <- J1 - Cm
     vex <- mom$vex                                          # J2, or J2 - J1^2 / N if N is fixed
-    list(N = Nexp, En = En, J1 = J1, U = mu, C = Cm, R = z$q[i] * Cm, Tm = (1 - z$q[i]) * Cm,
+    list(N = Nexp, En = En, J1 = J1, Lambda = z$a * sum(L), U = mu, C = Cm, R = z$q[i] * Cm, Tm = (1 - z$q[i]) * Cm,
          seen = m * sum(w * (1 - exp(-L))), chat = if (mu > 0) 1 + (vex + Vs) / mu else NA,
          w = w, L = L, g = g, Dx = Dx, dlh = if (z$detectfn == 'HEX') d / z$sigma[i] else z$d2 / s2)   # dlh = d log h / d log sigma
 }
@@ -82,7 +90,7 @@
 .etcc_row <- function (z, i, o, warnseen)
     data.frame(D = if (z$perCell) NA else z$D[i], lambda0 = z$lambda0[i], sigma = z$sigma[i], noccasions = z$noccasions[i],
                ncollar = z$ncollar[i], deployment = z$deployment, q = z$q[i],
-               N = o$N, En = o$En, J1 = o$J1, U = o$U, R = o$R, Tm = o$Tm, seen = o$seen,
+               N = o$N, En = o$En, J1 = o$J1, Lambda = o$Lambda, U = o$U, R = o$R, Tm = o$Tm, seen = o$seen,
                collarshare = o$C / o$J1, chat = o$chat, warn = o$seen < warnseen)
 
 Etcc <- function (D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
@@ -121,8 +129,9 @@ RSEtcc <- function (D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20
         }
         else {
             g <- o$g; w <- o$w; dlh <- o$dlh
-            bx <- S * lam * rowSums(g * dlh)                     # dL/dlog(sigma)
-            M  <- m * matrix(c(sum(w * o$L), sum(w * bx), sum(w * bx), sum(w * rowSums(S * lam * g * dlh^2))), 2)
+            fk <- z$fk
+            bx <- S * lam * as.vector((g * dlh) %*% fk)          # dL/dlog(sigma)
+            M  <- m * matrix(c(sum(w * o$L), sum(w * bx), sum(w * bx), sum(w * as.vector(S * lam * (g * dlh^2) %*% fk))), 2)
             M[2, 2] <- M[2, 2] + 2 * m * (z$nfix[i] - 1)
             gr <- c(1, sum(o$Dx * bx) / sum(o$Dx * o$L))
             cal2 <- as.numeric(t(gr) %*% solve(M, gr))
