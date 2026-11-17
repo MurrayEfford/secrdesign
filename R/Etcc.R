@@ -6,8 +6,9 @@
 ##             collars seen, c-hat of the unmarked total
 ##   RSEtcc()  same inputs as Etcc() (as minnrRSE has the inputs of Enrm); returns the counts of Etcc() and the predicted RSE(D-hat)
 ##
-## Model (hazard half-normal, count detectors, AC Poisson with density D(x), one cue class):
+## Model (hazard half-normal 'HHN' or hazard exponential 'HEX', count detectors, AC Poisson with density D(x), one cue class):
 ##   L(x)  = S sum_k lambda0 exp(-d_k(x)^2 / (2 sigma^2))       expected cues from an animal centred at x (S occasions)
+##           (HEX: exp(-d_k(x) / sigma); Vs below then uses 2 sigma^2 in place of sigma^2, the per-axis variance of the AC given the fixes)
 ##   En = a sum_x D (1 - exp(-L)),  J1 = a sum_x D L,  J2 = a sum_x D L^2,  Nexp = a sum_x D
 ##   collars: AC distribution w(x) proportional to D(x)              ('uniform', i.e. widespread)
 ##                                         or to D(x)(1 - exp(-L1(x)))  ('pdot', centred; L1 = L / S, one occasion)
@@ -35,13 +36,13 @@
 ## Value: data.frame with one row per setting.
 
 ## common set-up: recycle the settings and compute the distances
-.etcc_setup <- function (D, lambda0, sigma, traps, mask, noccasions, ncollar, deployment, q, nfix) {
+.etcc_setup <- function (D, lambda0, sigma, traps, mask, noccasions, ncollar, deployment, q, nfix, detectfn = 'HHN') {
     if (length(D) > 1 && length(D) != nrow(mask)) stop ("vector D must have one value per mask cell")
     perCell <- length(D) > 1
     n <- max(if (perCell) 1 else length(D), length(lambda0), length(sigma), length(noccasions), length(ncollar), length(q), length(nfix))
     rc <- function(x) rep_len(x, n)
     dx <- outer(mask$x, traps$x, '-'); dy <- outer(mask$y, traps$y, '-')
-    list(n = n, perCell = perCell, D = if (perCell) D else rc(D), lambda0 = rc(lambda0), sigma = rc(sigma),
+    list(n = n, perCell = perCell, detectfn = detectfn, D = if (perCell) D else rc(D), lambda0 = rc(lambda0), sigma = rc(sigma),
          noccasions = rc(noccasions), ncollar = rc(ncollar), q = rc(q), nfix = rc(nfix), deployment = deployment,
          a = attr(mask, 'area'), nmask = nrow(mask), dx = dx, dy = dy, d2 = dx^2 + dy^2)
 }
@@ -49,23 +50,33 @@
 ## expected counts and the pieces needed for the RSE, for setting i
 .etcc_one <- function (z, i, Ndist) {
     s2 <- z$sigma[i]^2; S <- z$noccasions[i]; m <- z$ncollar[i]; lam <- z$lambda0[i]
-    g  <- exp(-z$d2 / (2 * s2))
+    if (z$detectfn == 'HEX') {                              # h = lambda0 exp(-d / sigma)
+        d  <- pmax(sqrt(z$d2), 1e-8)
+        g  <- exp(-d / z$sigma[i])
+        gk <- g / (z$sigma[i] * d)                          # -(dh/dx) / (lambda0 dx)
+        vloc <- 2 * s2                                      # per-axis variance of the AC given the fixes: 1 / Fisher information
+    }
+    else {                                                  # h = lambda0 exp(-d^2 / (2 sigma^2))
+        g  <- exp(-z$d2 / (2 * s2))
+        gk <- g / s2
+        vloc <- s2
+    }
     L1 <- lam * rowSums(g)                                  # per occasion
     L  <- S * L1
-    Lx <- -S * lam * rowSums(g * z$dx) / s2                 # gradient of L
-    Ly <- -S * lam * rowSums(g * z$dy) / s2
+    Lx <- -S * lam * rowSums(gk * z$dx)                     # gradient of L
+    Ly <- -S * lam * rowSums(gk * z$dy)
     Dx <- if (z$perCell) z$D else rep(z$D[i], z$nmask)
     mom <- .cuemoments(L, Dx, z$a, Ndist)               # J1, J2, N, E(n), as in Echat()
     J1 <- mom$J1; Nexp <- mom$N; En <- mom$En               # En: expected number of animals detected
     w  <- if (z$deployment == 'pdot') Dx * (1 - exp(-L1)) else Dx
     w  <- w / sum(w)
     Cm <- m * sum(w * L)
-    Vs <- m * sum(w * (Lx^2 + Ly^2)) * s2 / z$nfix[i]
+    Vs <- m * sum(w * (Lx^2 + Ly^2)) * vloc / z$nfix[i]
     mu <- J1 - Cm
     vex <- mom$vex                                          # J2, or J2 - J1^2 / N if N is fixed
     list(N = Nexp, En = En, J1 = J1, U = mu, C = Cm, R = z$q[i] * Cm, Tm = (1 - z$q[i]) * Cm,
          seen = m * sum(w * (1 - exp(-L))), chat = if (mu > 0) 1 + (vex + Vs) / mu else NA,
-         w = w, L = L, g = g, Dx = Dx)
+         w = w, L = L, g = g, Dx = Dx, dlh = if (z$detectfn == 'HEX') d / z$sigma[i] else z$d2 / s2)   # dlh = d log h / d log sigma
 }
 
 .etcc_row <- function (z, i, o, warnseen)
@@ -76,21 +87,23 @@
 
 Etcc <- function (D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
                   deployment = c('pdot', 'uniform'), q = 1, nfix = 100,
-                  Ndist = c('poisson', 'fixed'), warnseen = 3) {
+                  Ndist = c('poisson', 'fixed'), warnseen = 3, detectfn = c('HHN', 'HEX')) {
     deployment <- match.arg(deployment)
     Ndist  <- match.arg(Ndist)
-    z <- .etcc_setup(D, lambda0, sigma, traps, mask, noccasions, ncollar, deployment, q, nfix)
+    detectfn <- match.arg(detectfn)
+    z <- .etcc_setup(D, lambda0, sigma, traps, mask, noccasions, ncollar, deployment, q, nfix, detectfn)
     do.call(rbind, lapply(seq_len(z$n), function(i) .etcc_row(z, i, .etcc_one(z, i, Ndist), warnseen)))
 }
 
 RSEtcc <- function (D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
                     deployment = c('pdot', 'uniform'), q = 1, nfix = 100,
                     Ndist = c('poisson', 'fixed'), calib = c('mc', 'fisher', 'poisson'), kcal = 1,
-                    warnseen = 3, nsimcollar = 2000) {
+                    warnseen = 3, nsimcollar = 2000, detectfn = c('HHN', 'HEX')) {
     calib <- match.arg(calib)
     deployment <- match.arg(deployment)
     Ndist  <- match.arg(Ndist)
-    z <- .etcc_setup(D, lambda0, sigma, traps, mask, noccasions, ncollar, deployment, q, nfix)
+    detectfn <- match.arg(detectfn)
+    z <- .etcc_setup(D, lambda0, sigma, traps, mask, noccasions, ncollar, deployment, q, nfix, detectfn)
     out <- vector('list', z$n)
     for (i in seq_len(z$n)) {
         o <- .etcc_one(z, i, Ndist)
@@ -107,9 +120,9 @@ RSEtcc <- function (D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20
             cal2 <- mean(1 / Cr[Cr > 0])
         }
         else {
-            d2 <- z$d2; g <- o$g; w <- o$w
-            bx <- S * lam * rowSums(g * d2) / s2                 # dL/dlog(sigma)
-            M  <- m * matrix(c(sum(w * o$L), sum(w * bx), sum(w * bx), sum(w * rowSums(S * lam * g * d2^2) / s2^2)), 2)
+            g <- o$g; w <- o$w; dlh <- o$dlh
+            bx <- S * lam * rowSums(g * dlh)                     # dL/dlog(sigma)
+            M  <- m * matrix(c(sum(w * o$L), sum(w * bx), sum(w * bx), sum(w * rowSums(S * lam * g * dlh^2))), 2)
             M[2, 2] <- M[2, 2] + 2 * m * (z$nfix[i] - 1)
             gr <- c(1, sum(o$Dx * bx) / sum(o$Dx * o$L))
             cal2 <- as.numeric(t(gr) %*% solve(M, gr))

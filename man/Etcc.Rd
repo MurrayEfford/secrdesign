@@ -22,18 +22,18 @@ approximations to the relative standard error of the density estimate, as
 
 Etcc(D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
     deployment = c("pdot", "uniform"), q = 1, nfix = 100,
-    Ndist = c("poisson", "fixed"), warnseen = 3)
+    Ndist = c("poisson", "fixed"), warnseen = 3, detectfn = c("HHN", "HEX"))
 
 RSEtcc(D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
     deployment = c("pdot", "uniform"), q = 1, nfix = 100,
     Ndist = c("poisson", "fixed"), calib = c("mc", "fisher", "poisson"),
-    kcal = 1, warnseen = 3, nsimcollar = 2000)
+    kcal = 1, warnseen = 3, nsimcollar = 2000, detectfn = c("HHN", "HEX"))
 
 }
 
 \arguments{
   \item{D}{population density animals / hectare; scalar, or a vector of length \code{nrow(mask)} for a single setting}
-  \item{lambda0}{numeric intercept of the hazard half-normal detection function}
+  \item{lambda0}{numeric intercept of the hazard detection function}
   \item{sigma}{numeric spatial scale of detection (same length units as \code{traps})}
   \item{traps}{\code{\link[secr]{traps}} object with detector type `count'}
   \item{mask}{\code{\link[secr]{mask}} object (the buffered habitat region)}
@@ -47,15 +47,16 @@ RSEtcc(D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
   \item{calib}{character; how the contribution of the collared sample is computed (see Details)}
   \item{kcal}{numeric multiplier of 1/R used when \code{calib = "poisson"}}
   \item{nsimcollar}{integer number of random sets of collars when \code{calib = "mc"}}
+  \item{detectfn}{character; shape of the hazard of detection: half-normal \code{"HHN"} or exponential \code{"HEX"} (see Details)}
 }
 
 \details{
 
-The arguments \code{D}, \code{lambda0}, \code{sigma}, \code{noccasions}, \code{ncollar}, \code{q} and \code{nfix} are recycled to a common length; each element defines one setting and gives one row of the result. Use \code{\link{expand.grid}} to combine settings. Only the hazard half-normal detection function is implemented, and detectors are assumed to be used on every occasion.
+The arguments \code{D}, \code{lambda0}, \code{sigma}, \code{noccasions}, \code{ncollar}, \code{q} and \code{nfix} are recycled to a common length; each element defines one setting and gives one row of the result. Use \code{\link{expand.grid}} to combine settings. Only the hazard half-normal (\code{"HHN"}) and hazard exponential (\code{"HEX"}) detection functions are implemented (as for telemetrytype 'marking' in \pkg{secr}), and detectors are assumed to be used on every occasion.
 
 \subsection{Expected counts}{
 
-Let \eqn{L(x) = S \sum_k \lambda_0 \exp(-d_k(x)^2/2\sigma^2)} be the expected number of cues in \eqn{S} occasions from an animal with activity centre at \eqn{x}. With \eqn{a} the cell area of the mask, define \eqn{J_1 = a \sum_x D(x) L(x)} (all cues), \eqn{J_2 = a \sum_x D(x) L(x)^2} and \eqn{N = a \sum_x D(x)}. The expected number of animals detected at least once is \eqn{E(n) = a \sum_x D(x) (1 - \exp(-L(x)))}, as for any SECR design (see \code{\link{Enrm}}).
+Let \eqn{L(x) = S \sum_k \lambda_0 \exp(-d_k(x)^2/2\sigma^2)} (\code{"HHN"}; \eqn{\exp(-d_k(x)/\sigma)} for \code{"HEX"}) be the expected number of cues in \eqn{S} occasions from an animal with activity centre at \eqn{x}. With \eqn{a} the cell area of the mask, define \eqn{J_1 = a \sum_x D(x) L(x)} (all cues), \eqn{J_2 = a \sum_x D(x) L(x)^2} and \eqn{N = a \sum_x D(x)}. The expected number of animals detected at least once is \eqn{E(n) = a \sum_x D(x) (1 - \exp(-L(x)))}, as for any SECR design (see \code{\link{Enrm}}).
 
 The collared animals' activity centres are distributed with probability \eqn{w(x)} over the mask: proportional to \eqn{D(x)} if \code{deployment = "uniform"} (widespread), or to \eqn{D(x)} times the probability of detection in one occasion if \code{deployment = "pdot"} (centred; an analogue of selecting animals that are detected). The expected number of cues from the collared animals is \eqn{C = m \sum_x w(x) L(x)} for \eqn{m} collars. Then
 
@@ -72,7 +73,7 @@ The collared animals' activity centres are distributed with probability \eqn{w(x
 
 The total unmarked count is a compound Poisson variable; its variance to mean ratio is
 \deqn{\hat c = 1 + (J_2 + V_s)/\mu}{c = 1 + (J2 + Vs) / mu}
-where \eqn{\mu} = \code{U}. \eqn{V_s = m \sum_x w(x) |\nabla L|^2 \sigma^2/n_{fix}} approximates the variance in the collared animals' cues caused by uncertainty in their activity centres. With \code{Ndist = "fixed"}, \eqn{J_2 - J_1^2/N} replaces \eqn{J_2}. This is the expression used by \code{secr.fit} with \code{details = list(chatmethod = "analytic")} (\code{chat}).
+where \eqn{\mu} = \code{U}. \eqn{V_s = m \sum_x w(x) |\nabla L|^2 v/n_{fix}} approximates the variance in the collared animals' cues caused by uncertainty in their activity centres; \eqn{v} is the per-axis variance of an activity centre estimated from one fix (\eqn{\sigma^2} for \code{"HHN"}, \eqn{2\sigma^2} for \code{"HEX"}). With \code{Ndist = "fixed"}, \eqn{J_2 - J_1^2/N} replaces \eqn{J_2}. This is the expression used by \code{secr.fit} with \code{details = list(chatmethod = "analytic")} (\code{chat}).
 
 }
 
