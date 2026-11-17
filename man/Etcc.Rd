@@ -156,7 +156,8 @@ Etcc(D = 53, lambda0 = 0.54, sigma = 8, traps = tr, mask = msk, ncollar = 20)
 # predicted RSE vs number of collars, widespread deployment
 set.seed(1)
 RSEtcc(D = 53, lambda0 = 0.54, sigma = 8, traps = tr, mask = msk,
-    ncollar = c(5, 10, 20, 40), deployment = "uniform")[, c("ncollar", "En", "seen", "RSEcoarse", "RSE", "warn")]
+    ncollar = c(5, 10, 20, 40), deployment = "uniform")[, c("ncollar", "En", "seen", 
+    "RSEcoarse", "RSE", "warn")]
 
 \donttest{
 n <- 3:60
