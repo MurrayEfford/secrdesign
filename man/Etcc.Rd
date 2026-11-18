@@ -20,11 +20,11 @@ approximations to the relative standard error of the density estimate, as
 
 \usage{
 
-Etcc(D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
+Etcc(D, lambda0, sigma, traps, mask, noccasions = NULL, ncollar = 20,
     deployment = c("pdot", "uniform"), q = 1, nfix = 100,
     Ndist = c("poisson", "fixed"), warnseen = 3, detectfn = c("HHN", "HEX"))
 
-RSEtcc(D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
+RSEtcc(D, lambda0, sigma, traps, mask, noccasions = NULL, ncollar = 20,
     deployment = c("pdot", "uniform"), q = 1, nfix = 100,
     Ndist = c("poisson", "fixed"), calib = c("mc", "fisher", "poisson"),
     kcal = 1, warnseen = 3, nsimcollar = 2000, detectfn = c("HHN", "HEX"))
@@ -37,7 +37,7 @@ RSEtcc(D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
   \item{sigma}{numeric spatial scale of detection (same length units as \code{traps})}
   \item{traps}{\code{\link[secr]{traps}} object with detector type `count'}
   \item{mask}{\code{\link[secr]{mask}} object (the buffered habitat region)}
-  \item{noccasions}{integer number of sighting occasions}
+  \item{noccasions}{integer number of sighting occasions; if NULL (the default) this is \code{ncol(usage(traps))} when \code{traps} has a usage attribute, otherwise 5}
   \item{ncollar}{integer number of collared animals}
   \item{deployment}{character; how collars are distributed (see Details)}
   \item{q}{numeric probability that a sighting of a collared animal is identified}
@@ -104,8 +104,9 @@ A data frame with one row for each setting. \code{Etcc} returns the columns
   \item{D, lambda0, sigma, noccasions, ncollar, deployment, q}{settings}
   \item{N}{expected number of animals in the mask}
   \item{En}{expected number of animals detected at least once}
+  \item{neff}{effective number of animals \eqn{n_{eff} = J_1^2/J_2}, where \eqn{J_2 = a \sum_x D(x) L(x)^2}, \eqn{a} is the cell area of the mask and \eqn{L(x)} the expected number of cues from an animal centred at \eqn{x}: the effective sample size of animals weighted by their expected numbers of cues. It equals the number of animals if all have the same expected cues, is smaller otherwise, and does not increase with the number of cues per animal (occasions, or detectors within a fixed area). The relative variance of the pooled count of cues is approximately \eqn{1/J_1 + 1/n_{eff}}}
   \item{J1}{expected total number of cues from all animals}
-  \item{Lambda}{expected number of cues per animal per unit density, summed over the mask (\eqn{\Lambda = a \sum_x L(x) = J_1/D}, in the area units of the mask, e.g. hectares); the denominator of \eqn{\hat D = T^a/\Lambda}}
+  \item{Lambda}{expected number of cues per animal per unit density, summed over the mask (\eqn{\Lambda = a \sum_x L(x) = J_1/D}, with \eqn{a} the cell area of the mask); units are cues per animal times the area units of the mask (cue-hectares per animal for a secr mask, the same area units as \code{D}); the denominator of \eqn{\hat D = T^a/\Lambda}}
   \item{U}{expected number of cues of unmarked animals}
   \item{R}{expected number of identified cues of collared animals}
   \item{Tm}{expected number of unidentified cues of collared animals}

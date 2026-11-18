@@ -10,6 +10,8 @@
 ##   L(x)  = S sum_k lambda0 exp(-d_k(x)^2 / (2 sigma^2))       expected cues from an animal centred at x (S occasions)
 ##           (HEX: exp(-d_k(x) / sigma); Vs below then uses 2 sigma^2 in place of sigma^2, the per-axis variance of the AC given the fixes)
 ##   En = a sum_x D (1 - exp(-L)),  J1 = a sum_x D L,  J2 = a sum_x D L^2,  Nexp = a sum_x D
+##   neff = J1^2 / J2   effective number of animals (Kish effective sample size, animals weighted by their expected cues);
+##        the relative variance of the pooled cue total is about 1 / J1 + 1 / neff
 ##   collars: AC distribution w(x) proportional to D(x)              ('uniform', i.e. widespread)
 ##                                         or to D(x)(1 - exp(-L1(x)))  ('pdot', centred; L1 = L / S, one occasion)
 ##   Cm = ncollar * E_w[L]            expected cues of the collared animals;  R = q Cm identified, Tm = (1 - q) Cm
@@ -39,13 +41,15 @@
 .etcc_setup <- function (D, lambda0, sigma, traps, mask, noccasions, ncollar, deployment, q, nfix, detectfn = 'HHN') {
     if (length(D) > 1 && length(D) != nrow(mask)) stop ("vector D must have one value per mask cell")
     perCell <- length(D) > 1
+    if (ms(traps)) stop ("Etcc does not accept multi-session traps")
+    us <- usage(traps)
+    ## noccasions defaults to ncol(usage) when traps has usage (as pdot), otherwise 5
+    if (is.null(noccasions)) noccasions <- if (is.null(us)) 5 else ncol(us)
     n <- max(if (perCell) 1 else length(D), length(lambda0), length(sigma), length(noccasions), length(ncollar), length(q), length(nfix))
     rc <- function(x) rep_len(x, n)
     ## mean effort per occasion of each detector, fk = rowMeans(usage) (1 if traps has no usage attribute); usage is any
     ## non-negative effort that multiplies the hazard (secr::usage), not necessarily 0/1 or a proportion;
     ## expected cues from a detector are noccasions * fk * hazard (= sum of usage over occasions when noccasions = ncol(usage))
-    if (ms(traps)) stop ("Etcc does not accept multi-session traps")
-    us <- usage(traps)
     fk <- if (is.null(us)) rep(1, nrow(traps)) else rowMeans(us)
     dx <- outer(mask$x, traps$x, '-'); dy <- outer(mask$y, traps$y, '-')
     list(n = n, perCell = perCell, detectfn = detectfn, D = if (perCell) D else rc(D), lambda0 = rc(lambda0), sigma = rc(sigma),
@@ -82,7 +86,7 @@
     Vs <- m * sum(w * (Lx^2 + Ly^2)) * vloc / z$nfix[i]
     mu <- J1 - Cm
     vex <- mom$vex                                          # J2, or J2 - J1^2 / N if N is fixed
-    list(N = Nexp, En = En, J1 = J1, Lambda = z$a * sum(L), U = mu, C = Cm, R = z$q[i] * Cm, Tm = (1 - z$q[i]) * Cm,
+    list(N = Nexp, En = En, neff = J1^2 / mom$J2, J1 = J1, Lambda = z$a * sum(L), U = mu, C = Cm, R = z$q[i] * Cm, Tm = (1 - z$q[i]) * Cm,
          seen = m * sum(w * (1 - exp(-L))), chat = if (mu > 0) 1 + (vex + Vs) / mu else NA,
          w = w, L = L, g = g, Dx = Dx, dlh = if (z$detectfn == 'HEX') d / z$sigma[i] else z$d2 / s2)   # dlh = d log h / d log sigma
 }
@@ -90,10 +94,10 @@
 .etcc_row <- function (z, i, o, warnseen)
     data.frame(D = if (z$perCell) NA else z$D[i], lambda0 = z$lambda0[i], sigma = z$sigma[i], noccasions = z$noccasions[i],
                ncollar = z$ncollar[i], deployment = z$deployment, q = z$q[i],
-               N = o$N, En = o$En, J1 = o$J1, Lambda = o$Lambda, U = o$U, R = o$R, Tm = o$Tm, seen = o$seen,
+               N = o$N, En = o$En, neff = o$neff, J1 = o$J1, Lambda = o$Lambda, U = o$U, R = o$R, Tm = o$Tm, seen = o$seen,
                collarshare = o$C / o$J1, chat = o$chat, warn = o$seen < warnseen)
 
-Etcc <- function (D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
+Etcc <- function (D, lambda0, sigma, traps, mask, noccasions = NULL, ncollar = 20,
                   deployment = c('pdot', 'uniform'), q = 1, nfix = 100,
                   Ndist = c('poisson', 'fixed'), warnseen = 3, detectfn = c('HHN', 'HEX')) {
     deployment <- match.arg(deployment)
@@ -103,7 +107,7 @@ Etcc <- function (D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
     do.call(rbind, lapply(seq_len(z$n), function(i) .etcc_row(z, i, .etcc_one(z, i, Ndist), warnseen)))
 }
 
-RSEtcc <- function (D, lambda0, sigma, traps, mask, noccasions = 5, ncollar = 20,
+RSEtcc <- function (D, lambda0, sigma, traps, mask, noccasions = NULL, ncollar = 20,
                     deployment = c('pdot', 'uniform'), q = 1, nfix = 100,
                     Ndist = c('poisson', 'fixed'), calib = c('mc', 'fisher', 'poisson'), kcal = 1,
                     warnseen = 3, nsimcollar = 2000, detectfn = c('HHN', 'HEX')) {
